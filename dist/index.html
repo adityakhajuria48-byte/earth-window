@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Find real satellite imagery by place and capture date. Explore Sentinel-2 and Landsat scenes with Earth Window.">
+  <meta name="theme-color" content="#0c191e"><title>Earth Window · Satellite imagery explorer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="/backend-config.js"></script><script defer src="/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#search-form">Skip to image search</a>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Earth Window home"><span class="brand-mark" aria-hidden="true">◉</span><span>earth<span class="brand-light">window</span><small>A DIFFERENT PERSPECTIVE</small></span></a>
+  <span class="top-context">Earth observation / Imagery explorer</span>
+  <button class="text-button" id="about-open">How it works <span aria-hidden="true">↗</span></button>
+</header>
+<main class="workspace">
+  <aside class="sidebar">
+    <div class="intro"><span class="eyebrow">EXPLORE THE ARCHIVE</span><h1>A place. A date.<br>A new perspective.</h1><p>Find what satellites actually captured.</p></div>
+    <form id="search-form">
+      <label for="place">01 <span>Choose a place</span></label>
+      <div class="input-action"><input id="place" type="search" value="Udhampur, India" placeholder="City or latitude, longitude" maxlength="150" autocomplete="off"><button type="button" id="find-place" aria-label="Find location">⌕</button></div>
+      <div id="place-results" class="place-results" aria-live="polite"></div>
+      <div class="location-readout"><span aria-hidden="true">⌖</span><span id="coordinates">32.9160° N, 75.1410° E</span><button type="button" id="recenter" aria-label="Recenter map on chosen location">↗</button></div>
+      <p class="hint">Search a city, enter coordinates, or click the map.</p>
+      <label for="date">02 <span>Choose a capture date</span></label>
+      <div class="date-row"><input id="date" type="date" required min="1982-01-01"><input id="time" type="time" value="12:00" aria-label="Preferred capture time in UTC" required></div>
+      <p class="hint">Time is UTC. Results show the actual capture time.</p>
+      <label class="plain-label" for="window">Search window</label>
+      <select id="window"><option value="0">Exact day</option><option value="7" selected>Within 7 days either side</option><option value="30">Within 30 days either side</option></select>
+      <label for="collection">03 <span>Choose your imagery</span></label>
+      <select id="collection"><option value="sentinel-2-l2a">Sentinel-2 · Optical · 10 m RGB</option><option value="landsat-c2-l2">Landsat · Optical · 30 m RGB</option></select>
+      <div class="range-heading"><label class="plain-label" for="cloud">Maximum scene cloud cover</label><output for="cloud" id="cloud-value">40%</output></div>
+      <input type="range" id="cloud" min="0" max="100" step="5" value="40"><div class="range-ends"><span>Clearer skies</span><span>Any sky</span></div>
+      <button class="primary" type="submit" id="search-button">Find satellite images <span aria-hidden="true">↗</span></button>
+      <p id="search-notice" role="status" class="hint notice"></p>
+    </form>
+    <div class="availability"><span aria-hidden="true">◷</span><p><strong>An archive, not a live camera.</strong> Coverage depends on satellite passes, clouds, and processing. An exact-time image may not exist.</p></div>
+    <a class="source-link" href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Open imagery via Earth Search <span>↗</span></a><a class="source-link" href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">Place names: Open-Meteo / GeoNames <span>↗</span></a>
+  </aside>
+  <section class="explorer" aria-label="Satellite image explorer">
+    <div class="map-shell">
+      <div id="map" aria-label="Interactive map. Click a place to choose a search location." tabindex="0"></div>
+      <div class="map-heading"><span class="eyebrow">YOUR AREA OF INTEREST</span><h2 id="location-title">Udhampur, India</h2></div>
+      <div class="map-tools"><label class="map-select-label" for="map-layer">Map layer</label><select id="map-layer"><option value="nasa">NASA daily overview</option><option value="streets">Street map</option></select></div>
+      <div class="map-caption"><span class="map-caption-symbol" aria-hidden="true">▧</span><div><strong id="map-source">Terra / MODIS · Daily overview</strong><span id="map-date">Loading date…</span></div></div>
+      <div id="map-warning" class="map-warning" role="status" hidden></div>
+    </div>
+    <section class="results-section" aria-labelledby="results-heading">
+      <div class="results-top"><div><span class="eyebrow">CAPTURED FROM ORBIT</span><h2 id="results-heading">Available scenes <span id="count">—</span></h2></div><div class="sort-control"><label for="sort">Sort by</label><select id="sort"><option value="nearest">Closest to your time</option><option value="clear">Least cloud cover</option><option value="newest">Newest first</option></select></div></div>
+      <p id="result-summary" class="result-summary" role="status">Choose a place and date to search the archive.</p>
+      <div id="scene-list" class="scene-list"><div class="empty-state"><span aria-hidden="true">◎</span><h3>Your next perspective is up here.</h3><p>Search to see real scenes, capture times, and image previews.</p></div></div>
+      <div class="results-foot"><span>Capture times in UTC · Cloud cover applies to the entire scene</span><button id="export" class="text-button" disabled>Export results ↓</button></div>
+    </section>
+  </section>
+</main>
+<dialog id="scene-dialog"><button class="close-dialog" aria-label="Close image details">×</button><div id="scene-details"></div></dialog>
+<dialog id="about-dialog"><button class="close-dialog" aria-label="Close how it works">×</button><div class="about-content"><span class="eyebrow">A LITTLE CONTEXT</span><h2>See the Earth.<br>Know what you're seeing.</h2><p>Pick a location and a date, then search for satellite scenes whose footprints cover that point. Results are ordered by proximity to your preferred UTC time.</p><ol><li><strong>Sentinel-2</strong> provides optical imagery with 10 m red, green, and blue pixels. Clouds can obscure the ground.</li><li><strong>Landsat</strong> offers a longer historical record with 30 m optical pixels. Coverage varies by mission and date.</li><li><strong>The map overview</strong> is NASA Terra/MODIS daily imagery, displayed at a much coarser scale. It is a daily mosaic, not a selected Sentinel or Landsat scene. Blank areas can mean missing coverage.</li><li><strong>Scene previews</strong> show the full satellite tile, not a crop of your chosen point. The map shows the scene footprint. Open the GeoTIFF in QGIS for full-resolution analysis.</li></ol><p>Future images do not exist yet. This app does not predict passes, task satellites, track travellers, or show individual people.</p><p>Sources: <a href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Element 84 Earth Search</a> · <a href="https://nasa-gibs.github.io/gibs-api-docs/access-basics/" target="_blank" rel="noopener noreferrer">NASA GIBS</a> · <a href="https://www.usgs.gov/landsat-missions" target="_blank" rel="noopener noreferrer">USGS Landsat</a></p></div></dialog>
+</body></html>

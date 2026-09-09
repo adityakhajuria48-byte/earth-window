@@ -1,0 +1,8 @@
+[
+  {"id":"s2-c1","collection":"sentinel-2-c1-l2a","endpoint":"https://earth-search.aws.element84.com/v1/search","name":"Sentinel-2 Collection 1","family":"Sentinel-2","agency":"ESA / Copernicus","region":"Europe","kind":"optical","period":"scene","gsd":10},
+  {"id":"s2","collection":"sentinel-2-l2a","endpoint":"https://earth-search.aws.element84.com/v1/search","name":"Sentinel-2 L2A","family":"Sentinel-2","agency":"ESA / Copernicus","region":"Europe","kind":"optical","period":"scene","gsd":10},
+  {"id":"landsat","collection":"landsat-c2-l2","endpoint":"https://earth-search.aws.element84.com/v1/search","name":"Landsat Collection 2","family":"Landsat","agency":"USGS / NASA","region":"United States","kind":"optical","period":"scene","gsd":30},
+  {"id":"s1","collection":"sentinel-1-grd","endpoint":"https://earth-search.aws.element84.com/v1/search","name":"Sentinel-1 GRD","family":"Sentinel-1","agency":"ESA / Copernicus","region":"Europe","kind":"radar","period":"scene"},
+  {"id":"modis","collection":"modis-09A1-061","endpoint":"https://planetarycomputer.microsoft.com/api/stac/v1/search","name":"Terra / Aqua MODIS","family":"MODIS","agency":"NASA","region":"United States","kind":"optical","period":"8-day composite","gsd":500},
+  {"id":"alos","collection":"alos-palsar-mosaic","endpoint":"https://planetarycomputer.microsoft.com/api/stac/v1/search","name":"ALOS / ALOS-2 PALSAR","family":"ALOS PALSAR","agency":"JAXA","region":"Japan","kind":"radar","period":"annual mosaic","gsd":25}
+]

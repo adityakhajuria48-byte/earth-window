@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timedelta, timezone
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -16,7 +17,7 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent / "dist"
 STAC = "https://earth-search.aws.element84.com/v1/search"
-COLLECTIONS = {"sentinel-2-l2a", "landsat-c2-l2"}
+SOURCES = json.loads((ROOT / "sources.json").read_text())
 _cache: dict[str, tuple[float, object]] = {}
 _cache_lock = threading.Lock()
 _geocode_lock = threading.Lock()
@@ -47,9 +48,6 @@ def search_parameters(params: dict[str, str], now: datetime | None = None) -> di
     lat, lon = float(params["lat"]), float(params["lon"])
     if not (math.isfinite(lat) and math.isfinite(lon) and -90 <= lat <= 90 and -180 <= lon <= 180):
         raise ValueError("Latitude must be −90 to 90; longitude must be −180 to 180.")
-    collection = params.get("collection", "sentinel-2-l2a")
-    if collection not in COLLECTIONS:
-        raise ValueError("Unsupported satellite collection.")
     days = int(params.get("window", "7"))
     if days not in (0, 7, 30):
         raise ValueError("Search window must be 0, 7, or 30 days.")
@@ -64,29 +62,81 @@ def search_parameters(params: dict[str, str], now: datetime | None = None) -> di
         raise ValueError("Choose a date from 1982 onward.")
     start = day - timedelta(days=days)
     end = min(day + timedelta(days=days + 1) - timedelta(milliseconds=1), now)
-    return {"collections": collection, "intersects": json.dumps({"type": "Point", "coordinates": [lon, lat]}), "datetime": f"{start.isoformat()}/{end.isoformat()}", "query": json.dumps({"eo:cloud_cover": {"lte": cloud}}), "limit": 100}
+    return {"lat": lat, "lon": lon, "start": start.isoformat(), "end": end.isoformat(), "cloud": cloud}
+
+
+def source_range(q: dict, source: dict) -> str:
+    start, end = datetime.fromisoformat(q["start"]), datetime.fromisoformat(q["end"])
+    if source["period"] == "8-day composite":
+        start -= timedelta(days=7)
+    elif source["period"] == "annual mosaic":
+        start = datetime(start.year, 1, 1, tzinfo=timezone.utc)
+        end = datetime(end.year + 1, 1, 1, tzinfo=timezone.utc) - timedelta(milliseconds=1)
+    return f"{start.isoformat()}/{end.isoformat()}"
+
+
+def search_source(q: dict, source: dict) -> dict:
+    search = {"collections": source["collection"], "intersects": json.dumps({"type": "Point", "coordinates": [q["lon"], q["lat"]]}), "datetime": source_range(q, source), "limit": 100}
+    # Cloud filtering is applied after aggregation in the client. Radar and
+    # optical scenes with unreported cloud cover must remain discoverable.
+    url = source["endpoint"] + "?" + urlencode(search)
+    features, truncated, complete = [], False, False
+    started = time.monotonic()
+    try:
+        for page in range(3):
+            if time.monotonic() - started > 35:
+                truncated = True
+                break
+            data = upstream_json(url)
+            if not isinstance(data, dict) or not isinstance(data.get("features"), list):
+                raise ValueError("Unexpected catalogue response.")
+            meta = {"sourceId": source["id"], **{k: source.get(k) for k in ("name", "family", "agency", "region", "kind", "period", "gsd")}}
+            features.extend({**f, "_earthWindow": meta} for f in data["features"])
+            next_link = next((link for link in data.get("links", []) if link.get("rel") == "next"), None)
+            if not next_link:
+                complete = True
+                break
+            candidate = next_link.get("href", "")
+            parsed, expected = urlparse(candidate), urlparse(source["endpoint"])
+            if parsed.scheme != "https" or parsed.netloc != expected.netloc or not parsed.path.startswith(expected.path.rsplit("/", 1)[0] + "/") or next_link.get("method", "GET") != "GET":
+                truncated = True
+                break
+            url = candidate
+            if page == 2:
+                truncated = True
+        return {"id": source["id"], "name": source["name"], "status": "complete" if complete else "partial", "features": features, "truncated": truncated}
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError):
+        return {"id": source["id"], "name": source["name"], "status": "partial" if features else "unavailable", "features": features, "truncated": bool(features), "error": "This archive could not finish the search. Retry to check its coverage."}
+
+
+def feature_interval(feature: dict) -> tuple[datetime, datetime] | None:
+    p, source = feature.get("properties", {}), feature.get("_earthWindow", {})
+    try:
+        start = datetime.fromisoformat((p.get("start_datetime") or p["datetime"]).replace("Z", "+00:00")).astimezone(timezone.utc)
+        end = datetime.fromisoformat((p.get("end_datetime") or p.get("datetime") or p["start_datetime"]).replace("Z", "+00:00")).astimezone(timezone.utc)
+        if source.get("period") == "annual mosaic" and not p.get("start_datetime"):
+            start = datetime(start.year, 1, 1, tzinfo=timezone.utc)
+            end = datetime(start.year + 1, 1, 1, tzinfo=timezone.utc) - timedelta(milliseconds=1)
+        elif source.get("period") == "8-day composite" and not p.get("end_datetime"):
+            end = min(start + timedelta(days=8) - timedelta(milliseconds=1), datetime(start.year + 1, 1, 1, tzinfo=timezone.utc) - timedelta(milliseconds=1))
+        return (start, end) if end >= start else None
+    except (KeyError, ValueError, TypeError):
+        return None
+
+
+def matches(feature: dict, q: dict) -> bool:
+    period = feature_interval(feature)
+    if not period or period[1] < datetime.fromisoformat(q["start"]) or period[0] > datetime.fromisoformat(q["end"]):
+        return False
+    cloud = feature.get("properties", {}).get("eo:cloud_cover")
+    return feature.get("_earthWindow", {}).get("kind") == "radar" or not isinstance(cloud, (int, float)) or not math.isfinite(cloud) or not 0 <= cloud <= 100 or cloud <= q["cloud"]
 
 
 def search_scenes(params: dict[str, str]) -> dict:
-    url = STAC + "?" + urlencode(search_parameters(params))
-    features, truncated = [], False
-    for page in range(5):
-        data = upstream_json(url)
-        if not isinstance(data, dict) or not isinstance(data.get("features"), list):
-            raise ValueError("The imagery service returned an unexpected response.")
-        features.extend(data["features"])
-        next_link = next((link for link in data.get("links", []) if link.get("rel") == "next"), None)
-        if not next_link:
-            break
-        candidate = next_link.get("href", "")
-        parsed = urlparse(candidate)
-        if parsed.scheme != "https" or parsed.netloc != "earth-search.aws.element84.com" or next_link.get("method", "GET") != "GET":
-            truncated = True
-            break
-        url = candidate
-        if page == 4:
-            truncated = True
-    return {"features": features, "truncated": truncated}
+    q = search_parameters(params)
+    with ThreadPoolExecutor(max_workers=len(SOURCES)) as pool:
+        results = list(pool.map(partial(search_source, q), SOURCES))
+    return {"features": [f for r in results for f in r["features"] if matches(f, q)], "sources": [{k: v for k, v in r.items() if k != "features"} for r in results], "truncated": any(r["truncated"] for r in results)}
 
 
 def geocode(query: str) -> object:
@@ -152,13 +202,13 @@ class Handler(SimpleHTTPRequestHandler):
             except (URLError, TimeoutError, OSError):
                 self.json_response(502, {"error": "Imagery provider is unreachable. Please retry."})
             return
-        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js"}:
+        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json"}:
             self.send_error(404)
             return
         super().do_GET()
 
     def do_HEAD(self) -> None:
-        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js"}:
+        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json"}:
             self.send_error(404)
             return
         super().do_HEAD()

@@ -1,8 +1,8 @@
 # Earth Window
 
-**Choose a place and date. Earth Window searches the connected satellite archives automatically and tells you which satellites have data.** There is no satellite-selection step.
+**Explore any location in the world. Earth Window searches connected satellite archives automatically and tells you which satellites have data.** There is no satellite-selection step.
 
-The app includes an interactive map, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It starts at Udhampur, India, with a recent date and automatically searches once. Search another city, enter `latitude, longitude`, or click the map.
+The app includes an interactive map, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
 
 ## Run the Python website
 
@@ -16,7 +16,7 @@ On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ct
 
 ## Automatically searched archives
 
-All six configured collections are queried for every search; users do not have to choose a satellite.
+All six configured collections are queried for every search; users do not have to choose a satellite. The agency countries identify who operates the satellites, not where imagery can be searched. Locations in other countries are fully supported wherever those archives have acquisitions.
 
 | Satellite family | Operator / programme | Data | Time handling |
 | --- | --- | --- | --- |
@@ -48,18 +48,19 @@ For Azure assets, the viewer requests short-lived access links from Microsoft Pl
 
 ## Search correctness and reliability
 
+- Worldwide mode sends no geographic filter. Point mode accepts any latitude/longitude, and area mode supports map bounds, including regions crossing the date line.
 - Exact-day, ±7-day, and ±30-day windows use UTC. Single-capture searches are clipped to the current time.
 - Composite searches expand the provider query to find periods overlapping the requested dates, then filter those periods for overlap. They are labelled as composites and ranked after individual captures in the default time sort.
 - The optical cloud filter retains unreported cloud values with an explicit label. Radar is always retained regardless of cloud cover.
 - Each source reports complete, partial, or unavailable status. A failed archive never becomes a claim of no coverage.
 - Hosted searches show results as each source finishes. The Python server queries the sources concurrently and returns their combined result.
-- Pagination is limited to three pages of 100 records per collection. Partial results are clearly reported; narrow the time window when necessary.
+- Pagination is limited to three pages of 100 records per collection, requested newest first. Worldwide and broad-area results are limited catalogue pages, not an exhaustive world inventory. Time sorting orders the loaded results; it does not guarantee the globally nearest acquisition. Zoom into a region or select a point for focused coverage. Partial results are clearly reported; narrow the time window when necessary.
 - Result rendering is limited to 30 cards at a time, with a Show more button. Export includes all returned matching records, along with search settings and archive status.
 - Dates and inputs are validated. Source URLs and pagination hosts are constrained. Python caches JSON responses for five minutes and avoids logging searched coordinates.
 
 ## Map context
 
-The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStreetMap reference map**. These are map context, not satellite search filters. The NASA layer is a coarse daily mosaic, not the selected Sentinel, Landsat, or radar image. Scene footprints appear on the map; thumbnails and band previews display full tiles in the details panel. The Web Mercator map cannot display the poles, but geographic coordinate search accepts latitude −90 to 90.
+The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStreetMap reference map**. These are map context, not satellite search filters. The NASA layer is a coarse daily mosaic, not the selected Sentinel, Landsat, or radar image. Footprints for the currently displayed result cards appear on the map and can be clicked; thumbnails and band previews display full tiles in the details panel. The Web Mercator map cannot display the poles, but geographic coordinate search accepts latitude −90 to 90.
 
 ## Development steps
 
@@ -96,7 +97,7 @@ node --check dist/app.js
 node --check dist/bands.js
 ```
 
-The 22 correctness tests cover cloud/radar filtering, date validation, composite overlap, pagination, provider failure isolation, metadata-driven bands, RGB channel order, grid compatibility, no-data transparency, and local HTTP behavior. Test fixtures are synthetic and are never displayed by the website.
+The 27 correctness tests cover worldwide and regional queries, locations on multiple continents, date-line geometry, cloud/radar filtering, date validation, composite overlap, pagination, provider failure isolation, metadata-driven bands, RGB channel order, grid compatibility, no-data transparency, and local HTTP behavior. Test fixtures are synthetic and are never displayed by the website.
 
 External API/CDN requests were blocked or timed out in the build environment. Live provider retrieval and remote raster rendering therefore remain unverified end to end. No browser or visual QA is claimed. Errors are surfaced in the interface without replacing them with sample images.
 

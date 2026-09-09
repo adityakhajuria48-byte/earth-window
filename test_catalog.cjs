@@ -6,6 +6,19 @@ const q={start:'2025-09-10T00:00:00Z',end:'2025-09-10T23:59:59Z',cloud:20};
 const feature=(source,props={},assets={})=>EW.attach({id:'synthetic-test-record',collection:source.collection,properties:{datetime:'2025-09-10T10:00:00Z',...props},assets},source);
 const asset=(name,wavelength)=>({href:`https://example.com/${name}.tif`,type:'image/tiff; application=geotiff',roles:['data'], 'eo:bands':[{name,common_name:name,center_wavelength:wavelength}]});
 
+test('worldwide search never includes a default location',()=>{
+  assert.deepEqual(EW.spatialQuery({scope:'world',lat:32,lon:75}),{});
+});
+test('points anywhere in the world and regions produce correct geometry',()=>{
+  for(const [lat,lon] of [[40.7,-74],[-33.9,151.2],[-90,0],[65,-150]]){
+    assert.deepEqual(JSON.parse(EW.spatialQuery({scope:'point',lat,lon}).intersects).coordinates,[lon,lat]);
+  }
+  assert.equal(EW.spatialQuery({scope:'area',bounds:[-10,35,30,60]}).bbox,'-10,35,30,60');
+  const cross=JSON.parse(EW.spatialQuery({scope:'area',bounds:[170,-25,-170,25]}).intersects);
+  assert.equal(cross.type,'MultiPolygon');assert.equal(cross.coordinates.length,2);
+  assert.throws(()=>EW.spatialQuery({scope:'area',bounds:[NaN,0,1,1]}),/Invalid/);
+});
+
 test('automatic registry includes optical, radar, composite, and international sources',()=>{
   assert.equal(sources.length,6);
   assert.deepEqual(new Set(sources.map(x=>x.region)),new Set(['Europe','United States','Japan']));

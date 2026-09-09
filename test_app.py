@@ -33,6 +33,31 @@ class SearchTests(unittest.TestCase):
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                 app.search_parameters({**self.params, key: value}, self.now)
 
+    def test_worldwide_query_has_no_location_filter(self):
+        q = app.search_parameters({"date": "2025-09-10", "scope": "world"}, self.now)
+        self.assertEqual(q["scope"], "world")
+        self.assertEqual(app.spatial_query(q), {})
+
+    def test_any_global_coordinate_and_map_area(self):
+        for lat, lon in [(40.7, -74.0), (-33.9, 151.2), (-90, 0), (65, -150)]:
+            q = app.search_parameters({**self.params, "scope": "point", "lat": str(lat), "lon": str(lon)}, self.now)
+            self.assertEqual(json.loads(app.spatial_query(q)["intersects"])["coordinates"], [lon, lat])
+        q = app.search_parameters({"date": "2025-09-10", "scope": "area", "bounds": "170,-25,-170,25"}, self.now)
+        geometry = json.loads(app.spatial_query(q)["intersects"])
+        self.assertEqual(geometry["type"], "MultiPolygon")
+        self.assertEqual(len(geometry["coordinates"]), 2)
+        with self.assertRaises(ValueError):
+            app.search_parameters({"date": "2025-09-10", "scope": "area", "bounds": "nan,0,10,10"}, self.now)
+
+    @patch("app.upstream_json")
+    def test_worldwide_source_request_does_not_send_a_hidden_point(self, get):
+        get.return_value = {"features": [], "links": []}
+        q = app.search_parameters({"date": "2025-09-10", "scope": "world"}, self.now)
+        app.search_source(q, app.SOURCES[0])
+        sent = parse_qs(urlparse(get.call_args.args[0]).query)
+        self.assertNotIn("intersects", sent)
+        self.assertNotIn("bbox", sent)
+
     def test_radar_and_unknown_clouds_survive_cloud_filter(self):
         self.assertFalse(app.matches(self.feature(90), self.q))
         self.assertTrue(app.matches(self.feature(None), self.q))

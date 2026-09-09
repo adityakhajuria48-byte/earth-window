@@ -45,9 +45,23 @@ def upstream_json(url: str) -> object:
 
 def search_parameters(params: dict[str, str], now: datetime | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
-    lat, lon = float(params["lat"]), float(params["lon"])
-    if not (math.isfinite(lat) and math.isfinite(lon) and -90 <= lat <= 90 and -180 <= lon <= 180):
-        raise ValueError("Latitude must be −90 to 90; longitude must be −180 to 180.")
+    scope = params.get("scope", "point" if "lat" in params or "lon" in params else "world")
+    if scope not in {"world", "point", "area"}:
+        raise ValueError("Invalid search scope.")
+    geo = {"scope": scope}
+    if scope == "point":
+        lat, lon = float(params["lat"]), float(params["lon"])
+        if not (math.isfinite(lat) and math.isfinite(lon) and -90 <= lat <= 90 and -180 <= lon <= 180):
+            raise ValueError("Latitude must be −90 to 90; longitude must be −180 to 180.")
+        geo.update(lat=lat, lon=lon)
+    elif scope == "area":
+        bounds = [float(v) for v in params.get("bounds", "").split(",")]
+        if len(bounds) != 4 or not all(math.isfinite(v) for v in bounds):
+            raise ValueError("Invalid map bounds.")
+        w, south, e, north = bounds
+        if not (-180 <= w <= 180 and -180 <= e <= 180 and -90 <= south < north <= 90) or w == e:
+            raise ValueError("Invalid map bounds.")
+        geo["bounds"] = bounds
     days = int(params.get("window", "7"))
     if days not in (0, 7, 30):
         raise ValueError("Search window must be 0, 7, or 30 days.")
@@ -62,7 +76,7 @@ def search_parameters(params: dict[str, str], now: datetime | None = None) -> di
         raise ValueError("Choose a date from 1982 onward.")
     start = day - timedelta(days=days)
     end = min(day + timedelta(days=days + 1) - timedelta(milliseconds=1), now)
-    return {"lat": lat, "lon": lon, "start": start.isoformat(), "end": end.isoformat(), "cloud": cloud}
+    return {**geo, "start": start.isoformat(), "end": end.isoformat(), "cloud": cloud}
 
 
 def source_range(q: dict, source: dict) -> str:
@@ -75,8 +89,22 @@ def source_range(q: dict, source: dict) -> str:
     return f"{start.isoformat()}/{end.isoformat()}"
 
 
+def spatial_query(q: dict) -> dict:
+    if q.get("scope") == "world":
+        return {}
+    if q.get("scope") == "area":
+        w, south, e, north = q["bounds"]
+        if w < e:
+            return {"bbox": ",".join(str(x) for x in q["bounds"])}
+        def ring(a, z):
+            return [[a, south], [z, south], [z, north], [a, north], [a, south]]
+        polygons = [[ring(a, z)] for a, z in [(w, 180), (-180, e)] if a != z]
+        return {"intersects": json.dumps({"type": "MultiPolygon", "coordinates": polygons})}
+    return {"intersects": json.dumps({"type": "Point", "coordinates": [q["lon"], q["lat"]]})}
+
+
 def search_source(q: dict, source: dict) -> dict:
-    search = {"collections": source["collection"], "intersects": json.dumps({"type": "Point", "coordinates": [q["lon"], q["lat"]]}), "datetime": source_range(q, source), "limit": 100}
+    search = {"collections": source["collection"], **spatial_query(q), "datetime": source_range(q, source), "limit": 100, "sortby": "-datetime"}
     # Cloud filtering is applied after aggregation in the client. Radar and
     # optical scenes with unreported cloud cover must remain discoverable.
     url = source["endpoint"] + "?" + urlencode(search)

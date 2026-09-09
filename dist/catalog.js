@@ -2,6 +2,20 @@
 (function(root) {
   'use strict';
   const DAY=86400000;
+  function spatialQuery(q){
+    if(q.scope==='world')return {};
+    if(q.scope==='area'){
+      const b=q.bounds;
+      if(!Array.isArray(b)||b.length!==4||!b.every(Number.isFinite))throw Error('Invalid map bounds.');
+      const [w,s,e,n]=b;
+      if(w < -180||w>180||e < -180||e>180||s < -90||n>90||s>=n||w===e)throw Error('Invalid map bounds.');
+      if(w<e)return {bbox:b.join(',')};
+      const ring=(a,z)=>[[a,s],[z,s],[z,n],[a,n],[a,s]];
+      return {intersects:JSON.stringify({type:'MultiPolygon',coordinates:[[ring(w,180)],[ring(-180,e)]].filter(p=>p[0][0][0]!==p[0][1][0])})};
+    }
+    if(!Number.isFinite(q.lat)||!Number.isFinite(q.lon)||Math.abs(q.lat)>90||Math.abs(q.lon)>180)throw Error('Invalid geographic point.');
+    return {intersects:JSON.stringify({type:'Point',coordinates:[q.lon,q.lat]})};
+  }
   function source(f){return f._earthWindow||{};}
   function interval(f){
     const p=f.properties||{},s=source(f);
@@ -51,6 +65,6 @@
     }
     return {width:first.width,height:first.height,pixels};
   }
-  const api={source,interval,distance,cloud,matches,attach,requestRange,identity,dedupe,https,bands,presets,stretch};
+  const api={source,interval,distance,cloud,matches,attach,requestRange,identity,dedupe,https,bands,presets,stretch,spatialQuery};
   root.EW=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

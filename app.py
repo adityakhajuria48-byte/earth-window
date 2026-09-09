@@ -8,6 +8,7 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import math
+import unicodedata
 from pathlib import Path
 import threading
 import time
@@ -18,6 +19,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parent / "dist"
 STAC = "https://earth-search.aws.element84.com/v1/search"
 SOURCES = json.loads((ROOT / "sources.json").read_text())
+LANDMARKS = json.loads((ROOT / "landmarks.json").read_text())
 _cache: dict[str, tuple[float, object]] = {}
 _cache_lock = threading.Lock()
 _geocode_lock = threading.Lock()
@@ -167,21 +169,72 @@ def search_scenes(params: dict[str, str]) -> dict:
     return {"features": [f for r in results for f in r["features"] if matches(f, q)], "sources": [{k: v for k, v in r.items() if k != "features"} for r in results], "truncated": any(r["truncated"] for r in results)}
 
 
+def valid_place(p):
+    return all(isinstance(p.get(k), (int, float)) and not isinstance(p[k], bool) and math.isfinite(p[k]) and abs(p[k]) <= limit for k, limit in (("lat", 90), ("lon", 180))) and bool(p.get("display_name"))
+
+
+def known_places(query):
+    def normalize(s):
+        return " ".join(unicodedata.normalize("NFKC", s).lower().split())
+    q = normalize(query)
+    return [p for p in LANDMARKS if valid_place(p) and any(q == normalize(name) for alias in p["aliases"] for name in (alias, alias + ", " + p["country"], alias + " " + p["country"]))]
+
+
+def photon_places(data):
+    if not isinstance(data, dict) or not isinstance(data.get("features"), list):
+        raise ValueError("Unexpected place-search response.")
+    places = []
+    for f in data["features"]:
+        if not isinstance(f, dict):
+            continue
+        g, p = f.get("geometry") or {}, f.get("properties") or {}
+        coords = g.get("coordinates")
+        if g.get("type") != "Point" or not isinstance(coords, list) or len(coords) < 2:
+            continue
+        name = ", ".join(dict.fromkeys(p[k] for k in ("name", "city", "state", "country") if isinstance(p.get(k), str) and p[k].strip()))
+        place = {"lat": coords[1], "lon": coords[0], "display_name": name, "provider": "Photon / OpenStreetMap"}
+        if valid_place(place):
+            places.append(place)
+    return places[:5]
+
+
+def city_places(data):
+    if not isinstance(data, dict) or not isinstance(data.get("results", []), list):
+        raise ValueError("Unexpected city-search response.")
+    places = [{"lat": p.get("latitude"), "lon": p.get("longitude"), "display_name": ", ".join(dict.fromkeys(p[k] for k in ("name", "admin1", "country") if isinstance(p.get(k), str) and p[k].strip())), "provider": "Open-Meteo / GeoNames"} for p in data.get("results", []) if isinstance(p, dict)]
+    return [p for p in places if valid_place(p)][:5]
+
+
 def geocode(query: str) -> object:
     global _last_geocode
     query = query.strip()
     if not 2 <= len(query) <= 150:
         raise ValueError("Place name must contain 2–150 characters.")
-    # Throttle place lookups; cache provider responses. No autocomplete.
+    local = known_places(query)
+    if local:
+        return local
+    providers = [
+        ("https://photon.komoot.io/api/?" + urlencode({"q": query, "limit": 5, "lang": "en"}), photon_places),
+        ("https://geocoding-api.open-meteo.com/v1/search?" + urlencode({"name": query, "format": "json", "count": 5, "language": "en"}), city_places),
+    ]
+    failed = False
+    # Manual queries only, cached by upstream_json; serialize and throttle each call.
     with _geocode_lock:
-        delay = 1.1 - (time.monotonic() - _last_geocode)
-        if delay > 0:
-            time.sleep(delay)
-        try:
-            data = upstream_json("https://geocoding-api.open-meteo.com/v1/search?" + urlencode({"name": query, "format": "json", "count": 5, "language": "en"}))
-            return [{"lat": p["latitude"], "lon": p["longitude"], "display_name": ", ".join(str(p[k]) for k in ("name", "admin1", "country") if p.get(k))} for p in data.get("results", [])]
-        finally:
-            _last_geocode = time.monotonic()
+        for url, parse in providers:
+            delay = 1.1 - (time.monotonic() - _last_geocode)
+            if delay > 0:
+                time.sleep(delay)
+            try:
+                results = parse(upstream_json(url))
+                if results:
+                    return results
+            except (HTTPError, URLError, TimeoutError, OSError, ValueError):
+                failed = True
+            finally:
+                _last_geocode = time.monotonic()
+    if failed:
+        raise URLError("Place lookup unavailable")
+    return []
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -228,15 +281,15 @@ class Handler(SimpleHTTPRequestHandler):
             except HTTPError as exc:
                 self.json_response(429 if exc.code == 429 else 502, {"error": "Satellite data provider could not complete the request."})
             except (URLError, TimeoutError, OSError):
-                self.json_response(502, {"error": "Imagery provider is unreachable. Please retry."})
+                self.json_response(502, {"error": "Place search is partly unavailable. Retry, enter latitude, longitude, or click the map." if parsed.path == "/api/geocode" else "Imagery provider is unreachable. Please retry."})
             return
-        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json"}:
+        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js"}:
             self.send_error(404)
             return
         super().do_GET()
 
     def do_HEAD(self) -> None:
-        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json"}:
+        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js"}:
             self.send_error(404)
             return
         super().do_HEAD()

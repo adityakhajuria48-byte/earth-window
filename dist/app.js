@@ -70,8 +70,29 @@ function showResultLocations(){
     layer.addTo(resultFootprints);
   }
 }
+const placeCache=new Map();
+let landmarkList;
+let lastPlaceLookup=0;
+async function lookupPlace(q){
+  const key=q.toLocaleLowerCase().trim(),hit=placeCache.get(key);
+  if(hit&&Date.now()-hit.time<300000)return hit.results;
+  let results;
+  if(window.EARTH_WINDOW_PYTHON){
+    const r=await fetch('/api/geocode?'+new URLSearchParams({q}),{signal:AbortSignal.timeout(50000)});
+    const body=await r.json();if(!r.ok)throw Error(body.error||'Place search unavailable.');results=body;
+  }else{
+    if(!landmarkList)try{landmarkList=await fetchJSON('/landmarks.json',AbortSignal.timeout(10000));}catch{landmarkList=[];}
+    results=await EWGeo.lookup(q,async url=>{
+      const delay=Math.max(0,lastPlaceLookup+1100-Date.now());lastPlaceLookup=Date.now()+delay;
+      if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
+      return fetchJSON(url,AbortSignal.timeout(15000));
+    },landmarkList);
+  }
+  if(placeCache.size>=64)placeCache.delete(placeCache.keys().next().value);
+  placeCache.set(key,{time:Date.now(),results});return results;
+}
 function parseCoords(q) {const m=q.trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);if(!m)return null;const lat=Number(m[1]),lon=Number(m[2]);if(lat < -90||lat>90||lon < -180||lon>180)throw Error('Use latitude from −90 to 90 and longitude from −180 to 180.');return [lat,lon];}
-async function findPlace() {const q=$('place').value.trim();if(!q){wholeWorld(false);return true;}const request=++state.geoRequest;try {const coords=parseCoords(q);if(coords){setPlace(...coords,q);return true;}$('find-place').disabled=true;$('search-notice').textContent='Finding places…';const url=window.EARTH_WINDOW_PYTHON?'/api/geocode?'+new URLSearchParams({q}):'https://geocoding-api.open-meteo.com/v1/search?'+new URLSearchParams({name:q,count:5,language:'en',format:'json'});const raw=await fetchJSON(url,AbortSignal.timeout(20000));const results=window.EARTH_WINDOW_PYTHON?raw:(raw.results||[]).map(p=>({lat:p.latitude,lon:p.longitude,display_name:[p.name,p.admin1,p.country].filter(Boolean).join(', ')}));if(request!==state.geoRequest)return false;$('place-results').replaceChildren();if(!Array.isArray(results)||!results.length)throw Error('No matching place found. Try another name or enter latitude, longitude.');if(results.length===1){setPlace(Number(results[0].lat),Number(results[0].lon),results[0].display_name);return true;}for(const place of results){const b=text('button',place.display_name);b.type='button';b.onclick=()=>setPlace(Number(place.lat),Number(place.lon),place.display_name);$('place-results').append(b);}$('search-notice').textContent='Choose the matching location above, then find images.';return false;}catch(e){if(request===state.geoRequest)$('search-notice').textContent=e.name==='TimeoutError'?'Place lookup timed out. Try coordinates or click the map.':e.message;return false;}finally{if(request===state.geoRequest)$('find-place').disabled=false;}}
+async function findPlace() {if($('find-place').disabled)return false;const q=$('place').value.trim();if(!q){wholeWorld(false);return true;}const request=++state.geoRequest;try {const coords=parseCoords(q);if(coords){setPlace(...coords,q);return true;}$('find-place').disabled=true;$('search-notice').textContent='Finding places…';const results=await lookupPlace(q);if(request!==state.geoRequest)return false;$('place-results').replaceChildren();if(!Array.isArray(results)||!results.length)throw Error('No matching place found. Try another name or enter latitude, longitude.');if(results.length===1){setPlace(Number(results[0].lat),Number(results[0].lon),results[0].display_name);return true;}for(const place of results){const b=text('button',place.display_name);b.type='button';b.onclick=()=>setPlace(Number(place.lat),Number(place.lon),place.display_name);$('place-results').append(b);}$('search-notice').textContent='Choose the matching location above, then find images.';return false;}catch(e){if(request===state.geoRequest)$('search-notice').textContent=e.name==='TimeoutError'?'Place lookup timed out. Try coordinates or click the map.':e.message;return false;}finally{if(request===state.geoRequest)$('find-place').disabled=false;}}
 function searchParams() {const date=$('date').value,time=$('time').value;if(!date||!time)throw Error('Choose a date and UTC time.');const target=new Date(`${date}T${time}:00Z`);if(!Number.isFinite(+target))throw Error('Choose a valid date and UTC time.');if(date>today)throw Error('Future imagery is not available. Choose today or an earlier date.');if(date<'1982-01-01')throw Error('Choose a date from 1982 onward.');const days=Number($('window').value);const start=new Date(`${date}T00:00:00Z`);start.setUTCDate(start.getUTCDate()-days);const end=new Date(`${date}T23:59:59.999Z`);end.setUTCDate(end.getUTCDate()+days);return {date,time,days,target:+target,start:start.toISOString(),end:new Date(Math.min(+end,Date.now())).toISOString(),cloud:Number($('cloud').value),scope:state.scope,bounds:state.bounds,lat:state.lat,lon:state.lon};}
 async function fetchSource(q,s,signal){
   const params=new URLSearchParams({collections:s.collection,...EW.spatialQuery(q),datetime:EW.requestRange(q,s),limit:100,sortby:'-datetime'});

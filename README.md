@@ -78,6 +78,7 @@ The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStre
 | File | Responsibility |
 | --- | --- |
 | `app.py` | Python HTTP server, validation, concurrent catalogue search, time ranges, cloud filtering, caching, geocoding |
+| `dist/geocoding.js`, `dist/landmarks.json` | Worldwide Photon place search, city fallback, and sourced exact landmark aliases |
 | `dist/sources.json` | Shared satellite archive registry |
 | `dist/catalog.js` | Pure catalogue normalization, deduplication, band discovery, temporal matching, preview pixel stretch |
 | `dist/bands.js` | Band controls, provider asset authorization, GeoTIFF reading, preview and PNG export |
@@ -86,18 +87,27 @@ The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStre
 | `dist/backend-config.js` | Static mode flag; Python overrides this route to enable its API |
 | `test_app.py`, `test_catalog.cjs` | Python and JavaScript correctness tests |
 
-The **Python edition** runs catalogue and city queries through the local Python server. The **hosted Sites edition** serves the same interface as static assets and calls public APIs directly; it does not execute Python. The included Python server is for local/personal use. A public Python service should use a production HTTP stack, HTTPS, shared rate limits, and provider plans appropriate to traffic. Open-Meteo's free geocoding endpoint is for non-commercial use.
+The **Python edition** runs catalogue and place queries through the local Python server. The **hosted Sites edition** serves the same interface as static assets and calls public APIs directly; it does not execute Python. The included Python server is for local/personal use. A public Python service should use a production HTTP stack, HTTPS, shared rate limits, and provider plans appropriate to traffic. Open-Meteo's free geocoding endpoint is for non-commercial use.
+
+## Landmark search
+
+Search by city, mountain, volcano, island, or latitude/longitude. Photon searches OpenStreetMap places worldwide, with no country restriction or hidden map bias. Open-Meteo/GeoNames remains a city fallback. Search runs on explicit submission only, uses bounded results, throttling, and five-minute caching. Photon permits reasonable public API use without an availability guarantee; high-volume deployments should run their own instance. See [Photon documentation](https://github.com/komoot/photon).
+
+`Mount Anak Krakatau`, `Gunung Anak Krakatau`, and `Anak Krakatoa` (also with `Indonesia`) resolve locally from `dist/landmarks.json`. The point **−6.1009, 105.4233** comes from the [Smithsonian GVP Krakatau profile](https://volcano.si.edu/volcano.cfm?vn=262000), checked 9 September 2026. It is a volcano reference point for imagery search, not a surveyed summit position. This curated record contains location metadata only, never imagery or fabricated archive results. Other landmarks use the live global geocoder. Unqualified `Krakatau` is left to that geocoder to avoid confusing the wider volcanic complex with Anak Krakatau.
+
+An unmatched name and a failed provider produce different messages. Coordinates and map clicks remain available independently of geocoding. Successful location lookup does not guarantee imagery on the requested date.
 
 ## Validation
 
 ```bash
 python -m unittest -v test_app.py
 node --test test_catalog.cjs
+node --check dist/geocoding.js
 node --check dist/app.js
 node --check dist/bands.js
 ```
 
-The 27 correctness tests cover worldwide and regional queries, locations on multiple continents, date-line geometry, cloud/radar filtering, date validation, composite overlap, pagination, provider failure isolation, metadata-driven bands, RGB channel order, grid compatibility, no-data transparency, and local HTTP behavior. Test fixtures are synthetic and are never displayed by the website.
+The correctness tests cover worldwide and regional queries, locations on multiple continents, date-line geometry, cloud/radar filtering, date validation, composite overlap, pagination, provider failure isolation, metadata-driven bands, RGB channel order, grid compatibility, no-data transparency, local HTTP behavior, volcano alias resolution, worldwide landmark lookup, provider coordinate validation, and geocoder fallback behavior. Test fixtures are synthetic and are never displayed by the website.
 
 External API/CDN requests were blocked or timed out in the build environment. Live provider retrieval and remote raster rendering therefore remain unverified end to end. No browser or visual QA is claimed. Errors are surfaced in the interface without replacing them with sample images.
 

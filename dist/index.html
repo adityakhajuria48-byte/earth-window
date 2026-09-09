@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="/styles.css">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script defer src="/backend-config.js"></script><script defer src="/catalog.js"></script><script defer src="/bands.js"></script><script defer src="/app.js"></script>
+  <script defer src="/backend-config.js"></script><script defer src="/catalog.js"></script><script defer src="/bands.js"></script><script defer src="/geocoding.js"></script><script defer src="/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#search-form">Skip to image search</a>
@@ -22,10 +22,10 @@
     <form id="search-form">
       <div class="scope-actions"><button type="button" id="world-search" aria-pressed="true">Whole world</button><button type="button" id="area-search">Search map area</button></div>
       <label for="place">01 <span>Zoom to a place (optional)</span></label>
-      <div class="input-action"><input id="place" type="search" placeholder="City or latitude, longitude" maxlength="150" autocomplete="off"><button type="button" id="find-place" aria-label="Find location">⌕</button></div>
+      <div class="input-action"><input id="place" type="search" placeholder="City, landmark, or coordinates" maxlength="150" autocomplete="off"><button type="button" id="find-place" aria-label="Find location">⌕</button></div>
       <div id="place-results" class="place-results" aria-live="polite"></div>
       <div class="location-readout"><span aria-hidden="true">⌖</span><span id="coordinates">Worldwide · No location filter</span><button type="button" id="recenter" aria-label="Recenter map on chosen location">↗</button></div>
-      <p class="hint">Leave the place empty to search worldwide. Zoom and use Search map area to explore a region.</p>
+      <p class="hint">Search mountains, volcanoes, islands, or cities. Leave empty to search worldwide. Zoom and use Search map area to explore a region.</p>
       <label for="date">02 <span>Choose a capture date</span></label>
       <div class="date-row"><input id="date" type="date" required min="1982-01-01"><input id="time" type="time" value="12:00" aria-label="Preferred capture time in UTC" required></div>
       <p class="hint">Time is UTC. Results show the actual capture time.</p>
@@ -38,7 +38,7 @@
       <p id="search-notice" role="status" class="hint notice"></p>
     </form>
     <div class="availability"><span aria-hidden="true">◷</span><p><strong>An archive, not a live camera.</strong> Coverage depends on satellite passes, clouds, and processing. An exact-time image may not exist.</p></div>
-    <a class="source-link" href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Open imagery via Earth Search <span>↗</span></a><a class="source-link" href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">Place names: Open-Meteo / GeoNames <span>↗</span></a>
+    <a class="source-link" href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Open imagery via Earth Search <span>↗</span></a><a class="source-link" href="https://photon.komoot.io" target="_blank" rel="noopener noreferrer">Landmarks: Photon / OpenStreetMap <span>↗</span></a><a class="source-link" href="https://volcano.si.edu/volcano.cfm?vn=262000" target="_blank" rel="noopener noreferrer">Krakatau reference: Smithsonian GVP <span>↗</span></a><a class="source-link" href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">City names: Open-Meteo / GeoNames <span>↗</span></a>
   </aside>
   <section class="explorer" aria-label="Satellite image explorer">
     <div class="map-shell">

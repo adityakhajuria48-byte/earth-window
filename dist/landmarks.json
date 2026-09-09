@@ -1,0 +1,13 @@
+[
+  {
+    "display_name": "Anak Krakatau, Indonesia",
+    "lat": -6.1009,
+    "lon": 105.4233,
+    "aliases": ["Mount Anak Krakatau", "Anak Krakatau", "Gunung Anak Krakatau", "Mt Anak Krakatau", "Mt. Anak Krakatau", "Anak Krakatoa", "Mount Anak Krakatoa", "Gunung Anak Krakatoa"],
+    "country": "Indonesia",
+    "provider": "Smithsonian Global Volcanism Program",
+    "source_url": "https://volcano.si.edu/volcano.cfm?vn=262000",
+    "coordinate_note": "Krakatau volcano reference point, for locating imagery around Anak Krakatau; not a surveyed summit position.",
+    "checked_on": "2026-09-09"
+  }
+]

@@ -78,3 +78,32 @@ test('RGB rendering rejects different grids and preserves channel assignment',()
   assert.throws(()=>EW.stretch([raster([0,100]),{...raster([0,100]),crs:'other'},raster([0,100])]),/different grids/);
   assert.deepEqual(Array.from(EW.stretch([raster([100,0]),raster([0,100]),raster([0,0])]).pixels).slice(0,4),[255,0,0,255]);
 });
+
+const GEO=require('./dist/geocoding.js');
+const landmarks=require('./dist/landmarks.json');
+test('exact volcano aliases resolve locally and become the correct satellite point query',async()=>{
+  for(const query of ['Mount Anak Krakatau','  GUNUNG   ANAK KRAKATAU  ','Anak Krakatoa, Indonesia']){
+    const [place]=await GEO.lookup(query,()=>{throw Error('External call unexpected');},landmarks);
+    assert.deepEqual(JSON.parse(EW.spatialQuery({scope:'point',...place}).intersects).coordinates,[105.4233,-6.1009]);
+  }
+  assert.deepEqual(GEO.known('Krakatau',landmarks),[]);
+  assert.deepEqual(GEO.known('Mount Anak Krakatau Hotel',landmarks),[]);
+});
+test('other landmarks use global Photon POI search without a hidden country filter',async()=>{
+  const rows=await GEO.lookup('Test mountain',async url=>{
+    const u=new URL(url);assert.equal(u.hostname,'photon.komoot.io');
+    assert.deepEqual([...u.searchParams.keys()],['q','limit','lang']);
+    return {features:[{geometry:{type:'Point',coordinates:[-70.01,-32.65]},properties:{name:'Test mountain',country:'Argentina'}}]};
+  });
+  assert.equal(rows[0].lon,-70.01);assert.equal(rows[0].display_name,'Test mountain, Argentina');
+});
+test('city fallback survives Photon failure and outages never become a false no-match',async()=>{
+  const get=async url=>{if(url.includes('photon'))throw Error('offline');return {results:[{name:'Tokyo',latitude:35.68,longitude:139.69}]};};
+  assert.equal((await GEO.lookup('Tokyo',get))[0].display_name,'Tokyo');
+  assert.deepEqual(await GEO.lookup('Unmatched',async url=>url.includes('photon')?{features:[]}:{}),[]);
+  await assert.rejects(GEO.lookup('Unavailable',async url=>{if(url.includes('photon'))throw Error('offline');return {};}),/partly unavailable/);
+});
+test('invalid GeoJSON coordinates are never offered as locations',()=>{
+  const features=[[181,0],[0,91],[0,null],[0,true],[]].map(coordinates=>({geometry:{type:'Point',coordinates},properties:{name:'Bad'}}));
+  assert.deepEqual(GEO.photon({features}),[]);
+});

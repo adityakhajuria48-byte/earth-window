@@ -117,6 +117,44 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(next(x for x in result["sources"] if x["id"] == "s1")["status"], "unavailable")
 
 
+class GeocodingTests(unittest.TestCase):
+    @patch("app.upstream_json", side_effect=AssertionError("No provider call expected"))
+    def test_user_volcano_name_resolves_without_external_lookup(self, get):
+        for name in ("Mount Anak Krakatau", "  GUNUNG   ANAK KRAKATAU  ", "Anak Krakatoa, Indonesia"):
+            place = app.geocode(name)[0]
+            self.assertEqual((place["lat"], place["lon"]), (-6.1009, 105.4233))
+            q = app.search_parameters({"lat": str(place["lat"]), "lon": str(place["lon"]), "date": "2025-09-10"})
+            self.assertEqual(json.loads(app.spatial_query(q)["intersects"])["coordinates"], [105.4233, -6.1009])
+        self.assertEqual(app.known_places("Krakatau"), [])
+        self.assertEqual(app.known_places("Mount Anak Krakatau Hotel"), [])
+
+    @patch("app.time.sleep")
+    @patch("app.upstream_json")
+    def test_other_worldwide_landmarks_use_photon_without_country_restriction(self, get, sleep):
+        get.return_value = {"features": [{"geometry": {"type": "Point", "coordinates": [-70.01, -32.65]}, "properties": {"name": "Test mountain", "country": "Argentina"}}]}
+        place = app.geocode("Test mountain")[0]
+        self.assertEqual(place["lon"], -70.01)
+        url = urlparse(get.call_args.args[0])
+        self.assertEqual(url.hostname, "photon.komoot.io")
+        self.assertEqual(set(parse_qs(url.query)), {"q", "limit", "lang"})
+        self.assertEqual(get.call_count, 1)
+
+    @patch("app.time.sleep")
+    @patch("app.upstream_json")
+    def test_city_fallback_and_provider_failure_are_distinct_from_no_match(self, get, sleep):
+        get.side_effect = [TimeoutError(), {"results": [{"name": "Tokyo", "latitude": 35.68, "longitude": 139.69}]}]
+        self.assertEqual(app.geocode("Tokyo")[0]["display_name"], "Tokyo")
+        get.side_effect = [{"features": []}, {}]
+        self.assertEqual(app.geocode("Unmatched name"), [])
+        get.side_effect = [TimeoutError(), {}]
+        with self.assertRaises(app.URLError):
+            app.geocode("Unavailable landmark")
+
+    def test_invalid_provider_coordinates_are_rejected(self):
+        features = [{"geometry": {"type": "Point", "coordinates": c}, "properties": {"name": "Bad"}} for c in ([181, 0], [0, 91], [0, None], [0, True], [])]
+        self.assertEqual(app.photon_places({"features": features}), [])
+
+
 class HTTPTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -138,6 +176,13 @@ class HTTPTests(unittest.TestCase):
             self.assertIn(b"= true", r.read())
         with urlopen(self.url + "/api/health") as r:
             self.assertEqual(json.load(r)["backend"], "python")
+
+    def test_volcano_endpoint_and_browser_resources(self):
+        with urlopen(self.url + "/api/geocode?q=Mount%20Anak%20Krakatau") as r:
+            self.assertEqual(json.load(r)[0]["display_name"], "Anak Krakatau, Indonesia")
+        for path in ("/landmarks.json", "/geocoding.js"):
+            with urlopen(self.url + path) as r:
+                self.assertEqual(r.status, 200)
 
     def test_source_and_invalid_queries_are_not_served(self):
         for path, status in [("/app.py", 404), ("/../app.py", 404), ("/api/search?lat=nan", 400)]:

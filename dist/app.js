@@ -23,20 +23,25 @@ function assetURL(f,key) {return safeURL(f.assets?.[key]?.href);}
 async function fetchJSON(url,signal) {const r=await fetch(url,{signal,headers:{Accept:'application/geo+json, application/json'}});if(!r.ok)throw Error(r.status===429?'The imagery service is busy. Please wait a minute and retry.':`The service could not complete this request (HTTP ${r.status}). Please retry.`);return r.json();}
 function warnMap(message) {$('map-warning').textContent=message;$('map-warning').hidden=!message;}
 function updateMapLayer() {
-  if(!map)return;
-  if(nasa)map.removeLayer(nasa);
+  if(nasa&&map)map.removeLayer(nasa);
   warnMap('');
   const street=$('map-layer').value==='streets';
   $('map-source').textContent=street?'OpenStreetMap · Reference map':'Terra / MODIS · Daily overview';
   $('map-date').textContent=street?'Reference only · Not capture-date imagery':`${dateLabel(state.date)} · Daily mosaic · Not a selected scene`;
+  if(EWGlobe.active){
+    if(map&&streets&&map.hasLayer(streets))map.removeLayer(streets);
+    EWGlobe.setLayer(street?'streets':'nasa',state.date);return;
+  }
+  if(!map)return;
+  if(!map.hasLayer(streets))streets.addTo(map);
   if(street){streets.setOpacity(1);return;}
   streets.setOpacity(0);
   nasa=L.tileLayer(`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${state.date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,{maxNativeZoom:9,maxZoom:17,noWrap:true,attribution:'Imagery: <a href="https://www.earthdata.nasa.gov/">NASA GIBS</a>',bounds:[[-85,-180],[85,180]]}).addTo(map);
-  nasa.on('tileerror',()=>warnMap('NASA overview tiles could not load. Try Street map; scene search is separate.'));
+  nasa.on('tileerror',()=>{if(!EWGlobe.active)warnMap('NASA overview tiles could not load. Try Street map; scene search is separate.');});
   if(new Date(state.date)<new Date('2000-02-24'))warnMap('This date predates Terra/MODIS imagery. Use Street map to locate the historical scenes.');
 }
 function initMap() {
-  if(!window.L){$('map').append(text('div','The interactive map could not load. You can still search imagery by place or coordinates.','map-unavailable'));$('map-date').textContent='Map service unavailable';$('map-layer').disabled=true;return;}
+  if(!window.L){$('map').append(text('div','The interactive map could not load. You can still search imagery by place or coordinates.','map-unavailable'));$('map-date').textContent='Map service unavailable';return;}
   map=L.map('map',{zoomControl:false,worldCopyJump:true,minZoom:1,maxZoom:17}).setView([15,0],1);
   L.control.zoom({position:'bottomright'}).addTo(map);
   streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
@@ -45,23 +50,32 @@ function initMap() {
   map.on('click',e=>{const lon=((e.latlng.lng+180)%360+360)%360-180;const lat=Math.max(-90,Math.min(90,e.latlng.lat));setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false);});
   updateMapLayer();
 }
-function clearResults(message) {state.shown=30;$('load-more').hidden=true;$('source-status').replaceChildren();state.scenes=[];state.selected=null;resultFootprints?.clearLayers();$('count').textContent='—';$('export').disabled=true;$('scene-list').replaceChildren(empty('Ready for another perspective',message));if(footprint&&map){map.removeLayer(footprint);footprint=null;}}
+function clearResults(message) {EWGlobe.footprints([],null);state.shown=30;$('load-more').hidden=true;$('source-status').replaceChildren();state.scenes=[];state.selected=null;resultFootprints?.clearLayers();$('count').textContent='—';$('export').disabled=true;$('scene-list').replaceChildren(empty('Ready for another perspective',message));if(footprint&&map){map.removeLayer(footprint);footprint=null;}}
 function invalidate() {state.request++;currentController?.abort();$('search-button').disabled=false;$('search-button').replaceChildren(text('span','Find satellite images'),text('span','↗'));clearResults('Your search changed. Select Find satellite images to update the results.');$('result-summary').textContent='Search settings changed.';}
-function setPlace(lat,lon,name,fly=true) {state.scope='point';state.bounds=null;$('world-search').setAttribute('aria-pressed','false');state.geoRequest++;$('find-place').disabled=false;state.lat=lat;state.lon=lon;state.name=name;state.placeText=name;state.dirty=false;$('place').value=name;$('place-results').replaceChildren();$('location-title').textContent=name;$('coordinates').textContent=`${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(4)}° ${lon>=0?'E':'W'}`;if(map){if(!marker)marker=L.marker([lat,lon],{icon:L.divIcon({className:'',html:'<div class="pin-dot"></div>',iconSize:[16,16],iconAnchor:[8,8]}),keyboard:false}).addTo(map);else marker.setLatLng([lat,lon]);if(fly)map.setView([lat,lon],Math.min(10,Math.max(7,map.getZoom())));}invalidate();$('search-notice').textContent='Location selected. Find images to update the archive results.';}
+function setPlace(lat,lon,name,fly=true) {state.scope='point';state.bounds=null;$('world-search').setAttribute('aria-pressed','false');state.geoRequest++;$('find-place').disabled=false;state.lat=lat;state.lon=lon;state.name=name;state.placeText=name;state.dirty=false;$('place').value=name;$('place-results').replaceChildren();$('location-title').textContent=name;$('coordinates').textContent=`${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(4)}° ${lon>=0?'E':'W'}`;if(map){if(!marker)marker=L.marker([lat,lon],{icon:L.divIcon({className:'',html:'<div class="pin-dot"></div>',iconSize:[16,16],iconAnchor:[8,8]}),keyboard:false}).addTo(map);else marker.setLatLng([lat,lon]);if(fly)map.setView([lat,lon],Math.min(10,Math.max(7,map.getZoom())));}EWGlobe.setPosition({...state},fly);invalidate();$('search-notice').textContent='Location selected. Find images to update the archive results.';}
 function wholeWorld(run=true){
   state.scope='world';state.bounds=null;state.lat=null;state.lon=null;state.name='Whole world';state.placeText='';state.dirty=false;state.geoRequest++;
   $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;$('location-title').textContent='Whole world';$('coordinates').textContent='Worldwide · No location filter';$('world-search').setAttribute('aria-pressed','true');
-  if(marker&&map){map.removeLayer(marker);marker=null;}map?.setView([15,0],1);invalidate();$('search-notice').textContent='Worldwide search selected.';if(run)search();
+  if(marker&&map){map.removeLayer(marker);marker=null;}map?.setView([15,0],1);EWGlobe.setPosition(state);invalidate();$('search-notice').textContent='Worldwide search selected.';if(run)search();
 }
 function searchMapArea(){
+  if(EWGlobe.active){
+    const bounds=EWGlobe.bounds();
+    if(!bounds){$('search-notice').textContent='Zoom closer to Earth to select a region, or use Whole world.';return;}
+    if(bounds[2]-bounds[0]>=359){wholeWorld();return;}
+    state.scope='area';state.bounds=bounds;state.name='Selected globe area';state.placeText='';state.dirty=false;state.geoRequest++;
+    $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;$('location-title').textContent=state.name;$('coordinates').textContent='Region: '+bounds.map(n=>n.toFixed(1)+'°').join(', ');$('world-search').setAttribute('aria-pressed','false');
+    if(marker&&map){map.removeLayer(marker);marker=null;}EWGlobe.setPosition(state,false);invalidate();search();return;
+  }
   if(!map){$('search-notice').textContent='The map is unavailable. Worldwide search and coordinate search still work.';return;}
   const b=map.getBounds(),width=b.getEast()-b.getWest();if(width>=360){wholeWorld();return;}
   const wrap=x=>((x+180)%360+360)%360-180;
   state.scope='area';state.bounds=[wrap(b.getWest()),Math.max(-90,b.getSouth()),wrap(b.getEast()),Math.min(90,b.getNorth())];state.name='Selected map area';state.placeText='';state.dirty=false;state.geoRequest++;
   $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;$('location-title').textContent=state.name;$('coordinates').textContent='Region: '+state.bounds.map(n=>n.toFixed(1)+'°').join(', ');$('world-search').setAttribute('aria-pressed','false');
-  if(marker){map.removeLayer(marker);marker=null;}invalidate();search();
+  if(marker){map.removeLayer(marker);marker=null;}EWGlobe.setPosition(state,false);invalidate();search();
 }
 function showResultLocations(){
+  EWGlobe.footprints(orderedScenes().slice(0,state.shown),state.selected);
   if(!map||!resultFootprints)return;resultFootprints.clearLayers();
   for(const f of orderedScenes().slice(0,state.shown)){
     if(!f.geometry)continue;
@@ -176,7 +190,7 @@ function openScene(f){
 $('find-place').onclick=findPlace;
 $('place').addEventListener('input',()=>{state.geoRequest++;$('find-place').disabled=false;state.dirty=true;invalidate();$('place-results').replaceChildren();});
 $('place').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findPlace();}});
-$('recenter').onclick=()=>{if(state.scope==='point')map?.setView([state.lat,state.lon],8);else if(state.scope==='world')map?.setView([15,0],1);else if(map){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}};
+$('recenter').onclick=()=>{EWGlobe.setPosition(state);if(state.scope==='point')map?.setView([state.lat,state.lon],8);else if(state.scope==='world')map?.setView([15,0],1);else if(map){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}};
 $('world-search').onclick=()=>wholeWorld();
 $('area-search').onclick=searchMapArea;
 $('map-layer').onchange=updateMapLayer;
@@ -189,4 +203,10 @@ $('about-open').onclick=()=>$('about-dialog').showModal();
 for(const dialog of document.querySelectorAll('dialog')){dialog.querySelector('.close-dialog').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});}
 $('export').onclick=()=>{const payload={type:'FeatureCollection',search:state.query,retrieved_at:new Date().toISOString(),sources:state.sourceResults,features:orderedScenes()};const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/geo+json'}));const a=document.createElement('a');a.href=url;a.download=`earth-window-${state.query.date}.geojson`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 initMap();
+EWGlobe.init({
+  onPoint:(lat,lon)=>setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false),
+  onScene:openScene,
+  onMode:is3D=>{if(!is3D&&map){map.invalidateSize();if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}}updateMapLayer();},
+  onReady:()=>{EWGlobe.setPosition(state,state.scope!=='world');showResultLocations();}
+});
 loadSources().then(()=>{if(!state.dirty&&state.request===0)search();}).catch(e=>{$('search-notice').textContent=e.message;});

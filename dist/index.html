@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Find real satellite imagery by place and capture date. Explore Sentinel-2 and Landsat scenes with Earth Window.">
-  <meta name="theme-color" content="#0c191e"><title>Earth Window · Satellite imagery explorer</title>
+  <meta name="theme-color" content="#0c191e"><title>Earth Window · 3D satellite imagery explorer</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="/styles.css">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script defer src="/backend-config.js"></script><script defer src="/catalog.js"></script><script defer src="/bands.js"></script><script defer src="/geocoding.js"></script><script defer src="/app.js"></script>
+  <script defer src="/backend-config.js"></script><script defer src="/catalog.js"></script><script defer src="/bands.js"></script><script defer src="/geocoding.js"></script><script defer src="/globe.js"></script><script defer src="/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#search-form">Skip to image search</a>
 <header class="topbar">
-  <a class="brand" href="/" aria-label="Earth Window home"><span class="brand-mark" aria-hidden="true">◉</span><span>earth<span class="brand-light">window</span><small>A DIFFERENT PERSPECTIVE</small></span></a>
-  <span class="top-context">Earth observation / Imagery explorer</span>
+  <a class="brand" href="/" aria-label="Earth Window home"><span class="brand-mark" aria-hidden="true">◉</span><span>earth<span class="brand-light">window</span><small>EARTH OBSERVATION</small></span></a>
+  <span class="top-context">Global imagery · 3D explorer</span>
   <button class="text-button" id="about-open">How it works <span aria-hidden="true">↗</span></button>
 </header>
 <main class="workspace">
   <aside class="sidebar">
-    <div class="intro"><span class="eyebrow">EXPLORE THE ARCHIVE</span><h1>The whole world.<br>One window.</h1><p>Global imagery. All connected satellite archives.</p></div>
+    <div class="intro"><span class="eyebrow">EXPLORE THE ARCHIVE</span><h1>Explore Earth.</h1><p>Global imagery. All connected satellite archives.</p></div>
     <form id="search-form">
       <div class="scope-actions"><button type="button" id="world-search" aria-pressed="true">Whole world</button><button type="button" id="area-search">Search map area</button></div>
       <label for="place">01 <span>Zoom to a place (optional)</span></label>
@@ -41,13 +41,24 @@
     <a class="source-link" href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Open imagery via Earth Search <span>↗</span></a><a class="source-link" href="https://photon.komoot.io" target="_blank" rel="noopener noreferrer">Landmarks: Photon / OpenStreetMap <span>↗</span></a><a class="source-link" href="https://volcano.si.edu/volcano.cfm?vn=262000" target="_blank" rel="noopener noreferrer">Krakatau reference: Smithsonian GVP <span>↗</span></a><a class="source-link" href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">City names: Open-Meteo / GeoNames <span>↗</span></a>
   </aside>
   <section class="explorer" aria-label="Satellite image explorer">
-    <div class="map-shell">
+    <div class="map-shell" id="map-shell">
+      <div id="globe" aria-label="Interactive 3D Earth" hidden></div>
       <div id="map" aria-label="Interactive map. Click a place to choose a search location." tabindex="0"></div>
-      <div class="map-heading"><span class="eyebrow">EXPLORE EARTH</span><h2 id="location-title">Whole world</h2></div>
-      <div class="map-tools"><label class="map-select-label" for="map-layer">Map layer</label><select id="map-layer"><option value="nasa">NASA daily overview</option><option value="streets">Street map</option></select></div>
+      <div class="map-heading"><span class="eyebrow" id="view-label">3D GLOBE</span><h2 id="location-title">Whole world</h2></div>
+      <div class="map-tools"><div class="view-switch" role="group" aria-label="Map view"><button id="view-3d" type="button" aria-pressed="true">3D globe</button><button id="view-2d" type="button" aria-pressed="false">2D map</button></div><label class="map-select-label" for="map-layer">Map layer</label><select id="map-layer"><option value="nasa">NASA daily overview</option><option value="streets">Street map</option></select></div>
+      <div id="globe-status" class="globe-status" role="status" hidden></div>
+      <div id="globe-guide" class="globe-guide" hidden>Drag to rotate · Scroll or pinch to zoom · Click to select</div>
+      <div id="globe-controls" class="globe-controls" role="group" aria-label="Globe navigation" hidden>
+        <button id="globe-home" type="button" title="Show whole Earth" aria-label="Show whole Earth">◎</button>
+        <button id="globe-west" type="button" title="Rotate west" aria-label="Rotate west">←</button>
+        <button id="globe-east" type="button" title="Rotate east" aria-label="Rotate east">→</button>
+        <button id="globe-tilt" type="button" aria-pressed="false" title="Toggle oblique view">Tilt</button>
+        <button id="globe-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+        <button id="globe-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+      </div>
       <div class="map-caption"><span class="map-caption-symbol" aria-hidden="true">▧</span><div><strong id="map-source">Terra / MODIS · Daily overview</strong><span id="map-date">Loading date…</span></div></div>
       <div id="map-warning" class="map-warning" role="status" hidden></div>
-    </div><p class="map-coverage-note">Global NASA imagery is shown on the map. Outlined areas locate the results currently displayed below.</p>
+    </div><p class="map-coverage-note">NASA overview or reference map · 3D globe without terrain elevation. Outlines locate the results below; click an outline to inspect its image and bands.</p>
     <section class="results-section" aria-labelledby="results-heading">
       <div class="results-top"><div><span class="eyebrow">CAPTURED FROM ORBIT</span><h2 id="results-heading">Images & data <span id="count">—</span></h2></div><div class="sort-control"><label for="sort">Sort by</label><select id="sort"><option value="nearest">Closest loaded capture</option><option value="clear">Least cloud cover</option><option value="newest">Newest first</option></select></div></div>
       <p id="result-summary" class="result-summary" role="status">Searching worldwide imagery for your date.</p>

@@ -180,7 +180,7 @@ class HTTPTests(unittest.TestCase):
     def test_volcano_endpoint_and_browser_resources(self):
         with urlopen(self.url + "/api/geocode?q=Mount%20Anak%20Krakatau") as r:
             self.assertEqual(json.load(r)[0]["display_name"], "Anak Krakatau, Indonesia")
-        for path in ("/landmarks.json", "/geocoding.js"):
+        for path in ("/landmarks.json", "/geocoding.js", "/globe.js"):
             with urlopen(self.url + path) as r:
                 self.assertEqual(r.status, 200)
 

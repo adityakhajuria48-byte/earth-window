@@ -12,7 +12,7 @@ Install **Python 3.10+**, open a terminal inside this folder, then run:
 python app.py
 ```
 
-On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ctrl+C. There are no Python packages to install. Internet access is needed for satellite archives, map tiles, geocoding, Leaflet, fonts, and the optional raster viewer.
+On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ctrl+C. There are no Python packages to install. Internet access is needed for satellite archives, map tiles, geocoding, CesiumJS, Leaflet, fonts, and the optional raster viewer.
 
 ## Automatically searched archives
 
@@ -78,6 +78,7 @@ The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStre
 | File | Responsibility |
 | --- | --- |
 | `app.py` | Python HTTP server, validation, concurrent catalogue search, time ranges, cloud filtering, caching, geocoding |
+| `dist/globe.js` | 3D globe, camera controls, picking, source footprints, imagery layers, and 2D fallback |
 | `dist/geocoding.js`, `dist/landmarks.json` | Worldwide Photon place search, city fallback, and sourced exact landmark aliases |
 | `dist/sources.json` | Shared satellite archive registry |
 | `dist/catalog.js` | Pure catalogue normalization, deduplication, band discovery, temporal matching, preview pixel stretch |
@@ -88,6 +89,14 @@ The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStre
 | `test_app.py`, `test_catalog.cjs` | Python and JavaScript correctness tests |
 
 The **Python edition** runs catalogue and place queries through the local Python server. The **hosted Sites edition** serves the same interface as static assets and calls public APIs directly; it does not execute Python. The included Python server is for local/personal use. A public Python service should use a production HTTP stack, HTTPS, shared rate limits, and provider plans appropriate to traffic. Open-Meteo's free geocoding endpoint is for non-commercial use.
+
+## 3D Earth explorer
+
+Earth Window opens a rotatable CesiumJS globe, with zoom, whole-Earth view, an oblique-view toggle, and keyboard-accessible navigation buttons. Click Earth to select coordinates; search names (including Mount Anak Krakatau) to fly to a location. Search map area uses the 3D camera's geographic bounding rectangle, which can include space outside the visible curved region. The existing 2D map remains available from the view switch and is selected automatically if 3D loading or graphics fail.
+
+The globe uses the WGS84 ellipsoid, **without terrain elevation, 3D buildings, or simulated satellite positions**. NASA's date-labelled Terra/MODIS daily mosaic or the OpenStreetMap reference layer wraps the surface. NASA overview resolution is limited by its source; zooming does not create finer imagery. Web Mercator tiles do not cover the extreme poles, though coordinate search accepts polar locations. These are context layers; individual scene imagery and band controls stay in the results panel. Source footprints are selectable outlines, not claims that every pixel is cloud-free or valid.
+
+CesiumJS 1.127 loads asynchronously from its official CDN. No Cesium ion account or token is required: the viewer explicitly uses an ellipsoid and open tile providers. The renderer draws on demand, pauses when the tab is hidden or 2D is selected, and respects reduced-motion preferences for camera flights. CDN/WebGL failure keeps the search interface available. On mobile the globe appears above the search controls and results.
 
 ## Landmark search
 
@@ -102,6 +111,8 @@ An unmatched name and a failed provider produce different messages. Coordinates 
 ```bash
 python -m unittest -v test_app.py
 node --test test_catalog.cjs
+node --test test_globe.cjs
+node --check dist/globe.js
 node --check dist/geocoding.js
 node --check dist/app.js
 node --check dist/bands.js
@@ -109,7 +120,7 @@ node --check dist/bands.js
 
 The correctness tests cover worldwide and regional queries, locations on multiple continents, date-line geometry, cloud/radar filtering, date validation, composite overlap, pagination, provider failure isolation, metadata-driven bands, RGB channel order, grid compatibility, no-data transparency, local HTTP behavior, volcano alias resolution, worldwide landmark lookup, provider coordinate validation, and geocoder fallback behavior. Test fixtures are synthetic and are never displayed by the website.
 
-External API/CDN requests were blocked or timed out in the build environment. Live provider retrieval and remote raster rendering therefore remain unverified end to end. No browser or visual QA is claimed. Errors are surfaced in the interface without replacing them with sample images.
+External API/CDN requests were blocked or timed out in the build environment. Live provider retrieval and remote raster rendering therefore remain unverified end to end. The new 3D camera integration and geometry handling are checked locally, but live WebGL rendering has not been browser-tested. No visual QA is claimed. Errors are surfaced in the interface without replacing them with sample images.
 
 ## Source documentation
 
@@ -121,6 +132,7 @@ External API/CDN requests were blocked or timed out in the build environment. Li
 - Planetary Computer asset access: https://planetarycomputer.microsoft.com/docs/concepts/sas/
 - NASA GIBS: https://nasa-gibs.github.io/gibs-api-docs/access-basics/
 - Open-Meteo geocoding: https://open-meteo.com/en/docs/geocoding-api
+- CesiumJS Viewer: https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Documentation/Viewer.html
 - GeoTIFF.js: https://github.com/geotiffjs/geotiff.js
 
 Documentation checked on 9 September 2026. Availability and service terms can change.

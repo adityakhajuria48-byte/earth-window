@@ -19,7 +19,7 @@ function environment(){
   const get=id=>{if(!elements.has(id))elements.set(id,element());return elements.get(id);};
   const calls=[];
   const globeStub={active:false,footprints(){},setPosition(...args){calls.push(args);},init(){},bounds:()=>[170,-25,-170,25]};
-  const context=vm.createContext({document:{getElementById:get,createElement:element,querySelectorAll:()=>[]},window:{},EWGlobe:globeStub,EW:require('./dist/catalog.js'),EWGeo:require('./dist/geocoding.js'),URL,URLSearchParams,AbortController,AbortSignal,Date,Blob,setTimeout,clearTimeout,fetch:()=>Promise.reject(Error('No provider requests in integration tests'))});
+  const context=vm.createContext({document:{getElementById:get,createElement:element,querySelectorAll:()=>[]},window:{},EWStudio:{init(){},openPanel(){}},EWGlobe:globeStub,EW:require('./dist/catalog.js'),EWGeo:require('./dist/geocoding.js'),URL,URLSearchParams,AbortController,AbortSignal,Date,Blob,setTimeout,clearTimeout,fetch:()=>Promise.reject(Error('No provider requests in integration tests'))});
   vm.runInContext(fs.readFileSync('dist/app.js','utf8'),context);
   return {context,calls,get,globeStub};
 }

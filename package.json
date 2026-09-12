@@ -1,0 +1,7 @@
+{
+  "name": "earth-window",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {"dev": "vite", "test": "node --test test_catalog.cjs test_globe.cjs test_surface.cjs"},
+  "devDependencies": {"vite": "8.3.0"}
+}

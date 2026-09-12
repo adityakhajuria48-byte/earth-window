@@ -2,7 +2,7 @@
 
 **Explore any location in the world. Earth Window searches connected satellite archives automatically and tells you which satellites have data.** There is no satellite-selection step.
 
-The app includes an interactive map, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
+The app includes a full-screen 3D terrain workspace, globe imagery and before/after comparison, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
 
 ## Run the Python website
 
@@ -60,7 +60,7 @@ For Azure assets, the viewer requests short-lived access links from Microsoft Pl
 
 ## Map context
 
-The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStreetMap reference map**. These are map context, not satellite search filters. The NASA layer is a coarse daily mosaic, not the selected Sentinel, Landsat, or radar image. Footprints for the currently displayed result cards appear on the map and can be clicked; thumbnails and band previews display full tiles in the details panel. The Web Mercator map cannot display the poles, but geographic coordinate search accepts latitude −90 to 90.
+The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStreetMap reference map**. These are map context, not satellite search filters. The NASA layer is a coarse daily mosaic, not the selected Sentinel, Landsat, or radar image. Footprints for the currently displayed result cards appear on the map and can be clicked. Pin results as Before A and After B, select bands, and choose Display on globe to drape supported source pixels over terrain. Thumbnails and local band previews remain available in the details panel. The Web Mercator map cannot display the poles, but geographic coordinate search accepts latitude −90 to 90.
 
 ## Development steps
 
@@ -70,23 +70,30 @@ The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStre
 4. Normalize satellite identities and distinguish capture timestamps from composite periods.
 5. Discover per-item assets and expose only real bands, with original-file access and bounded raster previews.
 6. Add clear availability summaries, responsive controls, keyboard-accessible dialogs, loading/error states, and progressive results.
-7. Test temporal overlap, cloud/radar behavior, failure isolation, band metadata, pixel rendering, HTTP serving, and local asset wiring.
-8. Publish the static interface and keep the Python edition and GitHub source synchronized.
+7. Decode Mapzen Terrarium heights into Cesium heightmaps, with terrain-aware picking and optional elevation exaggeration.
+8. Reproject supported GeoTIFF grids into geographic image overlays; preserve no-data transparency and reject unsupported georeferencing.
+9. Pin dated captures, validate chronology and overlap, and compare split imagery on one terrain surface. Use common display limits for matching band choices within a satellite family.
+10. Make search, results, and imagery controls collapsible over a full-screen workspace.
+11. Run correctness tests and browser checks with actual archive data; record graphics and provider limitations explicitly.
+12. Publish the static interface and keep the Python edition and GitHub source synchronized.
 
 ## Code layout
 
 | File | Responsibility |
 | --- | --- |
 | `app.py` | Python HTTP server, validation, concurrent catalogue search, time ranges, cloud filtering, caching, geocoding |
-| `dist/globe.js` | 3D globe, camera controls, picking, source footprints, imagery layers, and 2D fallback |
+| `dist/globe.js` | Cesium globe, terrain-aware navigation, footprints, imagery layers, swipe splitting and 2D fallback |
+| `dist/terrain.js` | Open elevation tile decoding and Cesium heightmap provider |
+| `dist/surface.js` | Source-grid reprojection and shared display limits |
+| `dist/studio.js` | Capture pinning, band selection, dates, comparison and panel state |
 | `dist/geocoding.js`, `dist/landmarks.json` | Worldwide Photon place search, city fallback, and sourced exact landmark aliases |
 | `dist/sources.json` | Shared satellite archive registry |
 | `dist/catalog.js` | Pure catalogue normalization, deduplication, band discovery, temporal matching, preview pixel stretch |
 | `dist/bands.js` | Band controls, provider asset authorization, GeoTIFF reading, preview and PNG export |
 | `dist/app.js` | Map, automatic search, result cards, source availability and details |
-| `dist/index.html`, `dist/styles.css` | Responsive interface and accessible controls |
+| `dist/index.html`, `dist/styles.css`, `dist/workspace.css` | Responsive interface and accessible controls |
 | `dist/backend-config.js` | Static mode flag; Python overrides this route to enable its API |
-| `test_app.py`, `test_catalog.cjs` | Python and JavaScript correctness tests |
+| `test_app.py`, `test_catalog.cjs`, `test_globe.cjs`, `test_surface.cjs` | Python and JavaScript correctness tests |
 
 The **Python edition** runs catalogue and place queries through the local Python server. The **hosted Sites edition** serves the same interface as static assets and calls public APIs directly; it does not execute Python. The included Python server is for local/personal use. A public Python service should use a production HTTP stack, HTTPS, shared rate limits, and provider plans appropriate to traffic. Open-Meteo's free geocoding endpoint is for non-commercial use.
 
@@ -94,9 +101,23 @@ The **Python edition** runs catalogue and place queries through the local Python
 
 Earth Window opens a rotatable CesiumJS globe, with zoom, whole-Earth view, an oblique-view toggle, and keyboard-accessible navigation buttons. Click Earth to select coordinates; search names (including Mount Anak Krakatau) to fly to a location. Search map area uses the 3D camera's geographic bounding rectangle, which can include space outside the visible curved region. The existing 2D map remains available from the view switch and is selected automatically if 3D loading or graphics fail.
 
-The globe uses the WGS84 ellipsoid, **without terrain elevation, 3D buildings, or simulated satellite positions**. NASA's date-labelled Terra/MODIS daily mosaic or the OpenStreetMap reference layer wraps the surface. NASA overview resolution is limited by its source; zooming does not create finer imagery. Web Mercator tiles do not cover the extreme poles, though coordinate search accepts polar locations. These are context layers; individual scene imagery and band controls stay in the results panel. Source footprints are selectable outlines, not claims that every pixel is cloud-free or valid.
+The globe uses real **Mapzen Terrarium elevation tiles**, sampled into heightmaps. Mountains, valleys and volcano relief come from reference elevation data. Terrain age and resolution vary; it does not represent the chosen capture date or guarantee recent volcanic changes. Terrain can be disabled or exaggerated at 2× / 3×, with actual scale as the default. Provider credits are available in Layers & compare. This visual terrain is not a surveyed elevation analysis.
 
-CesiumJS 1.127 loads asynchronously from its official CDN. No Cesium ion account or token is required: the viewer explicitly uses an ellipsoid and open tile providers. The renderer draws on demand, pauses when the tab is hidden or 2D is selected, and respects reduced-motion preferences for camera flights. CDN/WebGL failure keeps the search interface available. On mobile the globe appears above the search controls and results.
+### Put imagery on terrain
+
+1. Search a place, coordinates, region, or the whole world and choose a capture window.
+2. Pin an earlier result with **Before A** and a later result with **After B**.
+3. In **Layers & compare**, choose each image's real bands or an available colour combination.
+4. Select **Display on globe**, then move the comparison slider. Uncheck **Compare A and B** to show A alone.
+5. To compare coarse daily coverage without selecting archive captures, choose **Daily overview dates** and two Terra/MODIS dates.
+
+Source bands are decoded into bounded previews, reprojected to geographic coordinates, and draped directly over the globe. Supported grids are north-up WGS84 geographic, Web Mercator, and WGS84 UTM in either hemisphere. Rotated grids, unsupported projections (including MODIS sinusoidal archive grids), and tiles crossing the date line are rejected explicitly; original files and local previews remain available. NASA's geographic daily overview comparison is available independently. Globe preview textures are at most 768 pixels per side and derive from source previews of at most 512 pixels per side; no extra source detail is created.
+
+Before/after requires chronological, non-overlapping product periods and intersecting image bounds. Matching band choices from the same satellite family use shared display limits. Other comparisons use independent contrast stretches and say so. Clouds, different processing, and registration can still differ; visual colour differences are not proof of ground change. Terrain stays the same on both sides. Global search is supported, but not every satellite, projection, place, or requested instant has a viewable image.
+
+CesiumJS 1.127 loads asynchronously from its official CDN. No Cesium ion account or token is required. The renderer draws on demand, pauses when hidden or in 2D, and respects reduced-motion preferences. A WebGL1 compatibility attempt follows a WebGL initialization failure; if graphics remain unavailable, the 2D map and search continue. Web Mercator terrain and overview tiles exclude the extreme poles, though polar coordinates remain searchable.
+
+The map fills the workspace. Search, Layers & compare, and Results can each be collapsed; narrow screens show one open panel at a time. The fullscreen button requests browser fullscreen where supported. Browser permissions may prevent native fullscreen; the application still fills its page.
 
 ## Landmark search
 
@@ -106,21 +127,27 @@ Search by city, mountain, volcano, island, or latitude/longitude. Photon searche
 
 An unmatched name and a failed provider produce different messages. Coordinates and map clicks remain available independently of geocoding. Successful location lookup does not guarantee imagery on the requested date.
 
-## Validation
+## Development and validation
+
+The Python edition needs no package installation. For an optional static development server, install Node.js 22.12+ and run:
+
+```bash
+npm ci
+npm run dev
+```
+
+Correctness checks:
 
 ```bash
 python -m unittest -v test_app.py
-node --test test_catalog.cjs
-node --test test_globe.cjs
-node --check dist/globe.js
-node --check dist/geocoding.js
-node --check dist/app.js
-node --check dist/bands.js
+npm test
 ```
 
-The correctness tests cover worldwide and regional queries, locations on multiple continents, date-line geometry, cloud/radar filtering, date validation, composite overlap, pagination, provider failure isolation, metadata-driven bands, RGB channel order, grid compatibility, no-data transparency, local HTTP behavior, volcano alias resolution, worldwide landmark lookup, provider coordinate validation, and geocoder fallback behavior. Test fixtures are synthetic and are never displayed by the website.
+On 12 September 2026, **19 Python tests and 25 JavaScript tests passed**. Coverage includes worldwide queries, date-line regions, composite periods, cloud/radar filtering, failure isolation, real-band discovery, channel order, grid alignment, no-data transparency, HTTP serving, landmark resolution, Terrarium elevation decoding, reprojection orientation and error cases, shared display limits, and chronological comparison. Synthetic fixtures are test-only and never shown on the site.
 
-External API/CDN requests were blocked or timed out in the build environment. Live provider retrieval and remote raster rendering therefore remain unverified end to end. The new 3D camera integration and geometry handling are checked locally, but live WebGL rendering has not been browser-tested. No visual QA is claimed. Errors are surfaced in the interface without replacing them with sample images.
+Browser checks used the local preview with live provider data. Mount Anak Krakatau resolved to the sourced reference location. A 1 September 2024 search returned six MODIS products; two archives completed and four Earth Search collections were unavailable in this environment. The UI reported incomplete coverage. Single-band and true-colour MODIS previews rendered successfully from actual source raster pixels. Capture pinning, band selection, collapsible panels, missing-capture validation, overlapping composite rejection, reversed-date rejection, and the unavailable-3D message were checked. The desktop workspace had no horizontal page overflow.
+
+**The test browser could not initialize either WebGL2 or WebGL1.** Actual 3D terrain rendering, image placement on the globe, camera motion over terrain, and the visual swipe remain unverified in a graphics-capable browser. Native fullscreen was also unavailable in this browser; the full-page workspace remained usable. These limits are not treated as passed visual checks. No sample imagery substitutes for failed requests.
 
 ## Source documentation
 
@@ -135,4 +162,10 @@ External API/CDN requests were blocked or timed out in the build environment. Li
 - CesiumJS Viewer: https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Documentation/Viewer.html
 - GeoTIFF.js: https://github.com/geotiffjs/geotiff.js
 
-Documentation checked on 9 September 2026. Availability and service terms can change.
+- Terrain tile documentation: https://github.com/tilezen/joerd
+- Terrain provider credits: https://github.com/tilezen/joerd/blob/master/docs/attribution.md
+- Cesium heightmaps: https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Documentation/HeightmapTerrainData.html
+- Cesium geographic image overlays: https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Documentation/SingleTileImageryProvider.html
+- Proj4js: https://github.com/proj4js/proj4js
+
+Catalogue documentation checked 9 September 2026; new terrain and overlay references checked 12 September 2026. Availability and service terms can change.

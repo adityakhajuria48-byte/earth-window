@@ -33,7 +33,11 @@ window.EarthBands = (() => {
       if(!sample.length)throw Error('This band contains no valid pixels in the preview.');
       const lo=sample[Math.floor(sample.length*.02)],hi=sample[Math.min(sample.length-1,Math.floor(sample.length*.98))];
       const keys=first.getGeoKeys();
-      return {data,width,height,valid,lo,hi,bbox:first.getBoundingBox(),crs:JSON.stringify(keys)};
+      const affine=first.getFileDirectory().ModelTransformation;
+      const resolution=first.getResolution();
+      const epsg=Number(keys.ProjectedCSTypeGeoKey||keys.GeographicTypeGeoKey);
+      const mapSafe=(!affine||(!affine[1]&&!affine[4]))&&resolution[0]>0&&resolution[1]<0;
+      return {data,width,height,valid,lo,hi,bbox:first.getBoundingBox(),crs:JSON.stringify(keys),epsg,mapSafe};
     }finally{if(tiff.close)await tiff.close();}
   }
   function panel(f){
@@ -64,5 +68,5 @@ window.EarthBands = (() => {
     const dialog=document.getElementById('scene-dialog');const close=()=>{revision++;controller?.abort();cache.clear();dialog.removeEventListener('close',close);};dialog.addEventListener('close',close);
     change();return box;
   }
-  return {panel,assetURL};
+  return {panel,assetURL,readBand};
 })();

@@ -25,24 +25,25 @@ function warnMap(message) {$('map-warning').textContent=message;$('map-warning')
 function updateMapLayer() {
   if(nasa&&map)map.removeLayer(nasa);
   warnMap('');
-  const street=$('map-layer').value==='streets';
-  $('map-source').textContent=street?'OpenStreetMap · Reference map':'Terra / MODIS · Daily overview';
-  $('map-date').textContent=street?'Reference only · Not capture-date imagery':`${dateLabel(state.date)} · Daily mosaic · Not a selected scene`;
+  const kind=$('map-layer').value,street=kind==='streets',reference=kind==='reference';
+  $('map-source').textContent=street?'OpenStreetMap · Reference map':reference?'NASA Blue Marble · Reference mosaic':'Terra / MODIS · Daily overview';
+  $('map-date').textContent=street?'Reference only · Not capture-date imagery':reference?'Global reference · Not capture-date imagery':`${dateLabel(state.date)} · Daily mosaic · Not a selected scene`;
   if(EWGlobe.active){
     if(map&&streets&&map.hasLayer(streets))map.removeLayer(streets);
-    EWGlobe.setLayer(street?'streets':'nasa',state.date);return;
+    EWGlobe.setLayer(kind,state.date);return;
   }
   if(!map)return;
   if(!map.hasLayer(streets))streets.addTo(map);
   if(street){streets.setOpacity(1);return;}
   streets.setOpacity(0);
-  nasa=L.tileLayer(`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${state.date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,{maxNativeZoom:9,maxZoom:17,noWrap:true,attribution:'Imagery: <a href="https://www.earthdata.nasa.gov/">NASA GIBS</a>',bounds:[[-85,-180],[85,180]]}).addTo(map);
-  nasa.on('tileerror',()=>{if(!EWGlobe.active)warnMap('NASA overview tiles could not load. Try Street map; scene search is separate.');});
-  if(new Date(state.date)<new Date('2000-02-24'))warnMap('This date predates Terra/MODIS imagery. Use Street map to locate the historical scenes.');
+  const url=reference?'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg':`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${state.date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`;
+  nasa=L.tileLayer(url,{maxNativeZoom:reference?8:9,maxZoom:17,noWrap:!reference,attribution:'Imagery: <a href="https://www.earthdata.nasa.gov/">NASA GIBS</a>',bounds:[[-85.0511,-180],[85.0511,180]]}).addTo(map);
+  nasa.on('tileerror',()=>{if(!EWGlobe.active)warnMap('Imagery tiles unavailable. Try another map layer; archive search remains available.');});
+  if(!reference&&new Date(state.date)<new Date('2000-02-24'))warnMap('This date predates Terra/MODIS. Use the reference mosaic to locate historical captures.');
 }
 function initMap() {
   if(!window.L){$('map').append(text('div','The interactive map could not load. You can still search imagery by place or coordinates.','map-unavailable'));$('map-date').textContent='Map service unavailable';return;}
-  map=L.map('map',{zoomControl:false,worldCopyJump:true,minZoom:1,maxZoom:17}).setView([15,0],1);
+  map=L.map('map',{zoomControl:false,worldCopyJump:true,minZoom:1,maxZoom:17}).setView([18,20],2);
   L.control.zoom({position:'bottomright'}).addTo(map);
   streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
   streets.on('tileerror',()=>{if($('map-layer').value==='streets')warnMap('Street-map tiles could not load. You can still search by place or coordinates.');});
@@ -56,7 +57,7 @@ function setPlace(lat,lon,name,fly=true) {state.scope='point';state.bounds=null;
 function wholeWorld(run=true){
   state.scope='world';state.bounds=null;state.lat=null;state.lon=null;state.name='Whole world';state.placeText='';state.dirty=false;state.geoRequest++;
   $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;$('location-title').textContent='Whole world';$('coordinates').textContent='Worldwide · No location filter';$('world-search').setAttribute('aria-pressed','true');
-  if(marker&&map){map.removeLayer(marker);marker=null;}map?.setView([15,0],1);EWGlobe.setPosition(state);invalidate();$('search-notice').textContent='Worldwide search selected.';if(run)search();
+  if(marker&&map){map.removeLayer(marker);marker=null;}map?.setView([18,20],2);EWGlobe.setPosition(state);invalidate();$('search-notice').textContent='Worldwide search selected.';if(run)search();
 }
 function searchMapArea(){
   if(EWGlobe.active){
@@ -191,7 +192,7 @@ function openScene(f){
 $('find-place').onclick=findPlace;
 $('place').addEventListener('input',()=>{state.geoRequest++;$('find-place').disabled=false;state.dirty=true;invalidate();$('place-results').replaceChildren();});
 $('place').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findPlace();}});
-$('recenter').onclick=()=>{EWGlobe.setPosition(state);if(state.scope==='point')map?.setView([state.lat,state.lon],8);else if(state.scope==='world')map?.setView([15,0],1);else if(map){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}};
+$('recenter').onclick=()=>{EWGlobe.setPosition(state);if(state.scope==='point')map?.setView([state.lat,state.lon],8);else if(state.scope==='world')map?.setView([18,20],2);else if(map){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}};
 $('world-search').onclick=()=>wholeWorld();
 $('area-search').onclick=searchMapArea;
 $('map-layer').onchange=updateMapLayer;
@@ -208,7 +209,7 @@ initMap();
 EWGlobe.init({
   onPoint:(lat,lon)=>setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false),
   onScene:openScene,
-  onMode:is3D=>{if(!is3D&&map){map.invalidateSize();if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}}updateMapLayer();},
+  onMode:is3D=>{if(!is3D&&map){map.invalidateSize();if(state.scope==='world')map.setView([18,20],2);else if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}}updateMapLayer();},
   onReady:()=>{EWGlobe.setPosition(state,state.scope!=='world');showResultLocations();}
 });
-loadSources().then(()=>{$('result-summary').textContent='Choose a location and date, then find satellite images.';}).catch(e=>{$('search-notice').textContent=e.message;});
+loadSources().then(()=>{$('result-summary').textContent='Search any place or the whole world to discover available captures.';}).catch(e=>{$('search-notice').textContent=e.message;});

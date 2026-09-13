@@ -55,15 +55,15 @@ const EWGlobe = (() => {
     if(!ready)return;
     const key=kind+date;if(key===layerKey)return;layerKey=key;
     status('');if(baseLayer)viewer.imageryLayers.remove(baseLayer,true);
-    const street=kind==='streets';
+    const street=kind==='streets',reference=kind==='reference';
     const provider=new Cesium.UrlTemplateImageryProvider({
-      url:street?'https://tile.openstreetmap.org/{z}/{x}/{y}.png':`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
-      tilingScheme:new Cesium.WebMercatorTilingScheme(),maximumLevel:street?19:9,
-      credit:street?'© OpenStreetMap contributors':'NASA GIBS · Terra / MODIS',enablePickFeatures:false
+      url:street?'https://tile.openstreetmap.org/{z}/{x}/{y}.png':reference?'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg':`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
+      tilingScheme:new Cesium.WebMercatorTilingScheme(),maximumLevel:street?19:reference?8:9,
+      credit:street?'© OpenStreetMap contributors':reference?'NASA GIBS · Blue Marble reference mosaic':'NASA GIBS · Terra / MODIS',enablePickFeatures:false
     });
     provider.errorEvent.addEventListener(()=>{if(key===layerKey)status('Overview tiles could not load. Try another map layer. Archive search is separate.');});
     baseLayer=viewer.imageryLayers.addImageryProvider(provider,0);
-    if(!street&&date<'2000-02-24')status('This date predates Terra/MODIS. Choose Street map to locate historical scenes.');
+    if(!street&&!reference&&date<'2000-02-24')status('This date predates Terra/MODIS. Choose Street map to locate historical scenes.');
     render();
   }
   function footprints(features,selection){
@@ -188,11 +188,11 @@ const EWGlobe = (() => {
       observer=new ResizeObserver(()=>{if(active){viewer.resize();render();}});observer.observe(document.getElementById('globe'));
       home(false);if(place)setPosition(place,place.scope!=='world');footprints(scenes,selected);
       status('');useMode(requested);
-      setTerrain(document.getElementById('terrain-toggle').checked);
+      setTerrain(document.getElementById('terrain-toggle').checked);setExaggeration(document.getElementById('terrain-scale').value);
       document.getElementById('terrain-toggle').onchange=e=>setTerrain(e.target.checked);
       document.getElementById('terrain-scale').onchange=e=>setExaggeration(e.target.value);
       config.onReady();
-    }catch(error){console.error('Earth Window globe: '+error.message+' '+error.stack);if(viewer&&!viewer.isDestroyed())viewer.destroy();viewer=null;ready=false;loading=null;useMode(false);status('3D could not load. Select 3D globe to retry, or continue with the 2D map.');document.getElementById('terrain-status').textContent='Terrain unavailable until 3D loads.';}
+    }catch(error){console.error('Earth Window globe: '+error.message+' '+error.stack);if(viewer&&!viewer.isDestroyed())viewer.destroy();viewer=null;ready=false;loading=null;useMode(false);status('2D view active. 3D graphics could not start in this browser.');document.getElementById('terrain-status').textContent='Terrain unavailable until 3D loads.';}
     finally{document.getElementById('view-3d').disabled=false;}
   }
   return {init,setPosition,setLayer,footprints,bounds,home,rings,showSurfaces,clearSurfaces,setComparison,setSplit,get active(){return active;}};

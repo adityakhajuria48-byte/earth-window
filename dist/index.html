@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Find real satellite imagery by place and capture date. Explore Sentinel-2 and Landsat scenes with Earth Window.">
-  <meta name="theme-color" content="#0c191e"><title>Earth Window · 3D satellite imagery explorer</title>
+  <meta name="description" content="Explore the whole world in satellite imagery. Discover captures, inspect spectral bands and compare dates on real terrain.">
+  <meta name="theme-color" content="#10171d"><title>Earth Window · 3D satellite imagery explorer</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workspace.css">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -15,41 +15,42 @@
   <a class="brand" href="/" aria-label="Earth Window home"><span class="brand-mark" aria-hidden="true">◉</span><span>earth<span class="brand-light">window</span><small>EARTH OBSERVATION</small></span></a>
   <nav class="workspace-nav" aria-label="Workspace panels">
     <button id="toggle-search" aria-controls="search-panel" aria-expanded="true">Search</button>
-    <button id="toggle-layers" aria-controls="layers-panel" aria-expanded="false">Layers & compare</button>
-    <button id="toggle-results" aria-controls="results-panel" aria-expanded="false">Results</button>
+    <button id="toggle-layers" aria-controls="layers-panel" aria-expanded="false">Imagery</button>
+    <button id="toggle-results" aria-controls="results-panel" aria-expanded="false">Captures</button>
   </nav><button id="fullscreen" class="text-button" aria-label="Toggle fullscreen">⛶</button>
-  <button class="text-button" id="about-open">How it works <span aria-hidden="true">↗</span></button>
+  <button class="text-button" id="about-open">Guide</button>
 </header>
 <main class="workspace">
-  <aside class="sidebar floating-panel" id="search-panel" aria-label="Search controls"><div class="panel-heading"><span class="eyebrow">FIND A CAPTURE</span><button id="close-search" class="panel-close" aria-label="Close search controls">×</button></div>
-    <div class="intro"><span class="eyebrow">EXPLORE THE ARCHIVE</span><h1>Explore Earth.</h1><p>Global imagery. All connected satellite archives.</p></div>
+  <aside class="sidebar floating-panel" id="search-panel" aria-label="Search controls">
+    <div class="panel-heading"><span class="eyebrow">SATELLITE ARCHIVE</span><button id="close-search" class="panel-close" aria-label="Close search controls">×</button></div>
+    <div class="intro"><h1>Explore anywhere.</h1><p>A place. A date. A new perspective.</p></div>
     <form id="search-form">
-      <div class="scope-actions"><button type="button" id="world-search" aria-pressed="true">Whole world</button><button type="button" id="area-search">Search map area</button></div>
-      <label for="place">01 <span>Zoom to a place (optional)</span></label>
-      <div class="input-action"><input id="place" type="search" placeholder="City, landmark, or coordinates" maxlength="150" autocomplete="off"><button type="button" id="find-place" aria-label="Find location">⌕</button></div>
+      <label for="place">Location</label>
+      <div class="input-action"><input id="place" type="search" placeholder="Search the planet…" maxlength="150" autocomplete="off"><button type="button" id="find-place" aria-label="Find location">⌕</button></div>
       <div id="place-results" class="place-results" aria-live="polite"></div>
       <div class="location-readout"><span aria-hidden="true">⌖</span><span id="coordinates">Worldwide · No location filter</span><button type="button" id="recenter" aria-label="Recenter map on chosen location">↗</button></div>
-      <p class="hint">Search mountains, volcanoes, islands, or cities. Leave empty to search worldwide. Zoom and use Search map area to explore a region.</p>
-      <label for="date">02 <span>Choose a capture date</span></label>
-      <div class="date-row"><input id="date" type="date" required min="1982-01-01"><input id="time" type="time" value="12:00" aria-label="Preferred capture time in UTC" required></div>
-      <p class="hint">Time is UTC. Results show the actual capture time.</p>
-      <label class="plain-label" for="window">Search window</label>
-      <select id="window"><option value="0">Exact day</option><option value="7" selected>Within 7 days either side</option><option value="30">Within 30 days either side</option></select>
-      <div class="auto-discovery"><span class="eyebrow">03 · AUTOMATIC DISCOVERY</span><strong>Every connected archive. One search.</strong><p>Sentinel-1 & 2, Landsat, Terra / Aqua MODIS, and ALOS / ALOS-2 PALSAR.</p><span class="source-regions">Worldwide imagery · Coverage varies by mission</span></div>
-      <div class="range-heading"><label class="plain-label" for="cloud">Maximum optical cloud cover</label><output for="cloud" id="cloud-value">40%</output></div>
-      <input type="range" id="cloud" min="0" max="100" step="5" value="40"><div class="range-ends"><span>Clearer skies</span><span>Any sky</span></div><p class="hint">Radar is included regardless of cloud cover. Unknown cloud values remain visible.</p>
+      <div class="scope-actions"><button type="button" id="world-search" aria-pressed="true">Whole world</button><button type="button" id="area-search">Visible area</button></div>
+      <label for="date">Capture date <span class="label-note">UTC</span></label>
+      <input id="date" type="date" required min="1982-01-01">
+      <label for="window">Date flexibility</label>
+      <select id="window"><option value="0">Exact day</option><option value="7" selected>± 7 days</option><option value="30">± 30 days</option></select>
+      <details class="search-options"><summary>Refine your search</summary>
+        <label for="time">Preferred capture time · UTC</label><input id="time" type="time" value="12:00" required>
+        <div class="range-heading"><label for="cloud">Maximum cloud cover</label><output for="cloud" id="cloud-value">40%</output></div>
+        <input type="range" id="cloud" min="0" max="100" step="5" value="40"><div class="range-ends"><span>Clear skies</span><span>Any sky</span></div><p class="hint">Radar and unreported cloud values remain included.</p>
+      </details>
       <button class="primary" type="submit" id="search-button">Find satellite images <span aria-hidden="true">↗</span></button>
       <p id="search-notice" role="status" class="hint notice"></p>
     </form>
-    <div class="availability"><span aria-hidden="true">◷</span><p><strong>An archive, not a live camera.</strong> Coverage depends on satellite passes, clouds, and processing. An exact-time image may not exist.</p></div>
-    <a class="source-link" href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Open imagery via Earth Search <span>↗</span></a><a class="source-link" href="https://photon.komoot.io" target="_blank" rel="noopener noreferrer">Landmarks: Photon / OpenStreetMap <span>↗</span></a><a class="source-link" href="https://volcano.si.edu/volcano.cfm?vn=262000" target="_blank" rel="noopener noreferrer">Krakatau reference: Smithsonian GVP <span>↗</span></a><a class="source-link" href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">City names: Open-Meteo / GeoNames <span>↗</span></a>
+    <div class="archive-note"><span class="archive-icon" aria-hidden="true">▧</span><div><strong>Every archive. One search.</strong><p>Sentinel · Landsat · MODIS · ALOS</p></div></div>
+    <p class="availability-note">Archive imagery · Availability varies by date.</p>
   </aside>
   <section class="explorer" aria-label="Satellite image explorer">
     <div class="map-shell" id="map-shell">
       <div id="globe" aria-label="Interactive 3D Earth" hidden></div>
       <div id="map" aria-label="Interactive map. Click a place to choose a search location." tabindex="0"></div>
       <div class="map-heading"><span class="eyebrow" id="view-label">3D GLOBE</span><h2 id="location-title">Whole world</h2></div>
-      <div class="map-tools"><div class="view-switch" role="group" aria-label="Map view"><button id="view-3d" type="button" aria-pressed="true">3D globe</button><button id="view-2d" type="button" aria-pressed="false">2D map</button></div><label class="map-select-label" for="map-layer">Map layer</label><select id="map-layer"><option value="nasa">NASA daily overview</option><option value="streets">Street map</option></select></div>
+      <div class="map-tools"><div class="view-switch" role="group" aria-label="Map view"><button id="view-3d" type="button" aria-pressed="true">3D globe</button><button id="view-2d" type="button" aria-pressed="false">2D map</button></div><label class="map-select-label" for="map-layer">Map layer</label><select id="map-layer"><option value="reference" selected>Earth mosaic · Reference</option><option value="nasa">Daily imagery · MODIS</option><option value="streets">Street map</option></select></div>
       <div id="globe-status" class="globe-status" role="status" hidden></div>
       <div id="globe-guide" class="globe-guide" hidden>Drag to rotate · Scroll or pinch to zoom · Click to select</div>
       <div id="globe-controls" class="globe-controls" role="group" aria-label="Globe navigation" hidden>
@@ -63,30 +64,30 @@
       <div id="swipe-line" class="swipe-line" hidden><span>↔</span></div>
       <div id="swipe-labels" class="swipe-labels" hidden><span id="before-label">Before</span><span id="after-label">After</span></div>
       <div id="active-layer" class="active-layer" hidden><strong id="active-layer-label"></strong><span id="active-layer-detail"></span></div>
-      <div class="map-caption"><span class="map-caption-symbol" aria-hidden="true">▧</span><div><strong id="map-source">Terra / MODIS · Daily overview</strong><span id="map-date">Loading date…</span></div></div>
+      <div class="map-caption"><span class="map-caption-symbol" aria-hidden="true">▧</span><div><strong id="map-source">NASA Blue Marble</strong><span id="map-date">Reference mosaic · Not capture-date imagery</span></div></div>
       <div id="map-warning" class="map-warning" role="status" hidden></div>
-    </div><p class="map-coverage-note">Context layers are labelled. Pin captures from Results to view bands or compare dates. Terrain is a reference surface, not capture-date elevation.</p>
+    </div><p class="map-coverage-note">Drag to explore · Scroll to zoom · Click to search a place</p>
     <section class="results-section floating-panel" id="results-panel" aria-labelledby="results-heading" hidden><button id="close-results" class="panel-close" aria-label="Close results">×</button>
-      <div class="results-top"><div><span class="eyebrow">CAPTURED FROM ORBIT</span><h2 id="results-heading">Images & data <span id="count">—</span></h2></div><div class="sort-control"><label for="sort">Sort by</label><select id="sort"><option value="nearest">Closest loaded capture</option><option value="clear">Least cloud cover</option><option value="newest">Newest first</option></select></div></div>
-      <p id="result-summary" class="result-summary" role="status">Searching worldwide imagery for your date.</p>
+      <div class="results-top"><div><span class="eyebrow">YOUR SEARCH RESULTS</span><h2 id="results-heading">Captures <span id="count">—</span></h2></div><div class="sort-control"><label for="sort">Sort by</label><select id="sort"><option value="nearest">Closest loaded capture</option><option value="clear">Least cloud cover</option><option value="newest">Newest first</option></select></div></div>
+      <p id="result-summary" class="result-summary" role="status">Choose a place and date to discover satellite captures.</p>
       <div id="source-status" class="source-status" aria-live="polite"></div><div id="scene-list" class="scene-list"><div class="empty-state"><span aria-hidden="true">◎</span><h3>Your next perspective is up here.</h3><p>Search to see real scenes, capture times, and image previews.</p></div></div>
       <button id="load-more" class="load-more" hidden>Show more results</button><div class="results-foot"><span>UTC dates · Composites show their time range · Cloud cover is scene-wide</span><button id="export" class="text-button" disabled>Export results ↓</button></div>
     </section>
   </section>
 <aside id="layers-panel" class="floating-panel layers-panel" aria-label="Layers and comparison" hidden>
-  <div class="panel-heading"><span class="eyebrow">SURFACE & TIME</span><button id="close-layers" class="panel-close" aria-label="Close layers and comparison">×</button></div>
-  <h2>Layers & comparison</h2>
-  <section class="terrain-settings">
+  <div class="panel-heading"><span class="eyebrow">IMAGERY WORKSPACE</span><button id="close-layers" class="panel-close" aria-label="Close layers and comparison">×</button></div>
+  <h2>Surface & time.</h2>
+  <details class="terrain-settings"><summary>Terrain &amp; elevation</summary>
     <label class="check-label"><input id="terrain-toggle" type="checkbox" checked> Terrain relief</label>
     <p id="terrain-status" class="hint" role="status">Waiting for the globe…</p>
     <label for="terrain-scale">Elevation display</label><select id="terrain-scale"><option value="1">Actual scale · 1×</option><option value="2">Exaggerated · 2×</option><option value="3">Exaggerated · 3×</option></select>
     <p class="hint">Reference elevation from <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">Mapzen terrain tiles</a>. Age and detail vary; recent volcano changes may be absent.</p><details class="hint"><summary>Terrain data credits</summary><p>Mapzen terrain tiles. ArcticDEM DEMs created from DigitalGlobe imagery, funded by NSF awards 1043681, 1559691 and 1542736. Australia © Commonwealth of Australia (Geoscience Australia) 2017. Austria © offene Daten Österreichs – Digitales Geländemodell (DGM) Österreich. Canada contains information licensed under the Open Government Licence – Canada. Europe produced using Copernicus data and information funded by the European Union – EU-DEM layers. ETOPO1: U.S. NOAA. Mexico: INEGI, Continental relief, 2016. New Zealand: Copyright 2011 Crown copyright (c) Land Information New Zealand and the New Zealand Government (All rights reserved). Norway © Kartverket. United Kingdom © Environment Agency copyright and/or database right 2015. All rights reserved. U.S. 3DEP and global GMTED2010 / SRTM courtesy of the U.S. Geological Survey. Height samples are reduced for interactive display.</p><a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener">Provider licences and attribution</a></details>
-  </section>
+  </details>
   <label for="compare-type">Imagery to display</label><select id="compare-type"><option value="overview">Daily overview dates</option><option value="captures">Selected archive captures</option></select>
   <div id="overview-fields" class="overview-fields">
     <label for="before-date">Before · A</label><input id="before-date" type="date" min="2000-02-24">
     <label for="after-date">After · B</label><input id="after-date" type="date" min="2000-02-24">
-    <p class="hint">Terra / MODIS daily mosaics. For detailed imagery, pin captures from Results.</p>
+    <p class="hint">Terra / MODIS daily mosaics. For detailed imagery, pin captures from Captures.</p>
   </div>
   <div id="capture-fields" hidden>
     <div class="capture-slot"><div class="slot-title"><strong>Before · A</strong><button id="clear-a" disabled aria-label="Clear capture A">Clear</button></div><p id="capture-a-label">No capture selected</p><label for="capture-a-band">A · Bands</label><select id="capture-a-band" disabled></select></div>
@@ -102,5 +103,5 @@
 </aside>
 </main>
 <dialog id="scene-dialog"><button class="close-dialog" aria-label="Close image details">×</button><div id="scene-details"></div></dialog>
-<dialog id="about-dialog"><button class="close-dialog" aria-label="Close how it works">×</button><div class="about-content"><span class="eyebrow">A LITTLE CONTEXT</span><h2>See the Earth.<br>Know what you're seeing.</h2><p>Start with the whole world: the map shows global daily imagery and the archive search has no location restriction. Zoom anywhere and use Search map area, or enter an optional city or coordinate. Worldwide results are a limited catalogue page, not an exhaustive inventory of Earth; narrow the area to find local scenes.</p><ol><li><strong>Automatic satellite discovery.</strong> Every search checks all connected archives: ESA/Copernicus Sentinel-1 and Sentinel-2, NASA/USGS Landsat, NASA Terra/Aqua MODIS, and JAXA ALOS/PALSAR mosaics. The satellite and data provider are identified on each result.</li><li><strong>Real band choices.</strong> Open a result to see the bands and data layers listed in its metadata. View single bands or available true-colour, vegetation, and SWIR combinations. Band previews are downsampled from the original raster data where browser access is supported.</li><li><strong>Capture versus composite.</strong> Single acquisitions show capture times. MODIS 8-day composites and PALSAR annual mosaics show their coverage period, never an invented capture instant.</li><li><strong>Map context.</strong> The NASA overview is a coarse daily mosaic. Scene and band previews show full source tiles; their footprints appear on the map. Pin Before A and After B, choose their bands in Layers &amp; compare, then Display on globe. The swipe slider compares imagery over one reference terrain surface. Use the original files in QGIS for a precise crop or analysis.</li><li><strong>Coverage transparency.</strong> Each archive reports success, partial results, or unavailability. Empty results from one archive do not hide the others. Connected archives cover many parts of the world; they do not include every satellite or guarantee every location.</li></ol><p>Future images do not exist yet. This app does not predict passes, task satellites, track travellers, or show individual people.</p><p>Sources: <a href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Element 84 Earth Search</a> · <a href="https://nasa-gibs.github.io/gibs-api-docs/access-basics/" target="_blank" rel="noopener noreferrer">NASA GIBS</a> · <a href="https://planetarycomputer.microsoft.com/catalog" target="_blank" rel="noopener noreferrer">Microsoft Planetary Computer</a> · <a href="https://www.usgs.gov/landsat-missions" target="_blank" rel="noopener noreferrer">USGS Landsat</a></p></div></dialog>
+<dialog id="about-dialog"><button class="close-dialog" aria-label="Close how it works">×</button><div class="about-content"><span class="eyebrow">A LITTLE CONTEXT</span><h2>See the Earth.<br>Know what you're seeing.</h2><p>Start with the whole world: the map opens with a NASA Blue Marble reference mosaic and the archive search has no location restriction. Zoom anywhere and use Search map area, or enter an optional city or coordinate. Worldwide results are a limited catalogue page, not an exhaustive inventory of Earth; narrow the area to find local scenes.</p><ol><li><strong>Automatic satellite discovery.</strong> Every search checks all connected archives: ESA/Copernicus Sentinel-1 and Sentinel-2, NASA/USGS Landsat, NASA Terra/Aqua MODIS, and JAXA ALOS/PALSAR mosaics. The satellite and data provider are identified on each result.</li><li><strong>Real band choices.</strong> Open a result to see the bands and data layers listed in its metadata. View single bands or available true-colour, vegetation, and SWIR combinations. Band previews are downsampled from the original raster data where browser access is supported.</li><li><strong>Capture versus composite.</strong> Single acquisitions show capture times. MODIS 8-day composites and PALSAR annual mosaics show their coverage period, never an invented capture instant.</li><li><strong>Map context.</strong> Blue Marble is a reference mosaic, not imagery from your chosen date. Select Daily imagery for the dated Terra/MODIS overview. Scene and band previews show full source tiles; their footprints appear on the map. Pin Before A and After B, choose their bands in Imagery, then Display on globe. The swipe slider compares imagery over one reference terrain surface. Use the original files in QGIS for a precise crop or analysis.</li><li><strong>Coverage transparency.</strong> Each archive reports success, partial results, or unavailability. Empty results from one archive do not hide the others. Connected archives cover many parts of the world; they do not include every satellite or guarantee every location.</li></ol><p>Future images do not exist yet. This app does not predict passes, task satellites, track travellers, or show individual people.</p><p>Sources: <a href="https://element84.com/earth-search/" target="_blank" rel="noopener noreferrer">Element 84 Earth Search</a> · <a href="https://nasa-gibs.github.io/gibs-api-docs/access-basics/" target="_blank" rel="noopener noreferrer">NASA GIBS</a> · <a href="https://planetarycomputer.microsoft.com/catalog" target="_blank" rel="noopener noreferrer">Microsoft Planetary Computer</a> · <a href="https://www.usgs.gov/landsat-missions" target="_blank" rel="noopener noreferrer">USGS Landsat</a></p></div></dialog>
 </body></html>

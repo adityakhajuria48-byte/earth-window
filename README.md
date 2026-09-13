@@ -60,7 +60,7 @@ For Azure assets, the viewer requests short-lived access links from Microsoft Pl
 
 ## Map context
 
-The selectable map layers are **NASA Terra/MODIS daily overview** and **OpenStreetMap reference map**. These are map context, not satellite search filters. The NASA layer is a coarse daily mosaic, not the selected Sentinel, Landsat, or radar image. Footprints for the currently displayed result cards appear on the map and can be clicked. Pin results as Before A and After B, select bands, and choose Display on globe to drape supported source pixels over terrain. Thumbnails and local band previews remain available in the details panel. The Web Mercator map cannot display the poles, but geographic coordinate search accepts latitude −90 to 90.
+The selectable map layers are **NASA Blue Marble reference mosaic**, **NASA Terra/MODIS daily overview**, and **OpenStreetMap reference map**. These are map context, not satellite search filters. Blue Marble is the default and is explicitly labelled as reference imagery, independent of the selected search date. The initial 2D view fills the workspace instead of showing a small isolated world tile. The NASA layer is a coarse daily mosaic, not the selected Sentinel, Landsat, or radar image. Footprints for the currently displayed result cards appear on the map and can be clicked. Pin results as Before A and After B, select bands, and choose Display on globe to drape supported source pixels over terrain. Thumbnails and local band previews remain available in the details panel. The Web Mercator map cannot display the poles, but geographic coordinate search accepts latitude −90 to 90.
 
 ## Development steps
 
@@ -101,13 +101,13 @@ The **Python edition** runs catalogue and place queries through the local Python
 
 Earth Window opens a rotatable CesiumJS globe, with zoom, whole-Earth view, an oblique-view toggle, and keyboard-accessible navigation buttons. Click Earth to select coordinates; search names (including Mount Anak Krakatau) to fly to a location. Search map area uses the 3D camera's geographic bounding rectangle, which can include space outside the visible curved region. The existing 2D map remains available from the view switch and is selected automatically if 3D loading or graphics fail.
 
-The globe uses real **Mapzen Terrarium elevation tiles**, sampled into heightmaps. Mountains, valleys and volcano relief come from reference elevation data. Terrain age and resolution vary; it does not represent the chosen capture date or guarantee recent volcanic changes. Terrain can be disabled or exaggerated at 2× / 3×, with actual scale as the default. Provider credits are available in Layers & compare. This visual terrain is not a surveyed elevation analysis.
+The globe uses real **Mapzen Terrarium elevation tiles**, sampled into heightmaps. Mountains, valleys and volcano relief come from reference elevation data. Terrain age and resolution vary; it does not represent the chosen capture date or guarantee recent volcanic changes. Terrain can be disabled or exaggerated at 2× / 3×, with actual scale as the default. Provider credits are available under Imagery → Terrain & elevation. This visual terrain is not a surveyed elevation analysis.
 
 ### Put imagery on terrain
 
 1. Search a place, coordinates, region, or the whole world and choose a capture window.
 2. Pin an earlier result with **Before A** and a later result with **After B**.
-3. In **Layers & compare**, choose each image's real bands or an available colour combination.
+3. In **Imagery**, choose each image's real bands or an available colour combination.
 4. Select **Display on globe**, then move the comparison slider. Uncheck **Compare A and B** to show A alone.
 5. To compare coarse daily coverage without selecting archive captures, choose **Daily overview dates** and two Terra/MODIS dates.
 
@@ -117,7 +117,7 @@ Before/after requires chronological, non-overlapping product periods and interse
 
 CesiumJS 1.127 loads asynchronously from its official CDN. No Cesium ion account or token is required. The renderer draws on demand, pauses when hidden or in 2D, and respects reduced-motion preferences. A WebGL1 compatibility attempt follows a WebGL initialization failure; if graphics remain unavailable, the 2D map and search continue. Web Mercator terrain and overview tiles exclude the extreme poles, though polar coordinates remain searchable.
 
-The map fills the workspace. Search, Layers & compare, and Results can each be collapsed; narrow screens show one open panel at a time. The fullscreen button requests browser fullscreen where supported. Browser permissions may prevent native fullscreen; the application still fills its page.
+The map fills the workspace. Search, Imagery, and Captures can each be collapsed. Search and Imagery share a compact side-panel position; Captures appear as a horizontal filmstrip beside them. Narrow screens show one open panel at a time. Time and cloud controls are under Refine your search, and terrain settings are under Terrain & elevation. The fullscreen button requests browser fullscreen where supported. Browser permissions may prevent native fullscreen; the application still fills its page.
 
 ## Landmark search
 
@@ -149,6 +149,25 @@ Browser checks used the local preview with live provider data. Mount Anak Krakat
 
 **The test browser could not initialize either WebGL2 or WebGL1.** Actual 3D terrain rendering, image placement on the globe, camera motion over terrain, and the visual swipe remain unverified in a graphics-capable browser. Native fullscreen was also unavailable in this browser; the full-page workspace remained usable. These limits are not treated as passed visual checks. No sample imagery substitutes for failed requests.
 
+## Workspace redesign · 13 September 2026
+
+The interface now uses a consistent dark palette, warm accent colour, compact forms, simpler navigation, and a continuous world map. Search settings, capture cards, band controls, and dialogs share the same visual system. The NASA Blue Marble reference layer comes from the provider's published WMTS capabilities; dated MODIS imagery remains a separate option. Source pixels are never replaced with generated artwork.
+
+Browser checks after the redesign confirmed the reference mosaic loads, Mount Anak Krakatau search returns live MODIS records, capture pinning opens the band controls and collapses Search, and supported band choices remain available. Existing 19 Python and 25 JavaScript checks pass. The browser's WebGL initialization limitation persists; no GPU CI pipeline was added.
+
+### Closing the 3D validation gap
+
+Use a browser/runner where WebGL2 initializes successfully. A virtual display or `--enable-gpu` flag alone does not supply a physical GPU; software rendering can exercise WebGL but should be reported separately from hardware acceleration.
+
+1. Record the browser version, WebGL renderer, context creation errors and context-loss events. Fail the rendering check if the app falls back to 2D.
+2. Wait for Cesium's terrain and imagery tile queues to settle and for a subsequent rendered frame, with a bounded timeout. Capture provider failures and render errors.
+3. Inspect a known mountain and volcano at actual elevation scale; verify several DEM sample heights against the source data. Recent volcano relief may differ from reference DEM age.
+4. Drape a georeferenced Sentinel/Landsat scene, compare coastlines and known control points against original raster coordinates, and check both UTM hemispheres. Reject unsupported projections explicitly.
+5. Switch individual bands and colour composites, compare two non-overlapping capture periods, move the split slider, and confirm labels, no-data areas, and registration visually.
+6. Capture baseline and current screenshots with fixed camera, dates, source assets, viewport, browser and renderer. Review intended changes before approving baselines; differences between GPU drivers must not be mistaken for geographical errors.
+
+This procedure is a validation plan, not evidence that 3D placement has already passed.
+
 ## Source documentation
 
 - Earth Search: https://github.com/Element84/earth-search
@@ -167,5 +186,8 @@ Browser checks used the local preview with live provider data. Mount Anak Krakat
 - Cesium heightmaps: https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Documentation/HeightmapTerrainData.html
 - Cesium geographic image overlays: https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Documentation/SingleTileImageryProvider.html
 - Proj4js: https://github.com/proj4js/proj4js
+- NASA WMTS layer registry: https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/1.0.0/WMTSCapabilities.xml
+- Browser screenshot comparisons: https://playwright.dev/docs/test-snapshots
+- GPU test setup: https://developer.chrome.com/blog/supercharge-web-ai-testing
 
 Catalogue documentation checked 9 September 2026; new terrain and overlay references checked 12 September 2026. Availability and service terms can change.

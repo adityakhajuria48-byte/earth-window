@@ -20,7 +20,7 @@ window.EWStudio=(()=>{
   function updateType(){const captures=$('compare-type').value==='captures';$('capture-fields').hidden=!captures;$('overview-fields').hidden=captures;}
   function openPanel(name,open){
     const panel=$(name+'-panel'),button=$('toggle-'+name);panel.hidden=!open;button.setAttribute('aria-expanded',String(open));
-    if(open&&window.matchMedia('(max-width: 900px)').matches)for(const other of ['search','layers','results'])if(other!==name){$(other+'-panel').hidden=true;$('toggle-'+other).setAttribute('aria-expanded','false');}
+    if(open)for(const other of ['search','layers','results'])if(other!==name&&(window.matchMedia('(max-width: 760px)').matches||(name!=='results'&&other!=='results'))){$(other+'-panel').hidden=true;$('toggle-'+other).setAttribute('aria-expanded','false');}
   }
   function captureInfo(slot){
     const f=slots[slot];if(!f)throw Error(`Add a capture to ${slot==='a'?'Before (A)':'After (B)'} from the image results.`);
@@ -68,7 +68,7 @@ window.EWStudio=(()=>{
       $('active-layer').hidden=false;
       $('overlay-status').textContent=$('compare-type').value==='overview'?'Dated NASA mosaics selected. Swipe to compare available tiles; gaps or clouds may occur.':'Source-band previews are on the globe. Swipe to compare; open original files for full-resolution analysis.';
       if($('compare-type').value==='overview')$('stretch-note').textContent='Daily mosaics combine observations. They are not exact-time captures; terrain remains the same reference DEM.';
-      if(window.matchMedia('(max-width: 900px)').matches)openPanel('layers',false);
+      if(window.matchMedia('(max-width: 760px)').matches)openPanel('layers',false);
     }catch(e){if(token===revision)$('overlay-status').textContent=signal.aborted?'Image loading timed out. Try a single band or open the original source file.':e.message;}
     finally{clearTimeout(timer);if(token===revision)$('render-globe').disabled=false;}
   }
@@ -87,7 +87,7 @@ window.EWStudio=(()=>{
     $('render-globe').onclick=display;
     $('clear-overlay').onclick=()=>{stop();EWGlobe.clearSurfaces();$('active-layer').hidden=true;$('overlay-status').textContent='Showing the reference map.';};
     for(const slot of ['a','b'])$('clear-'+slot).onclick=()=>{changed();slots[slot]=null;$('capture-'+slot+'-label').textContent='No capture selected';$('capture-'+slot+'-band').replaceChildren();$('capture-'+slot+'-band').disabled=true;$('clear-'+slot).disabled=true;};
-    if(window.matchMedia('(max-width: 900px)').matches)openPanel('search',false);
+    if(window.matchMedia('(max-width: 760px)').matches)openPanel('search',false);
     updateType();
   }
   function onMode(active){if(!active){$('swipe-line').hidden=true;$('swipe-labels').hidden=true;if(!$('active-layer').hidden)$('overlay-status').textContent='Capture overlays are available in 3D. Return to 3D and select Display on globe.';$('active-layer').hidden=true;}}

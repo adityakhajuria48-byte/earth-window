@@ -107,17 +107,25 @@ def spatial_query(q: dict) -> dict:
 
 def search_source(q: dict, source: dict) -> dict:
     search = {"collections": source["collection"], **spatial_query(q), "datetime": source_range(q, source), "limit": 100, "sortby": "-datetime"}
-    # Cloud filtering is applied after aggregation in the client. Radar and
-    # optical scenes with unreported cloud cover must remain discoverable.
     url = source["endpoint"] + "?" + urlencode(search)
     features, truncated, complete = [], False, False
     started = time.monotonic()
+    pages_fetched = 0
+    
     try:
         for page in range(3):
             if time.monotonic() - started > 35:
                 truncated = True
                 break
+            
+            page_start = time.monotonic()
             data = upstream_json(url)
+            page_duration = time.monotonic() - page_start
+            
+            if page_duration > 10:
+                print(f"⚠️ Slow source {source['id']}: page {page} took {page_duration:.1f}s")
+            
+            pages_fetched += 1
             if not isinstance(data, dict) or not isinstance(data.get("features"), list):
                 raise ValueError("Unexpected catalogue response.")
             meta = {"sourceId": source["id"], **{k: source.get(k) for k in ("name", "family", "agency", "region", "kind", "period", "gsd")}}
@@ -134,9 +142,54 @@ def search_source(q: dict, source: dict) -> dict:
             url = candidate
             if page == 2:
                 truncated = True
-        return {"id": source["id"], "name": source["name"], "status": "complete" if complete else "partial", "features": features, "truncated": truncated}
-    except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError):
-        return {"id": source["id"], "name": source["name"], "status": "partial" if features else "unavailable", "features": features, "truncated": bool(features), "error": "This archive could not finish the search. Retry to check its coverage."}
+        
+        total_duration = time.monotonic() - started
+        return {"id": source["id"], "name": source["name"], "status": "complete" if complete else "partial", "features": features, "truncated": truncated, "timing": {"total_ms": int(total_duration * 1000), "pages_fetched": pages_fetched}}
+    except HTTPError as exc:
+        error_detail = f"HTTP {exc.code}"
+        error_code = f"http_{exc.code}"
+        if exc.code == 429:
+            error_detail += " · Rate limited. Retry in a moment."
+        elif exc.code == 401:
+            error_detail += " · Provider authentication required."
+        elif exc.code >= 500:
+            error_detail += " · Provider temporarily unavailable."
+        
+        total_duration = time.monotonic() - started
+        return {
+            "id": source["id"],
+            "name": source["name"],
+            "status": "partial" if features else "unavailable",
+            "features": features,
+            "truncated": bool(features),
+            "error": f"Archive search failed: {error_detail}",
+            "errorCode": error_code,
+            "timing": {"total_ms": int(total_duration * 1000), "pages_fetched": pages_fetched}
+        }
+    except (URLError, TimeoutError, OSError) as exc:
+        total_duration = time.monotonic() - started
+        return {
+            "id": source["id"],
+            "name": source["name"],
+            "status": "partial" if features else "unavailable",
+            "features": features,
+            "truncated": bool(features),
+            "error": f"Network error: {type(exc).__name__}. Check your connection or try again later.",
+            "errorCode": "network_" + type(exc).__name__,
+            "timing": {"total_ms": int(total_duration * 1000), "pages_fetched": pages_fetched}
+        }
+    except ValueError as exc:
+        total_duration = time.monotonic() - started
+        return {
+            "id": source["id"],
+            "name": source["name"],
+            "status": "partial" if features else "unavailable",
+            "features": features,
+            "truncated": bool(features),
+            "error": f"Data format error from {source['name']}: {str(exc)}",
+            "errorCode": "format_error",
+            "timing": {"total_ms": int(total_duration * 1000), "pages_fetched": pages_fetched}
+        }
 
 
 def feature_interval(feature: dict) -> tuple[datetime, datetime] | None:
@@ -201,7 +254,7 @@ def photon_places(data):
 def city_places(data):
     if not isinstance(data, dict) or not isinstance(data.get("results", []), list):
         raise ValueError("Unexpected city-search response.")
-    places = [{"lat": p.get("latitude"), "lon": p.get("longitude"), "display_name": ", ".join(dict.fromkeys(p[k] for k in ("name", "admin1", "country") if isinstance(p.get(k), str) and p[k].strip())), "provider": "Open-Meteo / GeoNames"} for p in data.get("results", []) if isinstance(p, dict)]
+    places = [{"lat": p.get("latitude"), "lon": p.get("longitude"), "display_name": ", ".join(dict.fromkeys(p[k] for k in ("name", "admin1", "country") if isinstance(p.get(k), str) and p[k].strip())), "provider": "Open-Meteo Geocoding"} for p in data.get("results", [])]
     return [p for p in places if valid_place(p)][:5]
 
 
@@ -218,7 +271,6 @@ def geocode(query: str) -> object:
         ("https://geocoding-api.open-meteo.com/v1/search?" + urlencode({"name": query, "format": "json", "count": 5, "language": "en"}), city_places),
     ]
     failed = False
-    # Manual queries only, cached by upstream_json; serialize and throttle each call.
     with _geocode_lock:
         for url, parse in providers:
             delay = 1.1 - (time.monotonic() - _last_geocode)
@@ -281,15 +333,15 @@ class Handler(SimpleHTTPRequestHandler):
             except HTTPError as exc:
                 self.json_response(429 if exc.code == 429 else 502, {"error": "Satellite data provider could not complete the request."})
             except (URLError, TimeoutError, OSError):
-                self.json_response(502, {"error": "Place search is partly unavailable. Retry, enter latitude, longitude, or click the map." if parsed.path == "/api/geocode" else "Imagery provider is unreachable. Please retry."})
+                self.json_response(502, {"error": "Place search is partly unavailable. Retry, enter latitude, longitude, or click the map." if parsed.path == "/api/geocode" else "Imagery provider temporarily unavailable. Retry in a moment."})
             return
-        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css"}:
+        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/perf.js", "/workspace.css"}:
             self.send_error(404)
             return
         super().do_GET()
 
     def do_HEAD(self) -> None:
-        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css"}:
+        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/perf.js", "/workspace.css"}:
             self.send_error(404)
             return
         super().do_HEAD()

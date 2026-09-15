@@ -23,21 +23,22 @@
     if(!Number.isFinite(start))return null;
     if(s.period==='annual mosaic'&&!p.start_datetime){const year=new Date(start).getUTCFullYear();start=Date.UTC(year,0,1);end=Date.UTC(year+1,0,1)-1;}
     else if(s.period==='8-day composite'&&!p.end_datetime){end=Math.min(start+8*DAY-1,Date.UTC(new Date(start).getUTCFullYear()+1,0,1)-1);}
-    end=Number.isFinite(end)?end:start;if(end<start)return null;return {start,end,composite:s.period&&s.period!=='scene'};
+    if(s.timePrecision==='day'){const d=new Date(start);start=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());end=start+DAY-1;}
+    end=Number.isFinite(end)?end:start;if(end<start)return null;return {start,end,composite:!!s.period&&s.period!=='scene',dayOnly:s.timePrecision==='day',range:end>start};
   }
   function distance(f,target){const t=interval(f);return !t?Infinity:target<t.start?t.start-target:target>t.end?target-t.end:0;}
   function cloud(f){const v=f.properties?.['eo:cloud_cover'];return typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100?v:null;}
   function matches(f,q){const t=interval(f);if(!t||t.end<Date.parse(q.start)||t.start>Date.parse(q.end))return false;const c=cloud(f);return source(f).kind==='radar'||c===null||c<=q.cloud;}
-  function attach(f,s){return {...f,_earthWindow:{sourceId:s.id,name:s.name,family:s.family,agency:s.agency,region:s.region,kind:s.kind,period:s.period,gsd:s.gsd}};}
+  function attach(f,s){return {...f,_earthWindow:{sourceId:s.id,name:s.name,family:s.family,agency:s.agency,region:s.region,kind:s.kind,period:s.period,gsd:s.gsd,platform:s.platform,timePrecision:s.timePrecision,access:s.access,preview:s.preview,providerURL:s.providerURL,coverage:s.coverage}};}
   function requestRange(q,s){let start=new Date(q.start),end=new Date(q.end);if(s.period==='8-day composite')start=new Date(+start-7*DAY);if(s.period==='annual mosaic'){start=new Date(Date.UTC(start.getUTCFullYear(),0,1));end=new Date(Date.UTC(end.getUTCFullYear()+1,0,1)-1);}return `${start.toISOString()}/${end.toISOString()}`;}
   function identity(f){const s=source(f),p=f.properties||{};return `${s.sourceId}:${f.collection}:${f.id}`;}
   function dedupe(features){const seen=new Set();return features.filter(f=>{const p=f.properties||{},s=source(f);const tile=p['mgrs:utm_zone']&&p['mgrs:latitude_band']&&p['mgrs:grid_square']?`${p['mgrs:utm_zone']}${p['mgrs:latitude_band']}${p['mgrs:grid_square']}`:null;const key=s.family==='Sentinel-2'&&p.platform&&p.datetime&&tile?`${s.family}:${p.platform}:${p.datetime}:${tile}`:identity(f);if(seen.has(key))return false;seen.add(key);return true;});}
   function https(href){try{const u=new URL(href);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}
   const COMMON={coastal:'Coastal aerosol',blue:'Blue',green:'Green',red:'Red',rededge:'Red edge',nir:'Near infrared',nir08:'Near infrared',nir09:'Water vapour / NIR',swir16:'Shortwave infrared 1',swir22:'Shortwave infrared 2',lwir11:'Thermal infrared',lwir12:'Thermal infrared 2',vv:'VV radar',vh:'VH radar',hh:'HH radar',hv:'HV radar'};
   function bands(f){const result=[];for(const [key,a] of Object.entries(f.assets||{})){
-    const href=https(a.href);if(!href)continue;
-    const roles=a.roles||[], eo=a['eo:bands']||a.bands||[];
-    const raster=a['raster:bands']||[];
+    if(!a||typeof a!=='object')continue;const href=https(a.href)||https(a.alternate?.https?.href);if(!href)continue;
+    const roles=Array.isArray(a.roles)?a.roles:[], eo=Array.isArray(a['eo:bands'])?a['eo:bands']:Array.isArray(a.bands)?a.bands:[];
+    const raster=Array.isArray(a['raster:bands'])?a['raster:bands']:[];
     const isTiff=/tiff/i.test(a.type||'')||/\.tiff?(?:\?|$)/i.test(href);
     const known=COMMON[key.toLowerCase()];
     if(/jp2/i.test(key)||roles.includes('thumbnail')||roles.includes('overview')||['visual','thumbnail','rendered_preview','tilejson','map'].includes(key))continue;
@@ -49,10 +50,10 @@
       const e=eo[i]||{},r=raster[i]||{};let common=e.common_name||((eo.length<=1&&known)?key.toLowerCase():null);if(common?.startsWith('lwir')&&e.center_wavelength<3)common=null;
       const name=e.name||(count===1?key:`${key} / band ${i+1}`);
       const label=[name,(count===1?a.title:null)||e.description||COMMON[common]].filter(Boolean).filter((v,i,x)=>x.indexOf(v)===i).join(' · ');
-      result.push({id:`${key}:${i}`,key,index:i,label,common,href,isTiff,wavelength:e.center_wavelength,gsd:a.gsd||f.properties?.gsd||source(f).gsd,nodata:r.nodata,unit:r.unit,scale:r.scale,offset:r.offset});
+      result.push({id:`${key}:${i}`,key,index:i,label,common,href,isTiff,wavelength:e.center_wavelength,gsd:a.gsd||e.resolution_x||f.properties?.gsd||source(f).gsd,nodata:r.nodata??e.nodata,unit:r.unit,scale:r.scale??e.scale,offset:r.offset??e.scale_add,requiresAuth:source(f).access==='account'||!!a['auth:refs']?.length,canPreview:isTiff&&source(f).access!=='account'&&!a['auth:refs']?.length&&source(f).preview!=='download'});
     }
   }return result;}
-  function presets(bs){const get=(...names)=>bs.find(b=>b.isTiff&&names.includes(b.common));const red=get('red'),green=get('green'),blue=get('blue'),nir=get('nir','nir08'),swir=get('swir16');return [{id:'true',label:'True colour',bands:[red,green,blue]},{id:'vegetation',label:'False colour · vegetation',bands:[nir,red,green]},{id:'swir',label:'False colour · SWIR',bands:[swir,nir,red]}].filter(p=>p.bands.every(Boolean));}
+  function presets(bs){const get=(...names)=>bs.find(b=>b.isTiff&&names.includes(b.common));const red=get('red'),green=get('green'),blue=get('blue'),nir=get('nir','nir08'),swir=get('swir16','swir');return [{id:'true',label:'True colour',bands:[red,green,blue]},{id:'vegetation',label:'False colour · vegetation',bands:[nir,red,green]},{id:'swir',label:'False colour · SWIR',bands:[swir,nir,red]}].filter(p=>p.bands.every(Boolean));}
   function stretch(rasters){
     const first=rasters[0];
     if(!first||![1,3].includes(rasters.length))throw Error('Choose one band or three display channels.');

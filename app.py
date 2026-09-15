@@ -106,7 +106,10 @@ def spatial_query(q: dict) -> dict:
 
 
 def search_source(q: dict, source: dict) -> dict:
-    search = {"collections": source["collection"], **spatial_query(q), "datetime": source_range(q, source), "limit": 100, "sortby": "-datetime"}
+    search = {"collections": source["collection"], **spatial_query(q), "datetime": source_range(q, source), "limit": source.get("pageSize", 100)}
+    if source.get("sort", True):
+        search["sortby"] = "-datetime"
+    # Per-provider support differs; INPE rejects the STAC sort extension.
     # Cloud filtering is applied after aggregation in the client. Radar and
     # optical scenes with unreported cloud cover must remain discoverable.
     url = source["endpoint"] + "?" + urlencode(search)
@@ -120,7 +123,7 @@ def search_source(q: dict, source: dict) -> dict:
             data = upstream_json(url)
             if not isinstance(data, dict) or not isinstance(data.get("features"), list):
                 raise ValueError("Unexpected catalogue response.")
-            meta = {"sourceId": source["id"], **{k: source.get(k) for k in ("name", "family", "agency", "region", "kind", "period", "gsd")}}
+            meta = {"sourceId": source["id"], **{k: source.get(k) for k in ("name", "family", "agency", "region", "kind", "period", "gsd", "platform", "timePrecision", "access", "preview", "providerURL", "coverage")}}
             features.extend({**f, "_earthWindow": meta} for f in data["features"])
             next_link = next((link for link in data.get("links", []) if link.get("rel") == "next"), None)
             if not next_link:
@@ -149,6 +152,9 @@ def feature_interval(feature: dict) -> tuple[datetime, datetime] | None:
             end = datetime(start.year + 1, 1, 1, tzinfo=timezone.utc) - timedelta(milliseconds=1)
         elif source.get("period") == "8-day composite" and not p.get("end_datetime"):
             end = min(start + timedelta(days=8) - timedelta(milliseconds=1), datetime(start.year + 1, 1, 1, tzinfo=timezone.utc) - timedelta(milliseconds=1))
+        if source.get("timePrecision") == "day":
+            start = start.replace(hour=0, minute=0, second=0, microsecond=0)
+            end = start + timedelta(days=1) - timedelta(milliseconds=1)
         return (start, end) if end >= start else None
     except (KeyError, ValueError, TypeError):
         return None

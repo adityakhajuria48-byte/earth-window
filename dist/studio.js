@@ -4,10 +4,10 @@ window.EWStudio=(()=>{
   const rasters=new Map();let controller,revision=0;
   const label=f=>{
     const period=EW.interval(f),date=t=>new Date(t).toISOString().slice(0,10);
-    const satellite=f.properties?.platform?String(f.properties.platform).replace(/-/g,' '):`${EW.source(f).family||'Satellite'} · platform not reported`;
-    return `${satellite} · ${period.composite?date(period.start)+' – '+date(period.end)+' composite':new Date(period.start).toISOString().replace('T',' ').replace('.000Z',' UTC')}`;
+    const satellite=(f.properties?.platform||EW.source(f).platform)?String(f.properties.platform||EW.source(f).platform).replace(/-/g,' '):`${EW.source(f).family||'Satellite'} · platform not reported`;
+    return `${satellite} · ${period.composite?date(period.start)+' – '+date(period.end)+' composite':period.dayOnly?date(period.start)+' · time not reported':new Date(period.start).toISOString().replace('T',' ').replace('.000Z',' UTC')+(period.range?' – '+new Date(period.end).toISOString().replace('T',' ').replace('.000Z',' UTC'):'')}`;
   };
-  function options(f){const bands=EW.bands(f);return [...EW.presets(bands).filter(p=>p.bands.every(b=>b.isTiff)).map(p=>({id:p.id,label:p.label,bands:p.bands})),...bands.filter(b=>b.isTiff).map(b=>({id:b.id,label:b.label,bands:[b]}))];}
+  function options(f){const bands=EW.bands(f);return [...EW.presets(bands).filter(p=>p.bands.every(b=>b.canPreview)).map(p=>({id:p.id,label:p.label,bands:p.bands})),...bands.filter(b=>b.canPreview).map(b=>({id:b.id,label:b.label,bands:[b]}))];}
   function stop(){revision++;controller?.abort();$('render-globe').disabled=false;}
   function changed(){stop();EWGlobe.clearSurfaces();$('active-layer').hidden=true;$('overlay-status').textContent='Settings changed. Select Display on globe to update the imagery.';}
   function pin(f,slot){

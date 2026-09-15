@@ -16,7 +16,7 @@ On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ct
 
 ## Automatically searched archives
 
-All six configured collections are queried for every search; users do not have to choose a satellite. The agency countries identify who operates the satellites, not where imagery can be searched. Locations in other countries are fully supported wherever those archives have acquisitions.
+All 17 configured collections are queried for every search; users do not have to choose a satellite. The agency countries identify who operates the satellites, not where imagery can be searched. Locations in other countries are fully supported wherever those archives have acquisitions.
 
 | Satellite family | Operator / programme | Data | Time handling |
 | --- | --- | --- | --- |
@@ -25,10 +25,20 @@ All six configured collections are queried for every search; users do not have t
 | Sentinel-1 | ESA / Copernicus, Europe | GRD radar and available polarizations | Individual capture times; cloud filter does not exclude radar |
 | Terra / Aqua MODIS | NASA, United States | 500 m surface reflectance and data layers | Explicit 8-day composite period |
 | ALOS / ALOS-2 PALSAR | JAXA, Japan | 25 m annual radar mosaics | Explicit annual period, never a fabricated capture time |
+| Resourcesat-1 | ISRO, India; hosted by INPE | LISS-III and AWiFS original band files, regional holdings | Acquisition day only; exact time unreported |
+| CBERS-4 / CBERS-4A | China / Brazil; hosted by INPE | MUX surface reflectance and WPM original bands, regional holdings | MUX uses day precision; WPM uses the supplied acquisition time |
+| Sentinel-1 SLC / Sentinel-2 L1C | Copernicus / CDSE | Searchable complex SAR and optical records; provider account required for files | Supplied acquisition time / interval |
+| Sentinel-3 | Copernicus / CDSE | OLCI full-resolution radiance and SLSTR radiance / brightness temperature, NTC products; account required | Acquisition intervals; time at an exact ground point is not determined |
+| Sentinel-5P | Copernicus / CDSE | Offline sulphur dioxide and nitrogen dioxide NetCDF products; account required | Atmospheric observations, not detailed ground photographs |
+| Sentinel-6 | Copernicus / CDSE | P4 Level 2 NTC altimetry products; account required | Track observations with acquisition intervals, not full ground imagery |
 
-The catalogue hosts are **Element 84 Earth Search** and **Microsoft Planetary Computer**. Individual platform names come from each result's metadata. If the platform is missing, the interface says so instead of guessing which satellite captured it.
+The catalogue hosts are **Element 84 Earth Search**, **Microsoft Planetary Computer**, **INPE**, and **Copernicus Data Space (CDSE)**. Individual platform names come from each result’s metadata, with a documented single-platform collection label used for INPE records when the item omits it. If the platform is missing, the interface says so instead of guessing which satellite captured it.
 
-These archives cover many parts of the world, not every satellite or every place. Mission coverage, historical availability, clouds, processing delays, and provider access determine whether data exists. Optical imagery cannot show the ground through clouds. A footprint intersection does not guarantee valid pixels at the selected point. Commercial, restricted, and unconnected national archives are not advertised as available.
+These archives cover many parts of the world, not every satellite or every place. Mission coverage, historical availability, clouds, processing delays, and provider access determine whether data exists. Optical imagery cannot show the ground through clouds. A footprint intersection does not guarantee valid pixels at the selected point. The Guide lists official routes to wider ISRO Bhoonidhi holdings, China’s CRESDA, Japan’s G-Portal, early Landsat MSS through EarthExplorer, and additional Copernicus products. These portal links are **not automatic connections** and are excluded from search-completion counts. Bhoonidhi API access needs an approved provider account; no credentials are configured or collected by this static website. Sentinel-4/5, the complete Sentinel product catalogue, the entire Landsat historical series, and all national missions are not claimed as connected.
+
+INPE supplies regional holdings, mainly in South America. Indian satellite ownership does not mean these particular holdings cover India. All searches still use the requested geometry without a country restriction. Searches of new INPE collections returned records at their real footprints and no results at a distant unrelated point. Original raster byte-range requests succeeded; the tested raster responses did not allow browser cross-origin access. Original file download links are offered, with browser rendering disabled for these collections. Open the downloaded data in GIS software. Large non-COG rasters are not falsely labelled as browser-ready.
+
+CDSE catalogue searches are public. Its asset metadata declares authentication requirements; S3 assets expose provider-supplied HTTPS alternatives. These are listed with their real band / file names, but download and rendering controls remain disabled until accessed through the provider. No authenticated data access or token handling is claimed. Scene IDs and original metadata links allow users to locate the exact product there.
 
 ## Band options
 
@@ -40,7 +50,7 @@ Open any result to inspect the **bands and data layers actually listed in that r
 - Radar assets can expose VV, VH, HH, or HV polarizations; the UI lists only the polarizations actually present.
 - Save a rendered preview as PNG. Provider-supplied thumbnails remain labelled separately.
 
-Band names, wavelengths, and data links are read from STAC asset metadata. Quality flags, observation angles, and other raster data layers can also appear. The original file is the authoritative data product.
+Band names, wavelengths, and data links are read from STAC asset metadata, including provider-supplied HTTPS alternatives and INPE band-level no-data / pixel spacing. Provider spectral metadata can contain inaccuracies; original documentation remains authoritative. Quality flags, observation angles, and other raster data layers can also appear. The original file is the authoritative data product.
 
 The GeoTIFF preview uses a suitable small overview, a maximum display dimension of 512 pixels, nearest-neighbour sampling, transparent no-data, and a separate 2–98% contrast stretch for each display channel. It rejects mixed grids and oversized rasters without a usable overview. **These previews are display products, not calibrated quantitative analyses or crops of the selected point.** An RGB combination does not add resolution. GeoTIFFs blocked by browser access rules and HDF/NetCDF assets can be opened in geospatial software instead. No NDVI or other scientific index is claimed.
 
@@ -54,7 +64,7 @@ For Azure assets, the viewer requests short-lived access links from Microsoft Pl
 - The optical cloud filter retains unreported cloud values with an explicit label. Radar is always retained regardless of cloud cover.
 - Each source reports complete, partial, or unavailable status. A failed archive never becomes a claim of no coverage.
 - Hosted searches show results as each source finishes. The Python server queries the sources concurrently and returns their combined result.
-- Pagination is limited to three pages of 100 records per collection, requested newest first. Worldwide and broad-area results are limited catalogue pages, not an exhaustive world inventory. Time sorting orders the loaded results; it does not guarantee the globally nearest acquisition. Zoom into a region or select a point for focused coverage. Partial results are clearly reported; narrow the time window when necessary.
+- Pagination is limited to three pages of 100 records per collection (20 per page for CDSE), requested in provider order (newest first where the sort extension is supported). Worldwide and broad-area results are limited catalogue pages, not an exhaustive world inventory. Time sorting orders the loaded results; it does not guarantee the globally nearest acquisition. Zoom into a region or select a point for focused coverage. Partial results are clearly reported; narrow the time window when necessary.
 - Result rendering is limited to 30 cards at a time, with a Show more button. Export includes all returned matching records, along with search settings and archive status.
 - Dates and inputs are validated. Source URLs and pagination hosts are constrained. Python caches JSON responses for five minutes and avoids logging searched coordinates.
 
@@ -191,3 +201,14 @@ This procedure is a validation plan, not evidence that 3D placement has already 
 - GPU test setup: https://developer.chrome.com/blog/supercharge-web-ai-testing
 
 Catalogue documentation checked 9 September 2026; new terrain and overlay references checked 12 September 2026. Availability and service terms can change.
+
+## Archive expansion · 15 September 2026
+
+- Added four INPE collections and seven public CDSE catalogue collections to automatic search. INPE rejects `sortby`; its adapter omits that parameter. CDSE responses are limited to 20 items per page, at most three pages; other sources retain 100 per page and three pages. Nearest means nearest **loaded** record, not a guaranteed exhaustive search.
+- New day-precision and acquisition-interval labels prevent invented capture instants. Source, access status, nominal resolution, and coverage remain visible in the details.
+- Added regression coverage for day-only matching, provider query differences, authentication-restricted HTTPS alternatives, real INPE band combinations and malformed assets.
+- Official provider references checked 15 September 2026: [INPE collections](https://data.inpe.br/bdc/stac/v1/collections), [CDSE STAC](https://documentation.dataspace.copernicus.eu/APIs/STAC.html), [Bhoonidhi API](https://bhoonidhi.nrsc.gov.in/bhoonidhi-api/), [JAXA G-Portal information](https://earth.jaxa.jp/en/data/2503/index.html), [USGS EarthExplorer](https://earthexplorer.usgs.gov/), [CRESDA](https://www.cresda.cn/zgzywxyyzxeng/index_pc.html).
+
+Verification for this expansion: **21 Python tests and 29 JavaScript tests passed**. Live INPE point/date searches returned Resourcesat-1 LISS-III and AWiFS, CBERS-4 MUX and CBERS-4A WPM records; original raster range requests returned HTTP 206. An unrelated northern-India point returned zero records from these regional collections for 12 September 2013. All seven new CDSE collection endpoints returned actual sample products in live API checks.
+
+Browser checks found two Resourcesat-1 records at −5.8358, −60.5674 on 12 September 2013, alongside two MODIS composites. Their four real bands, false-colour choices, original-file control and explicit day-only time labels were inspected. A search at 33, 75 on 10 September 2025 returned 11 records from Sentinel-2A, Sentinel-3A and Sentinel-5P. Sentinel-3 SLSTR details exposed real file/channel metadata and correctly disabled authenticated file access and rendering. The archive guide distinguished connected collections from external provider links. In each browser search, 12 of 17 collections completed and five were unavailable; incomplete coverage was visible. Provider availability can change. The browser again fell back to 2D because WebGL could not initialize; 3D placement remains unverified.

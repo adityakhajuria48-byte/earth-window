@@ -103,6 +103,23 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(result["status"], "partial")
         self.assertEqual(len(result["features"]), 1)
 
+    def test_inpe_query_omits_unsupported_sort_and_preserves_access_metadata(self):
+        source = next(s for s in app.SOURCES if s["id"] == "resourcesat-liss3")
+        with patch("app.upstream_json", return_value={"features": [{"id": "test", "properties": {"datetime": "2013-09-12T00:00:00Z"}}]}) as get:
+            result = app.search_source(self.q, source)
+        query = parse_qs(urlparse(get.call_args.args[0]).query)
+        self.assertNotIn("sortby", query)
+        meta = result["features"][0]["_earthWindow"]
+        self.assertEqual(meta["platform"], "Resourcesat-1")
+        self.assertEqual(meta["preview"], "download")
+
+    def test_day_precision_matches_a_midday_query(self):
+        f = self.feature(source={"kind": "optical", "period": "scene", "timePrecision": "day"}, date="2025-09-10T00:00:00Z")
+        q = {**self.q, "start": "2025-09-10T12:00:00+00:00", "end": "2025-09-10T13:00:00+00:00"}
+        self.assertTrue(app.matches(f, q))
+        start, end = app.feature_interval(f)
+        self.assertEqual((end-start).total_seconds(), 86399.999)
+
     @patch("app.upstream_json")
     def test_every_source_is_searched_and_failures_are_isolated(self, get):
         def response(url):

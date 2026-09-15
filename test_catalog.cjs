@@ -20,8 +20,9 @@ test('points anywhere in the world and regions produce correct geometry',()=>{
 });
 
 test('automatic registry includes optical, radar, composite, and international sources',()=>{
-  assert.equal(sources.length,6);
-  assert.deepEqual(new Set(sources.map(x=>x.region)),new Set(['Europe','United States','Japan']));
+  assert.equal(new Set(sources.map(s=>s.id)).size,sources.length);
+  for(const family of ['Resourcesat-1','CBERS','Sentinel-3','Sentinel-5P','Sentinel-6'])assert.ok(sources.some(s=>s.family===family));
+  assert.deepEqual(new Set(sources.map(x=>x.region)),new Set(['Europe','United States','Japan','India','China / Brazil','Europe / international']));
   assert.ok(sources.every(s=>s.endpoint.startsWith('https:')));
 });
 test('cloud filter never drops radar or unknown optical cloud values',()=>{
@@ -106,4 +107,25 @@ test('city fallback survives Photon failure and outages never become a false no-
 test('invalid GeoJSON coordinates are never offered as locations',()=>{
   const features=[[181,0],[0,91],[0,null],[0,true],[]].map(coordinates=>({geometry:{type:'Point',coordinates},properties:{name:'Bad'}}));
   assert.deepEqual(GEO.photon({features}),[]);
+});
+
+test('day-only acquisitions cannot masquerade as a midnight capture',()=>{
+  const f=feature(sources.find(s=>s.id==='resourcesat-liss3'),{datetime:'2013-09-12T00:00:00Z'}),t=EW.interval(f);
+  assert.equal(t.dayOnly,true);assert.equal(t.composite,false);assert.equal(t.end-t.start,86400000-1);
+  assert.equal(EW.matches(f,{start:'2013-09-12T12:00:00Z',end:'2013-09-12T13:00:00Z',cloud:100}),true);
+});
+test('authenticated S3 assets expose real HTTPS band metadata without enabling raster rendering',()=>{
+  const f=feature(sources.find(s=>s.id==='s1-slc'),{}, {vv:{href:'s3://eodata/scene.tif',type:'image/tiff',roles:['data'],'auth:refs':['s3'],alternate:{https:{href:'https://provider.example/scene.tif'}}}});
+  const b=EW.bands(f)[0];assert.equal(b.href,'https://provider.example/scene.tif');assert.equal(b.requiresAuth,true);assert.equal(b.canPreview,false);
+  assert.equal(EW.source(f).access,'account');
+});
+test('INPE band metadata preserves no-data, resolution and genuine channel combinations',()=>{
+  const assets=Object.fromEntries(['green','red','nir','swir'].map((common,i)=>['BAND'+(i+2),{href:'https://data.inpe.br/band'+i+'.tif',type:'image/tiff',roles:['data'],'eo:bands':[{name:'BAND'+(i+2),common_name:common,nodata:0,resolution_x:24,scale:1}]}]));
+  const bs=EW.bands(feature(sources.find(s=>s.id==='resourcesat-liss3'),{},assets));
+  assert.equal(bs.length,4);assert.equal(bs[0].nodata,0);assert.equal(bs[0].gsd,24);assert.equal(bs[0].canPreview,false);
+  assert.deepEqual(EW.presets(bs).map(p=>p.id),['vegetation','swir']);
+});
+test('malformed or credential-bearing alternate assets do not produce download links',()=>{
+ const bs=EW.bands(feature(sources[0],{}, {broken:null,secret:{href:'s3://bucket/key',type:'image/tiff',roles:['data'],alternate:{https:{href:'https://user:password@example.org/file.tif'}}}}));
+ assert.equal(bs.length,0);
 });

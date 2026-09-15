@@ -129,3 +129,41 @@ test('malformed or credential-bearing alternate assets do not produce download l
  const bs=EW.bands(feature(sources[0],{}, {broken:null,secret:{href:'s3://bucket/key',type:'image/tiff',roles:['data'],alternate:{https:{href:'https://user:password@example.org/file.tif'}}}}));
  assert.equal(bs.length,0);
 });
+
+test('availability calendar distinguishes acquisitions from overlapping composites',()=>{
+  const a=feature(sources[0],{datetime:'2025-09-10T23:58:00Z',end_datetime:'2025-09-11T00:02:00Z'});
+  const b=feature(sources.find(s=>s.id==='modis'),{datetime:'2025-09-05T00:00:00Z'});
+  const days=EW.availability([a,b],{start:'2025-09-09T00:00:00Z',end:'2025-09-12T23:59:59Z'});
+  assert.deepEqual(days.map(x=>[x.captures,x.composites]),[[0,1],[1,1],[1,1],[0,1]]);
+  assert.equal(EW.onDay(a,'2025-09-12'),false);
+  assert.equal(EW.availability([],{start:'bad',end:'bad'}).length,0);
+});
+test('best match prefers usable ground bands while nearest and detail remain explicit alternatives',()=>{
+  const direct=feature(sources[0],{datetime:'2025-09-10T09:00:00Z',gsd:30},{red:asset('red')});direct.id='direct';
+  const account=feature(sources.find(s=>s.id==='s2-l1c'),{datetime:'2025-09-10T12:00:00Z',gsd:10},{red:asset('red')});account.id='account';
+  const when=Date.parse('2025-09-10T12:00:00Z');
+  assert.equal(EW.rank([account,direct],when,'best')[0].id,'direct');
+  assert.equal(EW.rank([direct,account],when,'nearest')[0].id,'account');
+  assert.equal(EW.rank([direct,account],when,'detail')[0].id,'account');
+  assert.match(EW.timeOffset(direct,when),/3.0 h before/);
+});
+test('cloud ranking never treats radar or missing cloud values as clear ground',()=>{
+  const radar=feature(sources.find(s=>s.id==='s1'),{'eo:cloud_cover':0});radar.id='radar';
+  const optical=feature(sources[0],{'eo:cloud_cover':40});optical.id='optical';
+  assert.equal(EW.rank([radar,optical],Date.now(),'clear')[0].id,'optical');
+});
+test('indices require known surface-reflectance products, calibrated bands and access',()=>{
+ const assets=Object.fromEntries(['red','green','nir','swir22'].map(n=>[n,{...asset(n),'raster:bands':[{scale:.0001,offset:0}]}]));
+ assert.deepEqual(EW.indices(feature(sources[0],{},assets)).map(x=>x.id),['ndvi','ndwi','nbr']);
+ assert.equal(EW.indices(feature(sources.find(s=>s.id==='s2-l1c'),{},assets)).length,0);
+ delete assets.nir['raster:bands'];assert.equal(EW.indices(feature(sources[0],{},assets)).length,0);
+});
+test('normalized indices apply offsets, reject invalid pixels and preserve fixed colour scale',()=>{
+ const make=data=>({data,width:3,height:1,bbox:[0,0,3,1],crs:'test',valid:v=>v!==0});
+ const a=make([20000,0,7272]),b=make([15000,10000,7272]),cal=[{scale:.0000275,offset:-.2},{scale:.0000275,offset:-.2}];
+ const out=EW.indexRaster([a,b],cal),expected=(.35-.2125)/(.35+.2125);
+ assert.ok(Math.abs(out.values[0]-expected)<1e-6);assert.equal(out.count,1);
+ assert.ok(Number.isNaN(out.values[1]));assert.equal(out.pixels[7],0);assert.equal(out.pixels[11],0);
+ assert.throws(()=>EW.indexRaster([a,{...b,bbox:[1,0,4,1]}],cal),/different grids/);
+ assert.throws(()=>EW.indexRaster([a,b],[{},{}]),/calibration/);
+});

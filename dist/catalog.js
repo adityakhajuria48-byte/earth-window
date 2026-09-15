@@ -54,6 +54,42 @@
     }
   }return result;}
   function presets(bs){const get=(...names)=>bs.find(b=>b.isTiff&&names.includes(b.common));const red=get('red'),green=get('green'),blue=get('blue'),nir=get('nir','nir08'),swir=get('swir16','swir');return [{id:'true',label:'True colour',bands:[red,green,blue]},{id:'vegetation',label:'False colour · vegetation',bands:[nir,red,green]},{id:'swir',label:'False colour · SWIR',bands:[swir,nir,red]}].filter(p=>p.bands.every(Boolean));}
+  function onDay(f,day){const t=interval(f),start=Date.parse(day+'T00:00:00Z');return !!t&&Number.isFinite(start)&&t.end>=start&&t.start<start+DAY;}
+  function availability(features,q){
+    const start=Date.parse(q.start),end=Date.parse(q.end);if(!Number.isFinite(start)||!Number.isFinite(end)||end<start)return [];
+    const first=Math.floor(start/DAY)*DAY,last=Math.floor(end/DAY)*DAY,rows=[];
+    for(let time=first;time<=last&&rows.length<62;time+=DAY){
+      const day=new Date(time).toISOString().slice(0,10),matches=features.filter(f=>onDay(f,day));
+      rows.push({day,captures:matches.filter(f=>!interval(f).composite).length,composites:matches.filter(f=>interval(f).composite).length});
+    }return rows;
+  }
+  function spacing(f){const values=bands(f).map(b=>b.gsd).filter(v=>typeof v==='number'&&Number.isFinite(v)&&v>0);const nominal=f.properties?.gsd||source(f).gsd;if(typeof nominal==='number'&&Number.isFinite(nominal)&&nominal>0)values.push(nominal);return values.length?Math.min(...values):null;}
+  function rank(features,target,mode='best'){
+    const rows=features.map(f=>{const t=interval(f),bs=bands(f);return {f,t,ground:['optical','radar'].includes(source(f).kind),access:bs.some(b=>b.canPreview)?0:bs.some(b=>!b.requiresAuth)?1:2,gap:distance(f,target),cloud:source(f).kind==='optical'?(cloud(f)??Infinity):Infinity,gsd:spacing(f)??Infinity};});
+    rows.sort((a,b)=>{
+      if(mode==='clear')return a.cloud-b.cloud||a.gap-b.gap;
+      if(mode==='detail')return Number(!a.ground)-Number(!b.ground)||a.gsd-b.gsd||a.gap-b.gap;
+      if(mode==='newest')return (b.t?.start||0)-(a.t?.start||0);
+      if(mode==='nearest')return Number(!!a.t?.composite)-Number(!!b.t?.composite)||Number(!!a.t?.dayOnly)-Number(!!b.t?.dayOnly)||a.gap-b.gap;
+      // Access, ground imagery, time precision, proximity, clouds, then spacing.
+      return Number(!a.ground)-Number(!b.ground)||a.access-b.access||Number(!!a.t?.composite)-Number(!!b.t?.composite)||Number(!!a.t?.dayOnly)-Number(!!b.t?.dayOnly)||a.gap-b.gap||a.cloud-b.cloud||a.gsd-b.gsd;
+    });return rows.map(r=>r.f);
+  }
+  function timeOffset(f,target){const t=interval(f);if(!t)return 'Time unavailable';if(t.composite)return source(f).period+' · not an instant';if(t.dayOnly)return 'Day only · exact time unavailable';const gap=distance(f,target);if(gap===0)return t.range?'Requested time falls in acquisition interval':'Matches the reported capture time';const amount=gap<3600000?Math.max(1,Math.round(gap/60000))+' min':gap<DAY?(gap/3600000).toFixed(1)+' h':(gap/DAY).toFixed(1)+' days';return amount+(target<t.start?' after':' before')+' requested time';}
+  function indices(f){
+    // These connected Level-2 collections expose surface reflectance, not radiance.
+    if(!['s2','s2-c1','landsat','modis'].includes(source(f).sourceId))return [];
+    const bs=bands(f),get=(...names)=>bs.find(b=>b.canPreview&&names.includes(b.common)&&Number.isFinite(b.scale)&&b.scale>0&&(b.offset==null||Number.isFinite(b.offset)));
+    const nir=get('nir','nir08'),red=get('red'),green=get('green'),swir=get('swir22');
+    return [{id:'ndvi',label:'NDVI · vegetation',bands:[nir,red],formula:'(NIR − Red) / (NIR + Red)'},{id:'ndwi',label:'NDWI · water',bands:[green,nir],formula:'(Green − NIR) / (Green + NIR)'},{id:'nbr',label:'NBR · burn ratio',bands:[nir,swir],formula:'(NIR − SWIR2) / (NIR + SWIR2)'}].filter(x=>x.bands.every(Boolean));
+  }
+  function indexRaster(rasters,bs){
+    const [a,b]=rasters;if(!a||!b||rasters.length!==2||bs.length!==2||!bs.every(x=>Number.isFinite(x.scale)&&x.scale>0&&(x.offset==null||Number.isFinite(x.offset))))throw Error('This index needs two bands with explicit reflectance calibration.');
+    if(a.width!==b.width||a.height!==b.height||a.crs!==b.crs||a.bbox.length!==b.bbox.length||!a.bbox.every((v,i)=>Math.abs(v-b.bbox[i])<Math.max(1,Math.abs(v))*1e-6))throw Error('Index bands use different grids. Align the original rasters in GIS first.');
+    const values=new Float32Array(a.data.length);values.fill(NaN);const pixels=new Uint8ClampedArray(values.length*4);let count=0,min=Infinity,max=-Infinity;
+    for(let i=0;i<values.length;i++){if(!a.valid(a.data[i])||!b.valid(b.data[i]))continue;const x=a.data[i]*bs[0].scale+(bs[0].offset??0),y=b.data[i]*bs[1].scale+(bs[1].offset??0),den=x+y;if(!Number.isFinite(den)||den<=1e-12)continue;const v=(x-y)/den;if(!Number.isFinite(v)||v < -1||v>1)continue;values[i]=v;min=Math.min(min,v);max=Math.max(max,v);count++;const low=v<0?[36,92,170]:[241,239,224],high=v<0?[241,239,224]:[37,131,84],weight=v<0?v+1:v;for(let c=0;c<3;c++)pixels[i*4+c]=Math.round(low[c]+(high[c]-low[c])*weight);pixels[i*4+3]=255;}
+    if(!count)throw Error('No valid index pixels were found after no-data and denominator checks.');return {width:a.width,height:a.height,pixels,values,count,min,max};
+  }
   function stretch(rasters){
     const first=rasters[0];
     if(!first||![1,3].includes(rasters.length))throw Error('Choose one band or three display channels.');
@@ -66,6 +102,6 @@
     }
     return {width:first.width,height:first.height,pixels};
   }
-  const api={source,interval,distance,cloud,matches,attach,requestRange,identity,dedupe,https,bands,presets,stretch,spatialQuery};
+  const api={source,interval,distance,cloud,matches,attach,requestRange,identity,dedupe,https,bands,presets,stretch,spatialQuery,onDay,availability,spacing,rank,timeOffset,indices,indexRaster};
   root.EW=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

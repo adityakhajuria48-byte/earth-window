@@ -1,0 +1,8 @@
+.git
+node_modules
+.sites-runtime
+.openai
+.env*
+__pycache__
+*.zip
+dist/earth-window-python.zip

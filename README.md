@@ -12,7 +12,7 @@ Install **Python 3.10+**, open a terminal inside this folder, then run:
 python app.py
 ```
 
-On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ctrl+C. There are no Python packages to install. Internet access is needed for satellite archives, map tiles, geocoding, CesiumJS, Leaflet, fonts, and the optional raster viewer.
+On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ctrl+C. Search needs no extra Python packages. Optional GeoTIFF crop exports need `python -m pip install -r requirements-raster.txt`. Internet access is needed for satellite archives, map tiles, geocoding, CesiumJS, Leaflet, fonts, and the optional raster viewer.
 
 ## Automatically searched archives
 
@@ -238,3 +238,35 @@ Full-resolution georeferenced crops, scientific cloud/quality masking and rigoro
 References checked for this implementation: [USGS NDVI](https://www.usgs.gov/landsat-missions/landsat-normalized-difference-vegetation-index), [USGS NBR](https://www.usgs.gov/landsat-missions/landsat-normalized-burn-ratio), [USGS scale and offset](https://www.usgs.gov/faqs/how-do-i-use-a-scale-factor-landsat-level-2-science-products), [Sentinel Hub green–NIR NDWI](https://custom-scripts.sentinel-hub.com/custom-scripts/sentinel-2/ndwi/).
 
 Verification: 34 JavaScript tests and 21 Python tests pass. New tests cover midnight-spanning acquisitions, composite counts, usable-data ranking versus nearest-time ranking, unknown/radar cloud handling, calibrated-index eligibility, additive offsets, no-data transparency and mismatched-grid rejection. Browser checks at Anak Krakatau for 25 August–8 September 2024 returned 34 live records, and selecting 7 September reduced the view to its one record; All dates restored the list. Historical Resourcesat records correctly ranked as public downloads with day-only precision. MODIS returned HTTP 502 during the index check, so live source-pixel index rendering could not be verified in this session. Formula and pixel behaviour passed deterministic unit tests; that does not replace end-to-end live raster verification.
+
+
+## Native GeoTIFF crop export · 17 September 2026
+
+In a capture's band panel, expand **Export a georeferenced crop**. Choose a public single-band GeoTIFF and enter west/south/east/north in decimal degrees. Point searches start with a 0.02° rectangle around the chosen point; area searches use their searched bounds. Worldwide searches require an explicit rectangle. Users still never need to select a satellite.
+
+The static Site can save `earth-window-crop.json`, a reproducible request containing the archive, scene ID, band asset/index and geographic bounds. It contains no raster pixels. The **Python edition with raster dependencies installed** additionally offers **Download GeoTIFF crop**. The static Site does not silently claim a crop processor is connected.
+
+```bash
+python -m pip install -r requirements-raster.txt
+python app.py
+# Or process a saved request without the website:
+python crops.py --request earth-window-crop.json --output crop.tif
+```
+
+Exports retain the source CRS, native pixel spacing, stored values, embedded no-data mask, band description/units and available scale/offset. Values are not stretched, calibrated numerically, resampled or converted into an index. The requested WGS84 bounds are transformed into a rectangle on the native grid, snapped outward to whole pixels and clipped to the source extent. In a projected CRS this is the enclosing rectangle, not an exact polygon cutout. Source collection/item/asset, time metadata, requested bounds and processing notes are embedded in the file. No scientific cloud, shadow or quality masking is applied. External sidecar masks are not fetched. Rotated/missing georeferencing, invalid calibration, non-overlap, all-no-data crops and unsupported formats are rejected.
+
+The server resolves each asset from a known catalogue; requests cannot supply a URL. Only explicitly enabled HTTPS raster hosts are accepted. The range reader rejects redirects and whole-file fallback, validates byte ranges, shares a small block cache and caps raster transfer at 64 MiB. Crops are limited to 2° per side and 4 million native pixels, with oversized source storage blocks rejected. The HTTP endpoint runs at most one isolated crop process, kills it after 90 seconds, rejects cross-origin requests and removes temporary output. Provider errors, incompatible layouts and transfer limits can still prevent a crop. A listed GeoTIFF is a candidate, not a guarantee of successful processing.
+
+### Hosting preparation
+
+`Dockerfile` packages the Python edition with raster dependencies and runs as a non-root user. `render.yaml` describes one free-plan Docker service, with automatic deployments off and a host-generated `EARTH_WINDOW_PASSWORD`. Neither file contains secrets. Non-loopback binding requires this password; all routes use HTTP Basic authentication with username `earth-window`. An external HTTPS reverse proxy is required. This is a bounded personal service, not a public multi-user production platform.
+
+Render was connected during development, but deployment commands were not exposed in that tool session. No Render service creation or deployment is claimed. The existing owner-private Sites publication remains the static edition. A future deployment must verify host access to the private GitHub repository, build the image, check authenticated requests and real raster downloads, and then connect the hosted workflow. The Render password is configured in the host's environment, never committed or entered into the static website. Provider accounts such as Bhoonidhi/CDSE remain separate from the website password.
+
+### Verification for this release
+
+32 Python tests and 34 JavaScript tests passed. New tests check unchanged pixel arrays, pixel-origin transform, CRS, calibration, embedded mask, provenance, range-reader integration, source URL restrictions, extent/pixel limits, protected catalogue rejection, cross-origin requests, dependency absence and hosted authentication. Test rasters are clearly synthetic and never shown as satellite imagery.
+
+Browser testing used live Resourcesat-1 results on 12 September 2013 at −5.8358, −60.5674. The new coordinate fields and static-mode availability message were inspected; empty-coordinate rejection, request downloads and disabling crop requests for RGB mode were exercised. Live CBERS raster tests encountered HTTP 502 and an environment proxy denial, so a complete live-source GeoTIFF crop is still unverified. The 3D WebGL/terrain gap is unchanged; this browser used the 2D fallback. Docker configuration is prepared, not a verified hosted deployment.
+
+Implementation references: [Rasterio windowed reads and transforms](https://rasterio.readthedocs.io/en/stable/topics/windowed-rw.html), [Rasterio custom openers](https://rasterio.readthedocs.io/en/stable/topics/vsi.html), [Render Blueprint specification](https://render.com/docs/blueprint-spec).

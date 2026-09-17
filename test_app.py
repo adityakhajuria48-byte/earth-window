@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlparse
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 import app
 
 
@@ -206,6 +206,27 @@ class HTTPTests(unittest.TestCase):
             with self.subTest(path=path), self.assertRaises(HTTPError) as caught:
                 urlopen(self.url + path)
             self.assertEqual(caught.exception.code, status)
+
+    def test_crop_request_limits_and_missing_dependency(self):
+        for headers, body, expected, enabled in [
+            ({"Content-Type": "application/json"}, b"{}", 400, True),
+            ({"Content-Type": "application/json"}, b"{}", 503, False),
+            ({"Content-Type": "application/json", "Origin": "https://other.example"}, b"{}", 403, True),
+            ({"Content-Type": "application/json"}, b"x" * 8193, 400, True),
+        ]:
+            with patch("app.RASTER_AVAILABLE", enabled), self.assertRaises(HTTPError) as caught:
+                urlopen(Request(self.url + "/api/crop", data=body, headers=headers))
+            self.assertEqual(caught.exception.code, expected)
+
+    def test_hosted_auth_covers_pages_and_crop(self):
+        import base64
+        with patch.dict("os.environ", {"EARTH_WINDOW_PASSWORD": "test-only-password"}):
+            for path in ("/", "/api/health", "/backend-config.js"):
+                with self.assertRaises(HTTPError) as caught: urlopen(self.url + path)
+                self.assertEqual(caught.exception.code, 401)
+            token = base64.b64encode(b"earth-window:test-only-password").decode()
+            with urlopen(Request(self.url + "/api/health", headers={"Authorization": "Basic " + token})) as result:
+                self.assertEqual(result.status, 200)
 
 
 if __name__ == "__main__":

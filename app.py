@@ -2,15 +2,22 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import hmac
+import importlib.util
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import math
+import os
 import unicodedata
 from pathlib import Path
 import threading
+import subprocess
+import sys
+import tempfile
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -24,6 +31,8 @@ _cache: dict[str, tuple[float, object]] = {}
 _cache_lock = threading.Lock()
 _geocode_lock = threading.Lock()
 _last_geocode = 0.0
+_crop_slot = threading.BoundedSemaphore(1)
+RASTER_AVAILABLE = importlib.util.find_spec("rasterio") is not None
 
 
 def upstream_json(url: str) -> object:
@@ -244,6 +253,68 @@ def geocode(query: str) -> object:
 
 
 class Handler(SimpleHTTPRequestHandler):
+    def authorized(self) -> bool:
+        password = os.environ.get("EARTH_WINDOW_PASSWORD")
+        if not password:
+            return True
+        expected = "Basic " + base64.b64encode(("earth-window:" + password).encode()).decode()
+        if hmac.compare_digest(self.headers.get("Authorization", "").encode(), expected.encode()):
+            return True
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="Earth Window", charset="UTF-8"')
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+        return False
+
+    def do_POST(self) -> None:
+        if not self.authorized(): return
+        if self.path != "/api/crop":
+            self.json_response(404, {"error": "Unknown API endpoint."})
+            return
+        origin = self.headers.get("Origin")
+        if self.headers.get("Sec-Fetch-Site") == "cross-site" or (origin and urlparse(origin).netloc != self.headers.get("Host")):
+            self.json_response(403, {"error": "Use crop export from this website."})
+            return
+        if not RASTER_AVAILABLE:
+            self.json_response(503, {"error": "Crop processing is not installed on this server."})
+            return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if not 0 < length <= 8192 or self.headers.get_content_type() != "application/json":
+                raise ValueError("Expected a small JSON crop request.")
+            from crops import parameters
+            data = parameters(json.loads(self.rfile.read(length)))
+        except (ValueError, UnicodeError):
+            self.json_response(400, {"error": "Invalid crop request. Check the scene, band and bounding coordinates."})
+            return
+        if not _crop_slot.acquire(blocking=False):
+            self.json_response(429, {"error": "Another crop is processing. Please retry shortly."})
+            return
+        try:
+            with tempfile.TemporaryDirectory(prefix="earth-window-crop-") as folder:
+                output = Path(folder) / "crop.tif"
+                result = subprocess.run([sys.executable, str(ROOT.parent / "crops.py"), "--output", str(output)],
+                                        input=json.dumps(data), text=True, stdout=subprocess.PIPE,
+                                        stderr=subprocess.DEVNULL, timeout=90)
+                meta = json.loads(result.stdout) if result.stdout else {}
+                if result.returncode or not output.is_file():
+                    self.json_response(422, {"error": meta.get("error", "Crop processing failed. Try another band or a smaller area.")})
+                    return
+                payload = output.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/tiff")
+                self.send_header("Content-Disposition", 'attachment; filename="earth-window-crop.tif"')
+                self.send_header("Content-Length", str(len(payload)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(payload)
+        except subprocess.TimeoutExpired:
+            self.json_response(504, {"error": "Crop exceeded 90 seconds. Try a smaller area or the original file."})
+        except (OSError, ValueError):
+            self.json_response(502, {"error": "Crop processing failed. Please retry."})
+        finally:
+            _crop_slot.release()
+
     def json_response(self, status: int, payload: object) -> None:
         data = json.dumps(payload).encode("utf-8")
         self.send_response(status)
@@ -259,9 +330,10 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self) -> None:
+        if not self.authorized(): return
         parsed = urlparse(self.path)
         if parsed.path == "/backend-config.js":
-            body = b"window.EARTH_WINDOW_PYTHON = true;"
+            body = ("window.EARTH_WINDOW_PYTHON = true; window.EARTH_WINDOW_CROPS = " + str(RASTER_AVAILABLE).lower() + ";").encode()
             self.send_response(200)
             self.send_header("Content-Type", "text/javascript")
             self.send_header("Content-Length", str(len(body)))
@@ -277,7 +349,7 @@ class Handler(SimpleHTTPRequestHandler):
                 elif parsed.path == "/api/geocode":
                     payload = geocode(params.get("q", ""))
                 elif parsed.path == "/api/health":
-                    payload = {"status": "ok", "backend": "python"}
+                    payload = {"status": "ok", "backend": "python", "crops": RASTER_AVAILABLE}
                 else:
                     self.json_response(404, {"error": "Unknown API endpoint."})
                     return
@@ -295,6 +367,7 @@ class Handler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_HEAD(self) -> None:
+        if not self.authorized(): return
         if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css"}:
             self.send_error(404)
             return
@@ -308,8 +381,10 @@ class Handler(SimpleHTTPRequestHandler):
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
     args = parser.parse_args()
+    if args.host not in ("127.0.0.1", "localhost", "::1") and not os.environ.get("EARTH_WINDOW_PASSWORD"):
+        parser.error("Set EARTH_WINDOW_PASSWORD before exposing this server. Use HTTPS at the hosting proxy; username: earth-window.")
     server = ThreadingHTTPServer((args.host, args.port), partial(Handler, directory=str(ROOT)))
     print(f"Earth Window is ready at http://{args.host}:{args.port}")
     try:

@@ -1,0 +1,2 @@
+# Optional: original-resolution GeoTIFF crop exports. Search works without these.
+rasterio==1.4.3

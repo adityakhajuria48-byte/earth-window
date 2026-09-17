@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: earth-window-python
+    runtime: docker
+    plan: free
+    autoDeployTrigger: "off"
+    envVars:
+      - key: EARTH_WINDOW_PASSWORD
+        generateValue: true

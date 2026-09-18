@@ -16,7 +16,7 @@ On Windows, `py app.py` also works. Open **http://127.0.0.1:8000**. Stop with Ct
 
 ## Automatically searched archives
 
-All 17 configured collections are queried for every search; users do not have to choose a satellite. The agency countries identify who operates the satellites, not where imagery can be searched. Locations in other countries are fully supported wherever those archives have acquisitions.
+All 21 configured collections are queried for every search; users do not have to choose a satellite. The agency countries identify who operates the satellites, not where imagery can be searched. Locations in other countries are fully supported wherever those archives have acquisitions.
 
 | Satellite family | Operator / programme | Data | Time handling |
 | --- | --- | --- | --- |
@@ -26,7 +26,8 @@ All 17 configured collections are queried for every search; users do not have to
 | Terra / Aqua MODIS | NASA, United States | 500 m surface reflectance and data layers | Explicit 8-day composite period |
 | ALOS / ALOS-2 PALSAR | JAXA, Japan | 25 m annual radar mosaics | Explicit annual period, never a fabricated capture time |
 | Resourcesat-1 | ISRO, India; hosted by INPE | LISS-III and AWiFS original band files, regional holdings | Acquisition day only; exact time unreported |
-| CBERS-4 / CBERS-4A | China / Brazil; hosted by INPE | MUX surface reflectance and WPM original bands, regional holdings | MUX uses day precision; WPM uses the supplied acquisition time |
+| CBERS-2 / CBERS-2B | China / Brazil; hosted by INPE | CCD 20 m original bands; historical holdings 2003–2009 / 2007–2010 | Supplied acquisition time; bands vary by scene |
+| CBERS-4 / CBERS-4A | China / Brazil; hosted by INPE | CBERS-4 MUX surface reflectance and 10 m PAN multispectral; CBERS-4A WPM and 16 m MUX original bands | Surface-reflectance MUX uses day precision; the other collections use supplied acquisition times |
 | Sentinel-1 SLC / Sentinel-2 L1C | Copernicus / CDSE | Searchable complex SAR and optical records; provider account required for files | Supplied acquisition time / interval |
 | Sentinel-3 | Copernicus / CDSE | OLCI full-resolution radiance and SLSTR radiance / brightness temperature, NTC products; account required | Acquisition intervals; time at an exact ground point is not determined |
 | Sentinel-5P | Copernicus / CDSE | Offline sulphur dioxide and nitrogen dioxide NetCDF products; account required | Atmospheric observations, not detailed ground photographs |
@@ -289,3 +290,20 @@ The Render service reached `live`; an authenticated health request returned HTTP
 The live test exposed INPE's nullable `scale_add`; the exporter now falls back to the embedded GeoTIFF offset when catalogue offset fields are null. A regression test preserves nonzero embedded offsets too. **33 Python tests and 38 JavaScript tests pass.** Gateway tests cover authentication, cross-origin rejection, bounded request bodies, credential isolation, binary response streaming and configuration without secret disclosure.
 
 This verifies one real source crop and the gateway-to-processor path. It does not establish that every candidate asset/host supports crops. The production browser download path has not been independently exercised in this release; browser controls and request validation were checked in the previous release. Render's log query temporarily returned a service error during verification; health, deployment status and live crop checks succeeded independently. GPU terrain placement remains unverified in this browser environment.
+
+## Additional 10–20 m archives · 18 September 2026
+
+Four INPE collections now join automatic location/date searches, bringing the registry to **21 collections**. This adds two satellite platforms (CBERS-2 and CBERS-2B) and two instruments on already-connected platforms. No satellite selection is required.
+
+| New archive | Pixel spacing | Current archive span | Bands found in live sample |
+| --- | --- | --- | --- |
+| [CBERS-2 CCD](https://data.inpe.br/bdc/stac/v1/collections/CB2-CCD-L2-DN-1) | 20 m | 2003–2009 | Green, red, NIR; other scenes may differ |
+| [CBERS-2B CCD](https://data.inpe.br/bdc/stac/v1/collections/CB2B-CCD-L2-DN-1) | 20 m | 2007–2010 | Green, red, NIR, blue, a second red channel and panchromatic |
+| [CBERS-4 PAN multispectral](https://data.inpe.br/bdc/stac/v1/collections/CB4-PAN10M-L4-DN-1) | 10 m | 2014 onward | Green, red, NIR; no invented blue channel or true-colour combination |
+| [CBERS-4A MUX](https://data.inpe.br/bdc/stac/v1/collections/CB4A-MUX-L4-DN-1) | 16 m | 2019 onward | Blue, green, red, NIR |
+
+These are regional archive holdings, mainly South America, not worldwide coverage guarantees. The dates describe archive extent, not continuous acquisition. All four expose public original GeoTIFFs and source thumbnails. Individual band choices, pixel spacing, wavelengths and colour combinations come from each scene's actual assets. These digital-number products are not treated as surface reflectance and do not offer uncalibrated NDVI. Browser raster preview remains disabled because INPE raster responses lack cross-origin permission; original downloads are available, and bounded crop export may reject large untiled source blocks.
+
+Verification: **33 Python and 38 JavaScript tests passed**. Live point/date searches found sample scenes in all four new collections; each returned no records at a distant point (33° N, 75° E) for the same date. All four original raster requests returned HTTP 206 and valid TIFF headers, without browser CORS headers. Real-item band interpretation verified 20 / 20 / 10 / 16 m spacing and the expected single-band / colour combinations.
+
+Browser testing found CBERS-2B automatically at −17.012485, −48.222437 on 11 March 2010, with six actual band options, 13:39:32 UTC capture time, public-file controls and explicit preview limitations. The guide listed all 21 connected collections. The search completed 17 archives and reported four as unavailable instead of claiming complete coverage. This environment again used the 2D fallback; 3D rendering is unchanged and remains unverified here. No new successful crop-export claim is made for these four collections.

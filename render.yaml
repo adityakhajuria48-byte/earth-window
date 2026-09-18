@@ -1,9 +1,14 @@
 services:
   - type: web
     name: earth-window-python
-    runtime: docker
+    runtime: python
+    region: singapore
+    buildCommand: pip install -r requirements-raster.txt
+    startCommand: python app.py --host 0.0.0.0
     plan: free
     autoDeployTrigger: "off"
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.14
       - key: EARTH_WINDOW_PASSWORD
         generateValue: true

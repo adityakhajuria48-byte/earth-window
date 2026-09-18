@@ -105,7 +105,7 @@ The selectable map layers are **NASA Blue Marble reference mosaic**, **NASA Terr
 | `dist/backend-config.js` | Static mode flag; Python overrides this route to enable its API |
 | `test_app.py`, `test_catalog.cjs`, `test_globe.cjs`, `test_surface.cjs` | Python and JavaScript correctness tests |
 
-The **Python edition** runs catalogue and place queries through the local Python server. The **hosted Sites edition** serves the same interface as static assets and calls public APIs directly; it does not execute Python. The included Python server is for local/personal use. A public Python service should use a production HTTP stack, HTTPS, shared rate limits, and provider plans appropriate to traffic. Open-Meteo's free geocoding endpoint is for non-commercial use.
+The **Python edition** runs catalogue and place queries through the local Python server. The **hosted Sites edition** calls public catalogues directly and forwards crop requests through an authenticated server gateway to the Render Python service. The gateway keeps service credentials out of browser code. The included Python server is for local/personal use. A public Python service should use a production HTTP stack, HTTPS, shared rate limits, and provider plans appropriate to traffic. Open-Meteo's free geocoding endpoint is for non-commercial use.
 
 ## 3D Earth explorer
 
@@ -270,3 +270,22 @@ Render was connected during development, but deployment commands were not expose
 Browser testing used live Resourcesat-1 results on 12 September 2013 at −5.8358, −60.5674. The new coordinate fields and static-mode availability message were inspected; empty-coordinate rejection, request downloads and disabling crop requests for RGB mode were exercised. Live CBERS raster tests encountered HTTP 502 and an environment proxy denial, so a complete live-source GeoTIFF crop is still unverified. The 3D WebGL/terrain gap is unchanged; this browser used the 2D fallback. Docker configuration is prepared, not a verified hosted deployment.
 
 Implementation references: [Rasterio windowed reads and transforms](https://rasterio.readthedocs.io/en/stable/topics/windowed-rw.html), [Rasterio custom openers](https://rasterio.readthedocs.io/en/stable/topics/vsi.html), [Render Blueprint specification](https://render.com/docs/blueprint-spec).
+
+
+## Connected Python processor · 18 September 2026
+
+The existing owner-private website now includes a server gateway for `/api/crop` and `/api/health`. Public archive searches remain in the browser. `/backend-config.js` enables crop downloads only when the processor URL and secret are configured in Sites. A saved request remains available for local processing.
+
+The Python service is deployed on Render's **free plan in Singapore**, using the native Python runtime and Python 3.12.14. `render.yaml` now matches that runtime; the Dockerfile remains an optional alternative. Build: `pip install -r requirements-raster.txt`. Start: `python app.py --host 0.0.0.0`. Automatic deploys are disabled; GitHub updates alone do not redeploy this service. The first request after idle may need extra time while the free service wakes up.
+
+All Render application routes require the service password. The private Sites gateway checks the platform's authenticated-user header, rejects cross-origin crop requests, bounds JSON requests to 8 KiB, and sends only its own credential to the fixed configured processor. It does not forward visitor cookies or identity to Render. Credentials are held in runtime environment variables, never browser assets or GitHub. The existing owner-only Sites access policy is preserved. No new satellite-provider account access is implied.
+
+The gateway and existing website assets are bundled with `npm run build` into `dist/server/index.js`; the build output is ignored by Git and recreated during publication. `dist` remains the source of the Python edition's frontend. Normal Vite development without processor environment configuration still uses static-mode crop requests.
+
+### Live verification
+
+The Render service reached `live`; an authenticated health request returned HTTP 200 with `crops: true`, and an unauthenticated request returned HTTP 401. A real CBERS-4 MUX crop was requested through the local production gateway code against the deployed Python service. Scene `CBERS_4_MUX_20260831_177_137_L4`, asset `BAND7`, bounds `[−70.7442, −33.0567, −70.7242, −33.0367]` returned a **10,940-byte GeoTIFF**. Rasterio verified **96 × 114 pixels, EPSG:32719, 20 m pixel spacing, no-data −9999, scale 0.0001, offset 0**, and source provenance. All 10,944 output pixels were valid according to the source no-data mask. This does not establish cloud-free pixels or scientific suitability.
+
+The live test exposed INPE's nullable `scale_add`; the exporter now falls back to the embedded GeoTIFF offset when catalogue offset fields are null. A regression test preserves nonzero embedded offsets too. **33 Python tests and 38 JavaScript tests pass.** Gateway tests cover authentication, cross-origin rejection, bounded request bodies, credential isolation, binary response streaming and configuration without secret disclosure.
+
+This verifies one real source crop and the gateway-to-processor path. It does not establish that every candidate asset/host supports crops. The production browser download path has not been independently exercised in this release; browser controls and request validation were checked in the previous release. Render's log query temporarily returned a service error during verification; health, deployment status and live crop checks succeeded independently. GPU terrain placement remains unverified in this browser environment.

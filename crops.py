@@ -189,8 +189,11 @@ def write_crop(src, output, q, item, asset):
     mask[~np.isfinite(values)] = 0
     if not np.any(mask):
         raise ValueError("The crop contains only no-data pixels. Choose another scene or area.")
-    scale = meta.get("scale", src.scales[band - 1])
-    offset = meta.get("offset", meta.get("scale_add", src.offsets[band - 1]))
+    scale = meta.get("scale")
+    if scale is None: scale = src.scales[band - 1]
+    offset = meta.get("offset")
+    if offset is None: offset = meta.get("scale_add")
+    if offset is None: offset = src.offsets[band - 1]
     if not all(isinstance(x, (int, float)) and math.isfinite(x) for x in (scale, offset)):
         raise ValueError("Invalid band calibration metadata.")
     transform = src.window_transform(win)

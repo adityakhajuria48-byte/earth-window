@@ -90,6 +90,13 @@ class RasterTests(unittest.TestCase):
             with patch.object(crops, "MAX_PIXELS", 1), self.assertRaisesRegex(ValueError, "4 million"):
                 crops.write_crop(src, self.output, Q, ITEM, {})
 
+    def test_null_catalogue_offset_uses_geotiff_value(self):
+        with rasterio.open(self.source) as src:
+            crops.write_crop(src, self.output, Q, ITEM, {"eo:bands": [{"scale": .0001, "scale_add": None}]})
+        with rasterio.open(self.output) as out:
+            self.assertEqual(out.scales, (.0001,))
+            self.assertEqual(out.offsets, (-.2,))
+
     def test_custom_range_opener(self):
         payload = self.source.read_bytes()
         class Response(io.BytesIO):

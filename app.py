@@ -79,6 +79,9 @@ def search_parameters(params: dict[str, str], now: datetime | None = None) -> di
     cloud = float(params.get("cloud", "40"))
     if not math.isfinite(cloud) or not 0 <= cloud <= 100:
         raise ValueError("Cloud cover must be 0 to 100.")
+    resolution = int(params.get("resolution", "0"))
+    if resolution not in (0, 10, 30):
+        raise ValueError("Resolution must be all, 10 m or 30 m.")
     day = datetime.strptime(params["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
     datetime.strptime(params.get("time", "12:00"), "%H:%M")
     if day.date() > now.date():
@@ -87,7 +90,7 @@ def search_parameters(params: dict[str, str], now: datetime | None = None) -> di
         raise ValueError("Choose a date from 1982 onward.")
     start = day - timedelta(days=days)
     end = min(day + timedelta(days=days + 1) - timedelta(milliseconds=1), now)
-    return {**geo, "start": start.isoformat(), "end": end.isoformat(), "cloud": cloud}
+    return {**geo, "start": start.isoformat(), "end": end.isoformat(), "cloud": cloud, "resolution": resolution}
 
 
 def source_range(q: dict, source: dict) -> str:
@@ -169,7 +172,20 @@ def feature_interval(feature: dict) -> tuple[datetime, datetime] | None:
         return None
 
 
+def pixel_spacing(feature: dict):
+    values = [feature.get("properties", {}).get("gsd"), feature.get("_earthWindow", {}).get("gsd")]
+    for asset in feature.get("assets", {}).values():
+        if not isinstance(asset, dict): continue
+        values.append(asset.get("gsd"))
+        for band in asset.get("eo:bands") or asset.get("bands") or []:
+            if isinstance(band, dict): values.append(band.get("resolution_x"))
+    valid = [v for v in values if isinstance(v, (float, int)) and not isinstance(v, bool) and math.isfinite(v) and v > 0]
+    return min(valid) if valid else None
+
+
 def matches(feature: dict, q: dict) -> bool:
+    if q.get("resolution") and (pixel_spacing(feature) is None or pixel_spacing(feature) > q["resolution"]):
+        return False
     period = feature_interval(feature)
     if not period or period[1] < datetime.fromisoformat(q["start"]) or period[0] > datetime.fromisoformat(q["end"]):
         return False
@@ -268,7 +284,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         if not self.authorized(): return
-        if self.path != "/api/crop":
+        if self.path not in ("/api/crop", "/api/preview"):
             self.json_response(404, {"error": "Unknown API endpoint."})
             return
         origin = self.headers.get("Origin")
@@ -288,12 +304,13 @@ class Handler(SimpleHTTPRequestHandler):
             self.json_response(400, {"error": "Invalid crop request. Check the scene, band and bounding coordinates."})
             return
         if not _crop_slot.acquire(blocking=False):
-            self.json_response(429, {"error": "Another crop is processing. Please retry shortly."})
+            self.json_response(429, {"error": "Another image is processing. Please retry shortly."})
             return
         try:
             with tempfile.TemporaryDirectory(prefix="earth-window-crop-") as folder:
-                output = Path(folder) / "crop.tif"
-                result = subprocess.run([sys.executable, str(ROOT.parent / "crops.py"), "--output", str(output)],
+                preview = self.path == "/api/preview"
+                output = Path(folder) / ("preview.json" if preview else "crop.tif")
+                result = subprocess.run([sys.executable, str(ROOT.parent / ("previews.py" if preview else "crops.py")), "--output", str(output)],
                                         input=json.dumps(data), text=True, stdout=subprocess.PIPE,
                                         stderr=subprocess.DEVNULL, timeout=90)
                 meta = json.loads(result.stdout) if result.stdout else {}
@@ -302,8 +319,9 @@ class Handler(SimpleHTTPRequestHandler):
                     return
                 payload = output.read_bytes()
                 self.send_response(200)
-                self.send_header("Content-Type", "image/tiff")
-                self.send_header("Content-Disposition", 'attachment; filename="earth-window-crop.tif"')
+                self.send_header("Content-Type", "application/json" if preview else "image/tiff")
+                if not preview:
+                    self.send_header("Content-Disposition", 'attachment; filename="earth-window-crop.tif"')
                 self.send_header("Content-Length", str(len(payload)))
                 self.send_header("Cache-Control", "no-store")
                 self.end_headers()

@@ -114,3 +114,28 @@ class RasterTests(unittest.TestCase):
 
 
 if __name__ == "__main__": unittest.main()
+
+@unittest.skipIf(rasterio is None, "Rasterio required")
+class PreviewTests(unittest.TestCase):
+    def test_preview_preserves_bounds_and_mask_and_bounds_output(self):
+        from previews import raster_preview
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "preview.tif"
+            data = np.arange(1024 * 512, dtype="float32").reshape(512, 1024)
+            mask = np.full(data.shape, 255, dtype="uint8"); mask[:100, :100] = 0
+            with rasterio.Env(GDAL_TIFF_INTERNAL_MASK=True):
+                with rasterio.open(path, "w", driver="GTiff", width=1024, height=512, count=1,
+                                   dtype="float32", crs="EPSG:32643", transform=from_origin(500000, 3700000, 10, 10)) as dst:
+                    dst.write(data, 1); dst.write_mask(mask)
+            out = raster_preview(path)
+            self.assertEqual((out["width"], out["height"]), (512, 256))
+            self.assertEqual(out["epsg"], 32643)
+            self.assertEqual(out["bbox"], [500000, 3694880, 510240, 3700000])
+            self.assertIsNone(out["data"][0])
+            self.assertTrue(any(v is not None for v in out["data"]))
+            self.assertLess(out["lo"], out["hi"])
+            json.dumps(out, allow_nan=False)
+
+
+if __name__ == "__main__":
+    unittest.main()

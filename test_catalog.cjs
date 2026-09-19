@@ -167,3 +167,14 @@ test('normalized indices apply offsets, reject invalid pixels and preserve fixed
  assert.throws(()=>EW.indexRaster([a,{...b,bbox:[1,0,4,1]}],cal),/different grids/);
  assert.throws(()=>EW.indexRaster([a,b],[{},{}]),/calibration/);
 });
+
+test('resolution limits exclude coarse and unknown pixels, keeping finer real bands',()=>{
+ const make=(gsd,assets={})=>feature({...sources[0],gsd}, {}, assets);
+ assert.equal(EW.matches(make(30),{...q,resolution:10}),false);
+ assert.equal(EW.matches(make(30),{...q,resolution:30}),true);
+ assert.equal(EW.matches(make(undefined),{...q,resolution:30}),false);
+ assert.equal(EW.matches(make(undefined),{...q,resolution:0}),true);
+ const a={...asset('red'), 'eo:bands':[{name:'red',common_name:'red',resolution_x:16}]};
+ assert.equal(EW.matches(make(undefined,{red:a}),{...q,resolution:30}),true);
+ assert.equal(EW.matches(make(undefined,{red:a}),{...q,resolution:10}),false);
+});

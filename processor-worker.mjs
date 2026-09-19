@@ -5,13 +5,13 @@ export async function handleRequest(request, env, assets = {}) {
   const json = (status, error) => Response.json({error}, {status, headers:{'Cache-Control':'no-store'}});
   if (path.startsWith('/api/')) {
     if (!request.headers.get('oai-authenticated-user-id')) return json(401, 'Sign in to Earth Window to process a crop.');
-    if (!['/api/crop', '/api/health'].includes(path)) return json(404, 'Unknown endpoint.');
-    if (request.method !== (path === '/api/crop' ? 'POST' : 'GET')) return json(405, 'Method not allowed.');
+    if (!['/api/crop', '/api/preview', '/api/health'].includes(path)) return json(404, 'Unknown endpoint.');
+    if (request.method !== (path === '/api/health' ? 'GET' : 'POST')) return json(405, 'Method not allowed.');
     if (!configured) return json(503, 'Crop processing is not connected yet.');
     const origin = request.headers.get('Origin');
     if ((origin && origin !== url.origin) || request.headers.get('Sec-Fetch-Site') === 'cross-site') return json(403, 'Start the export from Earth Window.');
     let body;
-    if (path === '/api/crop') {
+    if (path !== '/api/health') {
       if (!(request.headers.get('Content-Type') || '').startsWith('application/json')) return json(400, 'Expected a JSON crop request.');
       const declared = Number(request.headers.get('Content-Length'));
       if (declared > 8192) return json(413, 'Crop request is too large.');

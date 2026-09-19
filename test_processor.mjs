@@ -33,3 +33,12 @@ test('static assets and config never contain the processing password',async()=>{
   assert.equal(await page.text(),'Earth Window');
   assert.equal((await handleRequest(request('/processor-worker.mjs'),env)).status,404);
 });
+
+test('area preview uses the same authenticated bounded gateway',async()=>{
+ assert.equal((await handleRequest(request('/api/preview',{method:'POST'}),env)).status,401);
+ assert.equal((await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test',Origin:'https://other.example'}}),env)).status,403);
+ assert.equal((await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'x'.repeat(8193)}),env)).status,413);
+ const old=globalThis.fetch;
+ globalThis.fetch=async(url,options)=>{assert.equal(url.pathname,'/api/preview');assert.equal(options.method,'POST');return Response.json({width:1,height:1,data:[42]});};
+ try{const r=await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'{}'}),env);assert.equal(r.status,200);assert.deepEqual((await r.json()).data,[42]);}finally{globalThis.fetch=old;}
+});

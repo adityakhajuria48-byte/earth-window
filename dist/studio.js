@@ -1,21 +1,22 @@
 'use strict';
 window.EWStudio=(()=>{
-  const $=id=>document.getElementById(id),slots={a:null,b:null};
+  const $=id=>document.getElementById(id),slots={a:null,b:null},areas={a:null,b:null};
   const rasters=new Map();let controller,revision=0;
   const label=f=>{
     const period=EW.interval(f),date=t=>new Date(t).toISOString().slice(0,10);
     const satellite=(f.properties?.platform||EW.source(f).platform)?String(f.properties.platform||EW.source(f).platform).replace(/-/g,' '):`${EW.source(f).family||'Satellite'} · platform not reported`;
     return `${satellite} · ${period.composite?date(period.start)+' – '+date(period.end)+' composite':period.dayOnly?date(period.start)+' · time not reported':new Date(period.start).toISOString().replace('T',' ').replace('.000Z',' UTC')+(period.range?' – '+new Date(period.end).toISOString().replace('T',' ').replace('.000Z',' UTC'):'')}`;
   };
-  function options(f){const bands=EW.bands(f);return [...EW.presets(bands).filter(p=>p.bands.every(b=>b.canPreview)).map(p=>({id:p.id,label:p.label,bands:p.bands})),...bands.filter(b=>b.canPreview).map(b=>({id:b.id,label:b.label,bands:[b]}))];}
+  function options(f){const bands=EW.bands(f);return [...EW.presets(bands).filter(p=>p.bands.every(b=>EarthBands.available(b))).map(p=>({id:p.id,label:p.label,bands:p.bands})),...bands.filter(b=>EarthBands.available(b)).map(b=>({id:b.id,label:b.label,bands:[b]}))];}
   function stop(){revision++;controller?.abort();$('render-globe').disabled=false;}
   function changed(){stop();EWGlobe.clearSurfaces();$('active-layer').hidden=true;$('overlay-status').textContent='Settings changed. Select Display on globe to update the imagery.';}
-  function pin(f,slot){
+  function pin(f,slot,query){
+    areas[slot]=EarthBands.previewBounds(f,query);
     changed();slots[slot]=f;const o=options(f),select=$('capture-'+slot+'-band');
     select.replaceChildren(...o.map(p=>new Option(p.label,p.id)));select.disabled=!o.length;
     $('capture-'+slot+'-label').textContent=label(f);$('clear-'+slot).disabled=false;
     $('compare-type').value='captures';updateType();openPanel('layers',true);
-    $('overlay-status').textContent=o.length?'Capture added. Choose its bands, then Display on globe.':'This capture has no supported raster bands. Source data remain available in its details.';
+    $('overlay-status').textContent=o.length?'Capture added. Choose its bands, then Display on globe. Python previews use the searched area or a small box around the search point / scene centre.':'This capture has no supported raster bands. Source data remain available in its details.';
   }
   function updateType(){const captures=$('compare-type').value==='captures';$('capture-fields').hidden=!captures;$('overview-fields').hidden=captures;}
   function openPanel(name,open){
@@ -25,20 +26,20 @@ window.EWStudio=(()=>{
   function captureInfo(slot){
     const f=slots[slot];if(!f)throw Error(`Add a capture to ${slot==='a'?'Before (A)':'After (B)'} from the image results.`);
     const mode=options(f).find(o=>o.id===$('capture-'+slot+'-band').value);if(!mode)throw Error('This capture does not expose a supported band selection.');
-    return {f,mode};
+    return {f,mode,bbox:areas[slot]};
   }
   async function getRasters(info,signal){
     const rows=[];
     for(const band of info.mode.bands){
-      const key=band.href+'#'+band.index;
-      if(!rasters.has(key)){if(rasters.size>=8)rasters.delete(rasters.keys().next().value);rasters.set(key,await EarthBands.readBand(band,signal));}
+      const bbox=info.bbox;const key=band.href+'#'+band.index+JSON.stringify(bbox);
+      if(!rasters.has(key)){if(rasters.size>=8)rasters.delete(rasters.keys().next().value);rasters.set(key,await EarthBands.readBand(band,signal,{f:info.f,bbox}));}
       rows.push(rasters.get(key));
     }return rows;
   }
   function chronological(a,b){return EW.interval(a).end<EW.interval(b).start;}
   async function display(){
     stop();EWGlobe.clearSurfaces();const token=revision;
-    controller=new AbortController();const active=controller,signal=active.signal,timer=setTimeout(()=>active.abort(),120000);
+    controller=new AbortController();const active=controller,signal=active.signal,timer=setTimeout(()=>active.abort(),900000);
     const compare=$('compare-enabled').checked;$('render-globe').disabled=true;
     $('overlay-status').textContent='Preparing georeferenced imagery…';
     try{

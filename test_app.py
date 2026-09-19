@@ -221,12 +221,23 @@ class HTTPTests(unittest.TestCase):
     def test_hosted_auth_covers_pages_and_crop(self):
         import base64
         with patch.dict("os.environ", {"EARTH_WINDOW_PASSWORD": "test-only-password"}):
-            for path in ("/", "/api/health", "/backend-config.js"):
+            for path in ("/", "/api/health", "/backend-config.js", "/api/preview"):
                 with self.assertRaises(HTTPError) as caught: urlopen(self.url + path)
                 self.assertEqual(caught.exception.code, 401)
             token = base64.b64encode(b"earth-window:test-only-password").decode()
             with urlopen(Request(self.url + "/api/health", headers={"Authorization": "Basic " + token})) as result:
                 self.assertEqual(result.status, 200)
+
+
+class ResolutionTests(unittest.TestCase):
+    def test_resolution_validation_and_filtering(self):
+        q = app.search_parameters({"date":"2024-01-01", "resolution":"30", "window":"0"})
+        feature = {"properties":{"datetime":"2024-01-01T12:00:00Z"}, "assets":{"red":{"eo:bands":[{"resolution_x":16}]}}}
+        self.assertTrue(app.matches(feature,q))
+        self.assertFalse(app.matches(feature,{**q,"resolution":10}))
+        self.assertFalse(app.matches({**feature,"assets":{}},q))
+        self.assertTrue(app.matches({**feature,"assets":{}},{**q,"resolution":0}))
+        with self.assertRaises(ValueError): app.search_parameters({"date":"2024-01-01","resolution":"-1"})
 
 
 if __name__ == "__main__":

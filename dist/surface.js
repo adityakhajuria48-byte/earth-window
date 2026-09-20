@@ -21,7 +21,7 @@ const EWSurface=(()=>{
     if(a.length!==b.length)throw Error('Choose the same display channels for a shared stretch.');
     return a.map((r,i)=>({lo:Math.min(r.lo,b[i].lo),hi:Math.max(r.hi,b[i].hi)}));
   }
-  async function project(rasters,limits,signal){
+  async function project(rasters,limits,signal,target='geographic'){
     if(signal.aborted)throw Error('Image loading cancelled.');
     const r=rasters[0];if(!r.mapSafe)throw Error('This raster has a rotated or unsupported grid. Use the source file for accurate mapping.');const proj=await projection(),def=definition(r.epsg);
     const native=proj('EPSG:4326',def),geo=proj(def,'EPSG:4326');
@@ -32,13 +32,18 @@ const EWSurface=(()=>{
     if(ll.some(p=>!p.every(Number.isFinite)))throw Error('Invalid image georeferencing.');
     const west=Math.min(...ll.map(p=>p[0])),east=Math.max(...ll.map(p=>p[0])),south=Math.max(-90,Math.min(...ll.map(p=>p[1]))),north=Math.min(90,Math.max(...ll.map(p=>p[1])));
     if(east-west>180||west< -180||east>180||east<=west||north<=south)throw Error('This image crosses a projection boundary. Use its source file for accurate mapping.');
+    if(!['geographic','mercator'].includes(target))throw Error('Unsupported display projection.');
+    if(target==='mercator'&&(south < -85||north>85))throw Error('This preview is outside the 2D map. Use the 3D globe or original data.');
+    const mercY=lat=>Math.log(Math.tan(Math.PI/4+lat*Math.PI/360));
+    const topY=target==='mercator'?mercY(north):north,bottomY=target==='mercator'?mercY(south):south;
     const stretched=EW.stretch(rasters.map((r,i)=>limits?{...r,...limits[i]}:r));
     const size=768,width=size,height=Math.max(1,Math.min(size,Math.round(size*(north-south)/(east-west))));
     const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
     const ctx=canvas.getContext('2d'),pixels=ctx.createImageData(width,height);
     for(let y=0;y<height;y++){
       if(y%64===0){await new Promise(resolve=>setTimeout(resolve,0));if(signal.aborted)throw Error('Image loading cancelled.');}
-      const lat=north-(y+.5)*(north-south)/height;
+      const rowY=topY-(y+.5)*(topY-bottomY)/height;
+      const lat=target==='mercator'?(2*Math.atan(Math.exp(rowY))-Math.PI/2)*180/Math.PI:rowY;
       for(let x=0;x<width;x++){
         const [px,py]=native.forward([west+(x+.5)*(east-west)/width,lat]);
         const sx=Math.floor((px-xmin)/(xmax-xmin)*r.width),sy=Math.floor((ymax-py)/(ymax-ymin)*r.height);

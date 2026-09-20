@@ -4,6 +4,8 @@
 
 The app includes a full-screen 3D terrain workspace, globe imagery and before/after comparison, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
 
+**Latest validation (20 September 2026):** 77 automated checks pass. A live CBERS-4 area preview matches its native GeoTIFF pixel-for-pixel. The complete browser-to-processor workflow and GPU terrain placement are still unverified; see the dated validation report below.
+
 ## Run the Python website
 
 Install **Python 3.10+**, open a terminal inside this folder, then run:
@@ -319,3 +321,32 @@ Browser testing found CBERS-2B automatically at −17.012485, −48.222437 on 11
 Validation: **35 Python and 40 JavaScript tests passed**. The actual HTTP preview endpoint processed CBERS-4 MUX scene `CBERS_4_MUX_20260831_177_137_L4`, band `BAND7`, at `[−70.7442, −33.0567, −70.7242, −33.0367]`. It returned **96 × 114 pixels**, **EPSG:32719**, bounds `[337120, 6341060, 339040, 6343340]`, 10,944 valid pixels and 2–98% raw-value limits 150–939. Tests check mask preservation, bounded dimensions, georeferencing, resolution inclusion/exclusion and preview gateway access / request limits.
 
 Browser QA verified the resolution controls and a real 20 m CBERS result with the 30 m filter. The restricted browser-preview environment cannot run the separate Python service, so the complete browser-to-Python rendering interaction and new map button remain **unverified end to end**; server output and shared map reprojection have separate checks. WebGL still falls back to 2D here, so real GPU terrain placement remains unverified.
+
+
+## Processing reliability and map projection · 20 September 2026
+
+Band rendering now reports the channel being loaded and offers **Cancel preview**. GeoTIFF downloads offer **Cancel download**. Closing the capture or changing bands/bounds aborts the corresponding browser request; stale requests cannot replace a newer result. Cancellation stops waiting in the browser, not necessarily an already-running server job; the bounded Python job may finish before another request can run. Network failures now report service connectivity problems instead of falsely claiming a timeout. The capture panel distinguishes source-scene thumbnails from selected-area pixel previews.
+
+The 2D map now resamples raster rows for Web Mercator before placing the image overlay. Geographic latitude rows cannot simply be stretched onto Mercator, particularly at high latitudes. The globe retains its geographic texture projection. Polar extents outside the supported 2D map fail explicitly. This corrects projection handling; it does not establish independent visual ground-control accuracy.
+
+### Verification
+
+**42 JavaScript tests and 35 Python tests passed.** Added regressions verify Mercator latitude sampling, extent preservation, polar rejection and separate, non-sensitive messages for connectivity failure versus timeout.
+
+The deployed Render service returned authenticated health HTTP 200. Using the production gateway code against that service, both `/api/preview` and `/api/crop` succeeded for CBERS-4 MUX scene `CBERS_4_MUX_20260831_177_137_L4`, asset `BAND7`, bounds `[-70.7442, -33.0568, -70.7242, -33.0368]`. The preview took approximately 29 seconds and the export 14 seconds during this test; these are observations, not latency guarantees. Rasterio checked the returned **10,863-byte GeoTIFF**:
+
+| Check | Result |
+| --- | --- |
+| Dimensions | 96 × 113 pixels |
+| CRS and native spacing | EPSG:32719, 20 × 20 m |
+| Native bounds | 337120, 6341060, 339040, 6343320 |
+| No-data / scale / offset | −9999 / 0.0001 / 0 |
+| Valid pixels under source no-data mask | 10,848 |
+| Preview versus GeoTIFF | All values and native bounds match |
+| Provenance | Source item, collection, band and requested bounds retained |
+
+The source only establishes acquisition day, not an exact time. Its scene-wide cloud metadata reports 29.3%; valid no-data masks do not establish clear ground. Tests do not prove universal crop support or scientific suitability.
+
+A fresh browser search at −33.0468, −70.7342 for 31 August 2026 returned this actual CBERS scene and its five band/data options. Band selection, provider metadata, incomplete-archive reporting and the 2D fallback were inspected. The test browser's gateway could not connect to the external processor from its restricted runtime, although the separate live gateway/API test succeeded. Consequently, **browser-rendered selected-area pixels, final map placement, browser GeoTIFF downloads, and in-flight cancellation remain unverified end to end**. No recorded image or synthetic raster was substituted for a failed browser request. Temporary test connection configuration was removed.
+
+The browser again reported WebGL initialization failure, so **3D terrain, globe image placement, camera movement and visual before/after comparison remain unverified**. The graphics-capable validation procedure earlier in this document remains the required next verification step. These environmental limitations are not marked as passed tests.

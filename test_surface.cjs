@@ -56,3 +56,14 @@ test('before/after ordering excludes overlapping composite periods',()=>{
   assert.equal(chronological(f('2024-08-28','2024-09-04'),f('2024-09-04','2024-09-12')),false);
   assert.equal(chronological(f('2024-09-05','2024-09-12'),f('2024-08-28','2024-09-04')),false);
 });
+
+test('2D Mercator resampling uses nonlinear latitude while preserving extent',async()=>{
+  const env=projectionEnvironment();
+  const r={...raster(),width:1,height:2,data:new Float32Array([100,0]),bbox:[0,0,80,80]};
+  const out=await env.api.project([r],null,new AbortController().signal,'mercator');
+  assert.deepEqual(Array.from(out.bounds),[0,0,80,80]);
+  // Mercator midpoint is about 57 degrees north, within the northern source row.
+  const midpoint=(Math.floor(out.height/2)*out.width+Math.floor(out.width/2))*4;
+  assert.equal(env.pixels()[midpoint],255);
+  await assert.rejects(env.api.project([{...r,bbox:[0,80,1,89]}],null,new AbortController().signal,'mercator'),/outside the 2D/);
+});

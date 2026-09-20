@@ -3,6 +3,17 @@ import assert from 'node:assert/strict';
 import {handleRequest} from './processor-worker.mjs';
 const env={EARTH_WINDOW_PROCESSOR_URL:'https://processor.example',EARTH_WINDOW_PROCESSOR_PASSWORD:'test-secret'};
 const request=(path,options={})=>new Request('https://site.example'+path,options);
+test('gateway distinguishes connection failures from timeouts without exposing diagnostics',async()=>{
+  const original=globalThis.fetch;
+  try {
+    for (const [name,status,message] of [['TypeError',502,/Cannot reach/],['TimeoutError',504,/did not respond in time/]]) {
+      globalThis.fetch=async()=>{throw Object.assign(new Error('sensitive upstream details'),{name});};
+      const response=await handleRequest(request('/api/health',{headers:{'oai-authenticated-user-id':'test'}}),env);
+      assert.equal(response.status,status);
+      const body=await response.text();assert.match(body,message);assert.ok(!body.includes('sensitive'));
+    }
+  } finally {globalThis.fetch=original;}
+});
 test('crop gateway requires signed-in identity and refuses cross-origin requests',async()=>{
   assert.equal((await handleRequest(request('/api/crop',{method:'POST'}),env)).status,401);
   assert.equal((await handleRequest(request('/api/crop',{method:'POST',headers:{'oai-authenticated-user-id':'test','Origin':'https://other.example'}}),env)).status,403);

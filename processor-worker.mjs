@@ -43,7 +43,11 @@ export async function handleRequest(request, env, assets = {}) {
       const headers = new Headers({'Content-Type':contentType, 'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff'});
       if (response.ok && contentType.includes('image/tiff')) headers.set('Content-Disposition', 'attachment; filename="earth-window-crop.tif"');
       return new Response(response.body, {status:response.status, headers});
-    } catch { return json(504, 'The crop service did not respond in time. Retry or select a smaller area.'); }
+    } catch (error) {
+      return error.name === 'TimeoutError' || error.name === 'AbortError'
+        ? json(504, 'The processing service did not respond in time. Retry or select a smaller area.')
+        : json(502, 'Cannot reach the processing service. Please retry shortly; you can also open the original band file.');
+    }
   }
   if (!['GET','HEAD'].includes(request.method)) return json(405, 'Method not allowed.');
   if (path === '/backend-config.js') {

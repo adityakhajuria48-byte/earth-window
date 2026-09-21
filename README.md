@@ -350,3 +350,16 @@ The source only establishes acquisition day, not an exact time. Its scene-wide c
 A fresh browser search at −33.0468, −70.7342 for 31 August 2026 returned this actual CBERS scene and its five band/data options. Band selection, provider metadata, incomplete-archive reporting and the 2D fallback were inspected. The test browser's gateway could not connect to the external processor from its restricted runtime, although the separate live gateway/API test succeeded. Consequently, **browser-rendered selected-area pixels, final map placement, browser GeoTIFF downloads, and in-flight cancellation remain unverified end to end**. No recorded image or synthetic raster was substituted for a failed browser request. Temporary test connection configuration was removed.
 
 The browser again reported WebGL initialization failure, so **3D terrain, globe image placement, camera movement and visual before/after comparison remain unverified**. The graphics-capable validation procedure earlier in this document remains the required next verification step. These environmental limitations are not marked as passed tests.
+
+
+## Globe zoom stability · 21 September 2026
+
+The zoom buttons previously moved by a fraction of altitude above sea level. At 8,500 m altitude over an 8,000 m mountain, the old inward step was 3,400 m despite only 500 m of terrain clearance. Buttons now use estimated clearance above the currently loaded terrain, including elevation exaggeration, limit each inward step to 25% of clearance and retain a 250 m near margin. Low-altitude zoom-in waits if terrain height is unknown; zoom-out remains available. Cesium's collision detection remains enabled over a wider altitude range. Wheel/pinch zoom is slower with no zoom inertia, reducing overshoot while tiles refine. This is based on loaded terrain and is not a guarantee against every terrain/tilt interaction.
+
+Terrain uses a 129 × 129 mesh instead of 65 × 65 and interpolates decoded elevation values before meshing. This reduces coarse sampling steps without inventing additional source elevation detail. Missing transparent samples fail explicitly. Tile requests cancelled during camera movement no longer produce false outage messages; successful later tiles restore the terrain status. Refinement remains bounded at level 13.
+
+At close zoom, the globe explains that Blue Marble/MODIS overview imagery has limited detail and points to actual satellite captures or the navigation map. No synthetic sharpness, substituted capture date, or silently switched imagery is introduced.
+
+Validation: 46 JavaScript tests pass, including new high-mountain/exaggeration zoom limits, outward escape, packed-height interpolation and cancelled terrain requests. The browser loaded the site and its 2D fallback, but WebGL initialization still failed in this environment. Therefore the reported visual breakup, tile seams, oblique navigation and real GPU performance could not be reproduced or visually cleared here. These are targeted fixes for demonstrated code defects and sampling limitations, not a claim of verified 3D rendering.
+
+Implementation checked against [Cesium camera controls](https://cesium.com/learn/cesiumjs/ref-doc/ScreenSpaceCameraController.html) and the deployed Cesium 1.127 camera/heightmap source. The older dated test reports above retain their original scope.

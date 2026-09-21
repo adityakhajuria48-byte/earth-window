@@ -14,6 +14,30 @@ test('Terrarium decoding preserves sea level, negative relief and fractional hei
   assert.deepEqual([...terrain.grid(rgba,2,2,2)],[0,1,-1,2.5]);
 });
 
+test('terrain interpolates metres across packed-channel rollover without stair-step sampling',()=>{
+  const pixels=new Uint8Array([128,255,0,255,129,0,0,255,128,255,0,255,129,0,0,255]);
+  const heights=terrain.grid(pixels,2,2,3);
+  assert.deepEqual([...heights],[255,255.5,256,255,255.5,256,255,255.5,256]);
+  pixels[3]=0;
+  assert.throws(()=>terrain.grid(pixels,2,2,3),/Missing elevation/);
+});
+
+test('terrain cancellation does not report an outage and a later valid tile retains refinement limits',async()=>{
+  const notes=[],errors=[];let cancelled=true,closed=0;
+  const context=vm.createContext({document:{createElement:()=>({getContext:()=>({drawImage(){},getImageData:()=>({data:new Uint8Array([128,0,0,255,128,1,0,255,128,2,0,255,128,3,0,255])})})})}});
+  vm.runInContext(fs.readFileSync('dist/terrain.js','utf8'),context);
+  const C={RequestState:{CANCELLED:4},WebMercatorTilingScheme:class{getNumberOfXTilesAtLevel(){return 1;}},Event:class{raiseEvent(e){errors.push(e);}},Credit:class{},TerrainProvider:{getEstimatedLevelZeroGeometricErrorForAHeightmap:()=>1000},HeightmapTerrainData:class{constructor(options){Object.assign(this,options);}},Resource:class{fetchImage(){return cancelled?Promise.reject(Error('cancelled')):Promise.resolve({width:2,height:2,close(){closed++;}});}}};
+  const provider=vm.runInContext('EWTerrain',context).create(C,n=>notes.push(n));
+  await assert.rejects(provider.requestTileGeometry(0,0,0,{state:4}),/cancelled/);
+  assert.equal(notes.length,0);assert.equal(errors.length,0);
+  cancelled=false;
+  const tile=await provider.requestTileGeometry(0,0,13,{});
+  assert.equal(tile.width,129);assert.equal(tile.height,129);assert.equal(tile.childTileMask,0);
+  assert.equal(tile.buffer[0],0);assert.equal(tile.buffer.at(-1),3);
+  assert.equal(provider.getTileDataAvailable(0,0,14),false);assert.equal(closed,1);
+  assert.match(notes[0],/Terrain on/);
+});
+
 test('comparison uses common channel limits without mutating either source raster',()=>{
   const a=[{lo:5,hi:10},{lo:1,hi:5},{lo:-2,hi:9}],b=[{lo:2,hi:8},{lo:3,hi:8},{lo:-5,hi:11}];
   assert.deepEqual(surface.sharedStretch(a,b),[{lo:2,hi:10},{lo:1,hi:8},{lo:-5,hi:11}]);

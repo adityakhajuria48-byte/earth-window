@@ -1,17 +1,19 @@
 'use strict';
 const EWTerrain=(()=>{
   const decode=(r,g,b)=>r*256+g+b/256-32768;
-  function grid(pixels,width,height,size=65){
+  function grid(pixels,width,height,size=129){
     const buffer=new Float32Array(size*size);
-    // Decode original PNG pixels before sampling: interpolating RGB would corrupt heights.
+    // Interpolate decoded metres, never the packed RGB channels (which wrap at 256).
+    const sample=(x,y)=>{const i=4*(y*width+x);if(pixels[i+3]===0)throw Error('Missing elevation samples.');return decode(pixels[i],pixels[i+1],pixels[i+2]);};
     for(let y=0;y<size;y++)for(let x=0;x<size;x++){
-      const i=4*(Math.round(y*(height-1)/(size-1))*width+Math.round(x*(width-1)/(size-1)));
-      buffer[y*size+x]=decode(pixels[i],pixels[i+1],pixels[i+2]);
+      const px=x*(width-1)/(size-1),py=y*(height-1)/(size-1),x0=Math.floor(px),y0=Math.floor(py);
+      const x1=Math.min(x0+1,width-1),y1=Math.min(y0+1,height-1),fx=px-x0,fy=py-y0;
+      buffer[y*size+x]=(sample(x0,y0)*(1-fx)+sample(x1,y0)*fx)*(1-fy)+(sample(x0,y1)*(1-fx)+sample(x1,y1)*fx)*fy;
     }
     return buffer;
   }
   function create(C,onStatus){
-    const scheme=new C.WebMercatorTilingScheme(),errorEvent=new C.Event(),size=65,maxLevel=13;
+    const scheme=new C.WebMercatorTilingScheme(),errorEvent=new C.Event(),size=129,maxLevel=13;
     const error=C.TerrainProvider.getEstimatedLevelZeroGeometricErrorForAHeightmap(scheme.ellipsoid,size,scheme.getNumberOfXTilesAtLevel(0));
     let good=false,failed=false;
     return {
@@ -26,11 +28,13 @@ const EWTerrain=(()=>{
         return pending.then(image=>{
           const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;
           const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0);
-          const values=grid(ctx.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height,size);
-          image.close?.();
-          if(!good){good=true;onStatus('Terrain on · Mapzen elevation');}
+          let values;
+          try{values=grid(ctx.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height,size);}finally{image.close?.();}
+          if(!good||failed){good=true;failed=false;onStatus('Terrain on · Mapzen elevation');}
           return new C.HeightmapTerrainData({buffer:values,width:size,height:size,childTileMask:level<maxLevel?15:0});
         }).catch(e=>{
+          // Moving away cancels tile requests; this is not a provider outage.
+          if(request?.state===C.RequestState.CANCELLED)throw e;
           if(!failed){failed=true;onStatus('Terrain tiles unavailable · Turn terrain off to use the ellipsoid.');}
           errorEvent.raiseEvent({message:'Terrain tile unavailable',x,y,level,error:e});throw e;
         });

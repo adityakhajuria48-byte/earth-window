@@ -4,6 +4,23 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const globe=require('./dist/globe.js');
 
+test('zoom uses clearance above terrain, respects exaggeration and never crosses its near limit',()=>{
+  // Old sea-level step: 8500 * .4 = 3400 m, despite only 500 m above a mountain.
+  assert.equal(globe.zoomAmount(8500,8000,true),125);
+  assert.equal(globe.zoomAmount(8250,8000,true),0);
+  assert.equal(globe.zoomAmount(8100,8000,true),0);
+  assert.equal(globe.zoomAmount(24500,8000,true,3),125);
+  assert.equal(globe.zoomAmount(24250,8000,true,3),0);
+  assert.equal(globe.zoomAmount(1000,500,true,2,250),0);
+  assert.equal(globe.zoomAmount(NaN,0,true),0);
+  assert.equal(globe.zoomAmount(8500,undefined,true),0);
+});
+test('zoom out remains available below terrain and stops at the orbit limit',()=>{
+  assert.equal(globe.zoomAmount(7000,8000,false),250);
+  assert.equal(globe.zoomAmount(39999900,0,false),100);
+  assert.equal(globe.zoomAmount(40000000,0,false),0);
+});
+
 test('globe footprints accept polygons, holes and dateline multipolygons without swapping coordinates',()=>{
   const ring=[[170,-10],[180,-10],[180,10],[170,-10]];
   const other=[[-180,-10],[-170,-10],[-170,10],[-180,-10]];

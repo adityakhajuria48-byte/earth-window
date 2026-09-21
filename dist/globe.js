@@ -6,6 +6,27 @@ const EWGlobe = (() => {
   let place, scenes=[], selected, layerKey='', point, shapes=[];
   let tilted=false, observer, baseLayer, terrainProvider;
   let surfaceLayers=[],surfaceRevision=0;
+  const MIN_CLEARANCE=250,MAX_HEIGHT=40000000;
+  function zoomAmount(height,ground,inward,exaggeration=1,relativeHeight=0){
+    if(!Number.isFinite(height)||!Number.isFinite(ground))return 0;
+    const clearance=height-((ground-relativeHeight)*exaggeration+relativeHeight);
+    return inward?Math.max(0,Math.min(clearance*.25,clearance-MIN_CLEARANCE)):
+      Math.max(0,Math.min(Math.max(MIN_CLEARANCE,clearance*.35),MAX_HEIGHT-height));
+  }
+  function zoom(inward){
+    if(!ready)return;
+    const camera=viewer.camera,position=camera.positionCartographic;
+    const ground=viewer.scene.globe.getHeight(position);
+    if(!Number.isFinite(ground)&&inward&&position.height<100000){status('Wait for terrain to load before zooming closer.');return;}
+    const amount=zoomAmount(position.height,ground??0,inward,viewer.scene.verticalExaggeration,viewer.scene.verticalExaggerationRelativeHeight);
+    camera.cancelFlight();
+    if(inward)camera.zoomIn(amount);else camera.zoomOut(amount);
+    render();
+  }
+  function detailNote(){
+    const el=document.getElementById('globe-detail-note');
+    el.hidden=!active||surfaceLayers.length>0||document.getElementById('map-layer').value==='streets'||viewer.camera.positionCartographic.height>100000;
+  }
   const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const status=message=>{const el=document.getElementById('globe-status');el.textContent=message;el.hidden=!message;};
   function rings(geometry) {
@@ -63,6 +84,7 @@ const EWGlobe = (() => {
     });
     provider.errorEvent.addEventListener(()=>{if(key===layerKey)status('Overview tiles could not load. Try another map layer. Archive search is separate.');});
     baseLayer=viewer.imageryLayers.addImageryProvider(provider,0);
+    detailNote();
     if(!street&&!reference&&date<'2000-02-24')status('This date predates Terra/MODIS. Choose Street map to locate historical scenes.');
     render();
   }
@@ -96,6 +118,7 @@ const EWGlobe = (() => {
     if(ready){viewer.useDefaultRenderLoop=active&&!document.hidden;if(active){viewer.resize();render();}}
     config.onMode(active);
     if(window.EWStudio)EWStudio.onMode(active);
+    if(ready)detailNote();
   }
   function setTerrain(enabled){
     if(!ready)return;
@@ -112,6 +135,7 @@ const EWGlobe = (() => {
     surfaceRevision++;
     if(ready)for(const layer of surfaceLayers)viewer.imageryLayers.remove(layer,true);
     surfaceLayers=[];
+    if(ready)detailNote();
     document.getElementById('swipe-line').hidden=true;
     document.getElementById('swipe-labels').hidden=true;render();
   }
@@ -136,6 +160,7 @@ const EWGlobe = (() => {
         surfaceLayers.push(viewer.imageryLayers.addImageryProvider(provider));
       }
       if(revision!==surfaceRevision)return;
+      detailNote();
       setComparison(compare);setSplit(document.getElementById('swipe').value);
       if(fly&&entries[0]?.bounds)move(Cesium.Rectangle.fromDegrees(...entries[0].bounds));
       render();
@@ -159,9 +184,15 @@ const EWGlobe = (() => {
       viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#050d16');
       viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#183a4b');
       viewer.scene.globe.enableLighting=false;
-      viewer.scene.screenSpaceCameraController.minimumZoomDistance=250;
-      viewer.scene.screenSpaceCameraController.maximumZoomDistance=40000000;
-      viewer.scene.screenSpaceCameraController.enableCollisionDetection=true;
+      const controls=viewer.scene.screenSpaceCameraController;
+      controls.minimumZoomDistance=MIN_CLEARANCE;
+      controls.maximumZoomDistance=MAX_HEIGHT;
+      controls.enableCollisionDetection=true;
+      controls.minimumCollisionTerrainHeight=100000;
+      controls.zoomFactor=2;
+      controls.inertiaZoom=0;
+      controls.maximumMovementRatio=.05;
+      viewer.camera.moveEnd.addEventListener(detailNote);
       viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
       viewer.screenSpaceEventHandler.setInputAction(event=>{
         const hit=viewer.scene.pick(event.position);
@@ -173,8 +204,8 @@ const EWGlobe = (() => {
       viewer.canvas.setAttribute('aria-label','3D Earth. Drag to rotate, scroll to zoom. Use the buttons for keyboard navigation.');
       viewer.canvas.addEventListener('webglcontextlost',()=>{useMode(false);status('3D graphics became unavailable. Continue in 2D or refresh to retry.');});
       document.getElementById('globe-home').onclick=()=>home();
-      document.getElementById('globe-in').onclick=()=>{viewer.camera.zoomIn(viewer.camera.positionCartographic.height*.4);render();};
-      document.getElementById('globe-out').onclick=()=>{viewer.camera.zoomOut(viewer.camera.positionCartographic.height*.6);render();};
+      document.getElementById('globe-in').onclick=()=>zoom(true);
+      document.getElementById('globe-out').onclick=()=>zoom(false);
       document.getElementById('globe-tilt').onclick=()=>{
         const center=new Cesium.Cartesian2(viewer.canvas.clientWidth/2,viewer.canvas.clientHeight/2);
         const ray=viewer.camera.getPickRay(center);const target=ray&&viewer.scene.globe.pick(ray,viewer.scene);if(!target)return;
@@ -195,6 +226,6 @@ const EWGlobe = (() => {
     }catch(error){console.error('Earth Window globe: '+error.message+' '+error.stack);if(viewer&&!viewer.isDestroyed())viewer.destroy();viewer=null;ready=false;loading=null;useMode(false);status('2D view active. 3D graphics could not start in this browser.');document.getElementById('terrain-status').textContent='Terrain unavailable until 3D loads.';}
     finally{document.getElementById('view-3d').disabled=false;}
   }
-  return {init,setPosition,setLayer,footprints,bounds,home,rings,showSurfaces,clearSurfaces,setComparison,setSplit,get active(){return active;}};
+  return {init,setPosition,setLayer,footprints,bounds,home,rings,zoomAmount,showSurfaces,clearSurfaces,setComparison,setSplit,get active(){return active;}};
 })();
 if(typeof module!=='undefined')module.exports=EWGlobe;

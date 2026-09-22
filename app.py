@@ -284,12 +284,15 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         if not self.authorized(): return
-        if self.path not in ("/api/crop", "/api/preview"):
+        if self.path not in ("/api/crop", "/api/preview", "/api/aoi"):
             self.json_response(404, {"error": "Unknown API endpoint."})
             return
         origin = self.headers.get("Origin")
         if self.headers.get("Sec-Fetch-Site") == "cross-site" or (origin and urlparse(origin).netloc != self.headers.get("Host")):
             self.json_response(403, {"error": "Use crop export from this website."})
+            return
+        if self.path == "/api/aoi":
+            self.import_aoi()
             return
         if not RASTER_AVAILABLE:
             self.json_response(503, {"error": "Crop processing is not installed on this server."})
@@ -330,6 +333,39 @@ class Handler(SimpleHTTPRequestHandler):
             self.json_response(504, {"error": "Crop exceeded 90 seconds. Try a smaller area or the original file."})
         except (OSError, ValueError):
             self.json_response(502, {"error": "Crop processing failed. Please retry."})
+        finally:
+            _crop_slot.release()
+
+    def import_aoi(self):
+        from aoi import MAX_UPLOAD
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if not 0 < length <= MAX_UPLOAD:
+                self.json_response(413, {"error": "Upload a ZIP smaller than 10 MB."})
+                return
+            if self.headers.get_content_type() != "application/zip":
+                self.json_response(400, {"error": "Expected a zipped polygon shapefile."})
+                return
+        except ValueError:
+            self.json_response(400, {"error": "Invalid upload size."})
+            return
+        if not RASTER_AVAILABLE or importlib.util.find_spec("shapefile") is None:
+            self.json_response(503, {"error": "Shapefile processing is not installed on this server."})
+            return
+        if not _crop_slot.acquire(blocking=False):
+            self.json_response(429, {"error": "Another area or image is processing. Retry shortly."})
+            return
+        try:
+            self.connection.settimeout(30)
+            payload = self.rfile.read(length)
+            result = subprocess.run([sys.executable, str(ROOT.parent / "aoi.py")], input=payload,
+                                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=30,
+                                    env={**os.environ, "PROJ_NETWORK": "OFF"})
+            self.json_response(422 if result.returncode else 200, json.loads(result.stdout))
+        except (TimeoutError, subprocess.TimeoutExpired):
+            self.json_response(504, {"error": "Import timed out. Simplify the boundary and retry."})
+        except (OSError, ValueError):
+            self.json_response(422, {"error": "Cannot read this shapefile. Re-export the polygon layer and retry."})
         finally:
             _crop_slot.release()
 
@@ -379,14 +415,14 @@ class Handler(SimpleHTTPRequestHandler):
             except (URLError, TimeoutError, OSError):
                 self.json_response(502, {"error": "Place search is partly unavailable. Retry, enter latitude, longitude, or click the map." if parsed.path == "/api/geocode" else "Imagery provider is unreachable. Please retry."})
             return
-        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css"}:
+        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css", "/basemaps.js"}:
             self.send_error(404)
             return
         super().do_GET()
 
     def do_HEAD(self) -> None:
         if not self.authorized(): return
-        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css"}:
+        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css", "/basemaps.js"}:
             self.send_error(404)
             return
         super().do_HEAD()

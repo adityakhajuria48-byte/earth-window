@@ -2,7 +2,7 @@
 
 **Explore any location in the world. Earth Window searches connected satellite archives automatically and tells you which satellites have data.** There is no satellite-selection step.
 
-The app includes a full-screen 3D terrain workspace, globe imagery and before/after comparison, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
+The app includes a full-screen 3D terrain workspace, globe imagery and before/after comparison, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with detailed Esri reference imagery, no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
 
 **Latest validation (20 September 2026):** 77 automated checks pass. A live CBERS-4 area preview matches its native GeoTIFF pixel-for-pixel. The complete browser-to-processor workflow and GPU terrain placement are still unverified; see the dated validation report below.
 
@@ -363,3 +363,41 @@ At close zoom, the globe explains that Blue Marble/MODIS overview imagery has li
 Validation: 46 JavaScript tests pass, including new high-mountain/exaggeration zoom limits, outward escape, packed-height interpolation and cancelled terrain requests. The browser loaded the site and its 2D fallback, but WebGL initialization still failed in this environment. Therefore the reported visual breakup, tile seams, oblique navigation and real GPU performance could not be reproduced or visually cleared here. These are targeted fixes for demonstrated code defects and sampling limitations, not a claim of verified 3D rendering.
 
 Implementation checked against [Cesium camera controls](https://cesium.com/learn/cesiumjs/ref-doc/ScreenSpaceCameraController.html) and the deployed Cesium 1.127 camera/heightmap source. The older dated test reports above retain their original scope.
+
+
+## Progressive detailed reference imagery · 21 September 2026
+
+The default map is now **Esri World Imagery** in both 2D and 3D. The previous default Blue Marble layer stops at tile level 8; its pixels cannot support street-scale zoom. The 2D reference map requests progressively finer tiles through level 19, subject to actual local coverage. The globe uses the cached service’s advertised levels (currently 0–23), as required by Cesium’s provider, with camera clearance limits. It is explicitly labelled as a mosaic with mixed acquisition dates, separate from the searched capture date and the original satellite-band data. Blue Marble, dated MODIS and the street map remain available.
+
+Cesium uses its built-in `ArcGisMapServerImageryProvider`, including missing-tile discarding and the service’s provider attribution. Map switches wait for provider initialization before replacing the previous layer. A bounded retry handles transient tile failures. The 2D map uses a small canvas GridLayer: `blankTile=false` turns provider placeholder tiles into explicit failures, and a missing fine tile is filled with the correct area of a real ancestor tile (up to six parent levels). The whole parent is scaled and clipped by the output canvas to avoid interpolation seams between child tiles. Requests stalled for 12 seconds also advance to a parent; unloaded tiles cancel their callbacks and timers. At strong overzoom, the caption explains that finer imagery is unavailable. A failed initial 3D startup no longer resets an already selected 2D zoom. This retains geographic continuity without inventing detail. The map is capped at zoom 19; source resolution still varies.
+
+The primary terrain is now **Esri World Elevation** through Cesium's built-in `ArcGISTiledElevationTerrainProvider`, handling LERC elevation and provider tile availability. Mapzen remains an explicitly labelled fallback if primary provider initialization fails. Disabling terrain invalidates a pending initialization so it cannot switch itself back on later. Terrain screen-space error is 1.5 pixels, ancestor preloading is enabled and the tile cache is bounded at 200. Elevation remains a reference surface, not a DEM from the selected satellite capture date.
+
+### Actual verification
+
+- Live imagery and elevation metadata responded HTTP 200 with browser CORS support. Imagery tiles over Udhampur loaded at levels 10 and 15. A level-19 placeholder was detected; with `blankTile=false`, the service correctly returned HTTP 404. An actual level-12 elevation tile returned a 72,777-byte LERC payload.
+- Browser QA at **32.916° N, 75.141° E** inspected actual imagery at levels **10, 16 and 19**. At level 19, all 24 displayed canvas tiles completed using real level-18 imagery; no blank provider squares were visible. Screenshots showed regional relief, then streets/buildings, then the closer correctly placed parent imagery. This verifies 2D progressive loading and missing-tile recovery at this location, not universal coverage.
+- **48 JavaScript tests passed**, including detailed-versus-dated layer separation and parent-tile quadrant calculations. Existing Python processing is unchanged.
+- The browser still cannot initialize WebGL. The new primary elevation endpoint and tile payload are verified, but actual 3D mesh rendering, GPU stability and globe seam inspection remain unverified. No claim of perfect or Google-identical worldwide rendering is made.
+
+Provider documentation: [Esri World Imagery service](https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer), [Esri World Elevation service](https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer), [missing map tiles](https://developers.arcgis.com/rest/services-reference/enterprise/map-tile/), [Cesium imagery provider](https://cesium.com/learn/cesiumjs/ref-doc/ArcGisMapServerImageryProvider.html), [Cesium elevation provider](https://cesium.com/learn/cesiumjs/ref-doc/ArcGISTiledElevationTerrainProvider.html). Public services were accessed without adding credentials, accounts or paid plans. Availability and provider terms remain outside this application's control.
+
+
+## Worldwide zoom validation · 22 September 2026
+
+Completed **1,000 locations** across **244 country/territory codes**: **3,000/3,000 imagery checks passed**, including 351 parent fallbacks; terrain passed **991/1,000 initially** and **991/1,000 after a recorded recheck**. **50 JavaScript tests passed**. The resumable check scripts, complete observations, CSV and detailed limitations are in [validation/REPORT.md](validation/REPORT.md).
+
+Browser checks cover Udhampur, Anak Krakatau and Nuuk. Blurred coarse imagery and a visible parent-tile boundary at extreme enlargement remain a known limitation. WebGL initialization failed in the test browser: **these results do not certify 3D mesh rendering, GPU stability or worldwide seam-free zoom**. The original initial failures and separate follow-up remain available for review.
+
+
+## Shapefile study areas
+
+In Search, expand **Upload a study area** and upload one ZIP containing matching `.shp`, `.shx`, `.dbf`, and `.prj` files. Choose a capture date and click **Find satellite images**. The Python importer converts projected or geographic polygon coordinates to WGS 84 and retains holes; multiple features are combined. An amber outline marks the study area in 2D and the globe adapter. Searches submit polygon `intersects` to the connected STAC archives by POST. Archive failures remain explicitly unavailable; a scene intersecting an area does not guarantee full-area coverage or valid/cloud-free pixels.
+
+Uploads are temporary, are not extracted onto disk, and do not return attribute records. Limits: 10 MiB compressed, 40 MiB expanded, 100 ZIP entries, one layer, 500 polygon features, 20,000 input vertices, 30 seconds processing. Missing CRS, malformed geometry, points/lines, oversized files, duplicate archive paths, and unsplit date-line areas are rejected. Simplify complex boundaries or split date-line regions in GIS before upload.
+
+Existing band choices and GeoTIFF downloads apply to the results. The export rectangle starts at the study area's bounds, with the existing 2-degree / 4-million-pixel limits; it is **not polygon-masked**. Browser-read band previews still show source tiles; Python previews use the rectangle. No automatic mosaic across scenes is claimed.
+
+Local development: `python -m venv .venv`, install `requirements-raster.txt` in that environment, then `npm run dev`. The development upload route invokes the same bounded importer. Hosted uploads pass through the owner-authenticated Worker to the authenticated Render Python service. No credentials belong in client assets.
+
+Validation: 52 JavaScript checks passed; 42 Python checks passed (including geographic polygons with holes, UTM reprojection, missing components, corrupt/nonpolygon/self-crossing records, date-line rejection, ZIP expansion/path checks and hostile point counts). The browser file-upload interaction was interrupted and is **not verified**. Current 3D rendering remains unverified in the available browser. See `validation/REPORT.md` for the earlier 1,000-location map/terrain checks and their nine unresolved terrain failures.

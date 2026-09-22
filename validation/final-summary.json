@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-09-22T15:44:49.935618+00:00",
+  "locations": 1000,
+  "country_territory_codes": 244,
+  "locations_all_checks_passed": 991,
+  "imagery_checks": 3000,
+  "imagery_passed": 3000,
+  "imagery_native": 2649,
+  "imagery_parent_fallback": 351,
+  "terrain_checks": 1000,
+  "terrain_passed": 991,
+  "unique_tiles": 4097,
+  "http_attempts": 4477,
+  "http_404_attempts": 475,
+  "http_429_attempts": 0,
+  "downloaded_valid_tile_bytes": 91618592,
+  "zoom_results": {
+    "8": {
+      "passed": 1000,
+      "native": 1000,
+      "parent_fallback": 0
+    },
+    "14": {
+      "passed": 1000,
+      "native": 999,
+      "parent_fallback": 1
+    },
+    "19": {
+      "passed": 1000,
+      "native": 650,
+      "parent_fallback": 350
+    }
+  },
+  "failed_locations": [
+    "2400555",
+    "2294877",
+    "2463029",
+    "255683",
+    "2309332",
+    "4038659",
+    "1655199",
+    "7874631",
+    "7268049"
+  ],
+  "scope": "Provider tile retrieval, real JPEG/LERC decoding, tile-coordinate containment and ancestor fallback. Not browser rendering, GPU correctness, geocoder coverage, date/band availability, or Google Maps equivalence.",
+  "rechecked_locations": 9,
+  "recovered_locations": 0,
+  "latest_locations_all_checks_passed": 991,
+  "latest_terrain_passed": 991,
+  "remaining_failed_locations": [
+    "2400555",
+    "2294877",
+    "2463029",
+    "255683",
+    "2309332",
+    "4038659",
+    "1655199",
+    "7874631",
+    "7268049"
+  ],
+  "total_http_attempts_including_rechecks": 4534
+}

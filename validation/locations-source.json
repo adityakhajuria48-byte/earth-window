@@ -1,0 +1,16 @@
+{
+  "source": "https://download.geonames.org/export/dump/cities15000.zip",
+  "license": "GeoNames CC BY 4.0, https://www.geonames.org/",
+  "source_sha256": "cd4eac9a1adec3065e2e7ff884b30b51c9e1db006e1bd03422338809c2a46a80",
+  "selection": "4 explicit public landmarks, then country-code round-robin cities ordered by population descending; unique coordinates, |latitude| < 85 degrees",
+  "count": 1000,
+  "country_codes": 244,
+  "latitude_range": [
+    -54.28111,
+    78.22334
+  ],
+  "longitude_range": [
+    -176.17453,
+    179.36451
+  ]
+}

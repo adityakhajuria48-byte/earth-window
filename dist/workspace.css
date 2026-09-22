@@ -33,3 +33,5 @@ body{height:100dvh;overflow:hidden}.topbar{position:fixed;inset:0 0 auto;z-index
 @media(max-width:520px){.crop-bounds{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .globe-detail-note{margin:0;padding:10px 12px;background:#101d28ed;border:1px solid #ffffff24;border-radius:8px;color:#c7d5df;font-size:12px;line-height:1.5}
+
+.study-area{margin:14px 0;border:1px solid #35434d;border-radius:10px;padding:12px;background:#172129}.study-area summary{cursor:pointer;font-size:14px;font-weight:600}.study-area summary span{display:block;color:#a6b4bf;font-size:12px;margin:5px 0 0 15px;font-weight:400}.study-area input[type=file]{width:100%;font-size:13px;margin-top:8px;padding:8px}.study-area input::file-selector-button{background:#b8f56b;color:#10171d;border:0;border-radius:5px;padding:8px;margin-right:8px;cursor:pointer}.study-area #clear-aoi{border:1px solid #526171;border-radius:6px;padding:7px 10px;background:transparent;color:#e3eaf0}.study-area .notice{overflow-wrap:anywhere}

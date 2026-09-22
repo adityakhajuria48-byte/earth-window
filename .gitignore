@@ -7,3 +7,5 @@ __pycache__/
 node_modules/
 .sites-runtime/
 dist/server/
+
+.venv

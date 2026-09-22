@@ -5,8 +5,8 @@ let sourcesPromise;
 async function loadSources(){if(SOURCES.length)return SOURCES;if(!sourcesPromise)sourcesPromise=fetchJSON('/sources.json',AbortSignal.timeout(10000)).then(x=>{if(!Array.isArray(x)||!x.length)throw Error('Archive list unavailable.');SOURCES=x;return x;}).catch(e=>{sourcesPromise=null;throw e;});return sourcesPromise;}
 const today = new Date().toISOString().slice(0, 10);
 const initialDate = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
-const state = {scope:'world',bounds:null,lat:null,lon:null,name:'Whole world',placeText:'',scenes:[],date:initialDate,target:0,request:0,geoRequest:0,selected:null,query:null,dirty:false,shown:30,sourceResults:[],selectedDay:null};
-let map, marker, nasa, streets, footprint, resultFootprints, currentController;
+const state = {scope:'world',bounds:null,geometry:null,lat:null,lon:null,name:'Whole world',placeText:'',scenes:[],date:initialDate,target:0,request:0,geoRequest:0,selected:null,query:null,dirty:false,shown:30,sourceResults:[],selectedDay:null};
+let map, marker, nasa, streets, footprint, resultFootprints, currentController,was3D=false,aoiLayer,aoiController;
 $('date').value = initialDate; $('date').max = today;
 function text(tag, value, cls) { const e = document.createElement(tag); e.textContent = value; if(cls)e.className=cls;return e; }
 function safeURL(href) {return EW.https(href);}
@@ -22,13 +22,27 @@ function previewURL(f) {const assets=f.assets||{};for(const [key,a] of Object.en
 function assetURL(f,key) {return safeURL(f.assets?.[key]?.href);}
 async function fetchJSON(url,signal) {const r=await fetch(url,{signal,headers:{Accept:'application/geo+json, application/json'}});if(!r.ok)throw Error(r.status===429?'The imagery service is busy. Please wait a minute and retry.':`The service could not complete this request (HTTP ${r.status}). Please retry.`);return r.json();}
 function warnMap(message) {$('map-warning').textContent=message;$('map-warning').hidden=!message;}
+function updateMapDetail(){
+  if(!map||EWGlobe.active||$('map-layer').value!=='detailed')return;
+  const area=map.getContainer().getBoundingClientRect(),cx=(area.left+area.right)/2,cy=(area.top+area.bottom)/2;
+  const tiles=nasa?.getContainer()?.querySelectorAll('canvas.leaflet-tile-loaded')||[];
+  for(const tile of tiles){
+    if(Number(tile.dataset.requestedZoom)!==map.getZoom())continue;
+    const r=tile.getBoundingClientRect();
+    if(r.left<=cx&&r.right>cx&&r.top<=cy&&r.bottom>cy){
+      const coarse=map.getZoom()-Number(tile.dataset.sourceZoom)>=2;
+      $('map-date').textContent=EWBasemaps.layer('detailed').note+(coarse?' · Finer imagery unavailable at map centre; zoom out for more context.':'');
+      return;
+    }
+  }
+}
 function updateMapLayer() {
   window.EWMapPreview?.clear();
   if(nasa&&map)map.removeLayer(nasa);
   warnMap('');
-  const kind=$('map-layer').value,street=kind==='streets',reference=kind==='reference';
-  $('map-source').textContent=street?'OpenStreetMap · Reference map':reference?'NASA Blue Marble · Reference mosaic':'Terra / MODIS · Daily overview';
-  $('map-date').textContent=street?'Reference only · Not capture-date imagery':reference?'Global reference · Not capture-date imagery':`${dateLabel(state.date)} · Daily mosaic · Not a selected scene`;
+  const kind=$('map-layer').value,street=kind==='streets',spec=EWBasemaps.layer(kind,state.date);
+  $('map-source').textContent=spec.title;
+  $('map-date').textContent=spec.note;
   if(EWGlobe.active){
     if(map&&streets&&map.hasLayer(streets))map.removeLayer(streets);
     EWGlobe.setLayer(kind,state.date);return;
@@ -37,30 +51,34 @@ function updateMapLayer() {
   if(!map.hasLayer(streets))streets.addTo(map);
   if(street){streets.setOpacity(1);return;}
   streets.setOpacity(0);
-  const url=reference?'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg':`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${state.date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`;
-  nasa=L.tileLayer(url,{maxNativeZoom:reference?8:9,maxZoom:17,noWrap:!reference,attribution:'Imagery: <a href="https://www.earthdata.nasa.gov/">NASA GIBS</a>',bounds:[[-85.0511,-180],[85.0511,180]]}).addTo(map);
+  const options={maxNativeZoom:spec.maxLevel,maxZoom:19,keepBuffer:3,updateWhenIdle:true,attribution:spec.credit,bounds:[[-85.0511,-180],[85.0511,180]]};
+  nasa=(kind==='detailed'?EWBasemaps.detailedLayer(L,options):L.tileLayer(spec.url,options)).addTo(map);
+  if(kind==='detailed')nasa.on('load tileload',updateMapDetail);
   nasa.on('tileerror',()=>{if(!EWGlobe.active)warnMap('Imagery tiles unavailable. Try another map layer; archive search remains available.');});
-  if(!reference&&new Date(state.date)<new Date('2000-02-24'))warnMap('This date predates Terra/MODIS. Use the reference mosaic to locate historical captures.');
+  if(kind==='nasa'&&new Date(state.date)<new Date('2000-02-24'))warnMap('This date predates Terra/MODIS. Use the reference mosaic to locate historical captures.');
 }
 function initMap() {
   if(!window.L){$('map').append(text('div','The interactive map could not load. You can still search imagery by place or coordinates.','map-unavailable'));$('map-date').textContent='Map service unavailable';return;}
-  map=L.map('map',{zoomControl:false,worldCopyJump:true,minZoom:1,maxZoom:17}).setView([18,20],2);
+  map=L.map('map',{zoomControl:false,worldCopyJump:true,minZoom:1,maxZoom:19}).setView([18,20],2);
   L.control.zoom({position:'bottomright'}).addTo(map);
   streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
   streets.on('tileerror',()=>{if($('map-layer').value==='streets')warnMap('Street-map tiles could not load. You can still search by place or coordinates.');});
   resultFootprints=L.layerGroup().addTo(map);
   map.on('click',e=>{const lon=((e.latlng.lng+180)%360+360)%360-180;const lat=Math.max(-90,Math.min(90,e.latlng.lat));setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false);});
+  map.on('moveend zoomend',updateMapDetail);
   updateMapLayer();
 }
 function clearResults(message) {state.selectedDay=null;$('discovery').hidden=true;$('availability-days').replaceChildren();$('best-matches').replaceChildren();EWGlobe.footprints([],null);state.shown=30;$('load-more').hidden=true;$('source-status').replaceChildren();state.scenes=[];state.selected=null;resultFootprints?.clearLayers();$('count').textContent='—';$('export').disabled=true;$('scene-list').replaceChildren(empty('Ready for another perspective',message));if(footprint&&map){map.removeLayer(footprint);footprint=null;}}
 function invalidate() {state.request++;currentController?.abort();$('search-button').disabled=false;$('search-button').replaceChildren(text('span','Find satellite images'),text('span','↗'));clearResults('Your search changed. Select Find satellite images to update the results.');$('result-summary').textContent='Search settings changed.';}
-function setPlace(lat,lon,name,fly=true) {state.scope='point';state.bounds=null;$('world-search').setAttribute('aria-pressed','false');state.geoRequest++;$('find-place').disabled=false;state.lat=lat;state.lon=lon;state.name=name;state.placeText=name;state.dirty=false;$('place').value=name;$('place-results').replaceChildren();$('location-title').textContent=name;$('coordinates').textContent=`${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(4)}° ${lon>=0?'E':'W'}`;if(map){if(!marker)marker=L.marker([lat,lon],{icon:L.divIcon({className:'',html:'<div class="pin-dot"></div>',iconSize:[16,16],iconAnchor:[8,8]}),keyboard:false}).addTo(map);else marker.setLatLng([lat,lon]);if(fly)map.setView([lat,lon],Math.min(10,Math.max(7,map.getZoom())));}EWGlobe.setPosition({...state},fly);invalidate();$('search-notice').textContent='Location selected. Find images to update the archive results.';}
+function setPlace(lat,lon,name,fly=true) {clearAoi();state.scope='point';state.bounds=null;$('world-search').setAttribute('aria-pressed','false');state.geoRequest++;$('find-place').disabled=false;state.lat=lat;state.lon=lon;state.name=name;state.placeText=name;state.dirty=false;$('place').value=name;$('place-results').replaceChildren();$('location-title').textContent=name;$('coordinates').textContent=`${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(4)}° ${lon>=0?'E':'W'}`;if(map){if(!marker)marker=L.marker([lat,lon],{icon:L.divIcon({className:'',html:'<div class="pin-dot"></div>',iconSize:[16,16],iconAnchor:[8,8]}),keyboard:false}).addTo(map);else marker.setLatLng([lat,lon]);if(fly)map.setView([lat,lon],Math.min(10,Math.max(7,map.getZoom())));}EWGlobe.setPosition({...state},fly);invalidate();$('search-notice').textContent='Location selected. Find images to update the archive results.';}
 function wholeWorld(run=true){
+  clearAoi();
   state.scope='world';state.bounds=null;state.lat=null;state.lon=null;state.name='Whole world';state.placeText='';state.dirty=false;state.geoRequest++;
   $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;$('location-title').textContent='Whole world';$('coordinates').textContent='Worldwide · No location filter';$('world-search').setAttribute('aria-pressed','true');
   if(marker&&map){map.removeLayer(marker);marker=null;}map?.setView([18,20],2);EWGlobe.setPosition(state);invalidate();$('search-notice').textContent='Worldwide search selected.';if(run)search();
 }
 function searchMapArea(){
+  clearAoi();
   if(EWGlobe.active){
     const bounds=EWGlobe.bounds();
     if(!bounds){$('search-notice').textContent='Zoom closer to Earth to select a region, or use Whole world.';return;}
@@ -76,6 +94,41 @@ function searchMapArea(){
   $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;$('location-title').textContent=state.name;$('coordinates').textContent='Region: '+state.bounds.map(n=>n.toFixed(1)+'°').join(', ');$('world-search').setAttribute('aria-pressed','false');
   if(marker){map.removeLayer(marker);marker=null;}EWGlobe.setPosition(state,false);invalidate();search();
 }
+function clearAoi(){
+  aoiController?.abort();aoiController=null;state.geometry=null;
+  if(aoiLayer&&map)map.removeLayer(aoiLayer);aoiLayer=null;
+  $('aoi-file').value='';$('aoi-file').disabled=false;$('clear-aoi').hidden=true;
+  $('aoi-status').textContent='Upload a boundary, choose a date, then find images.';
+}
+async function uploadAoi(){
+  const file=$('aoi-file').files[0];if(!file)return;
+  if(!file.name.toLowerCase().endsWith('.zip')||file.size>10*1024*1024){$('aoi-status').textContent='Choose a shapefile ZIP smaller than 10 MB.';return;}
+  aoiController?.abort();const active=new AbortController();aoiController=active;
+  const request=++state.geoRequest,timer=setTimeout(()=>active.abort(),150000);
+  $('aoi-file').disabled=true;$('aoi-status').textContent='Reading the boundary and its coordinate system…';
+  try{
+    const response=await fetch('/api/aoi',{method:'POST',headers:{'Content-Type':'application/zip'},body:file,signal:active.signal});
+    if(!(response.headers.get('Content-Type')||'').includes('application/json'))throw Error('Boundary processing is unavailable. Please retry shortly.');
+    const data=await response.json();if(!response.ok)throw Error(data.error||'Could not import this shapefile.');
+    if(request!==state.geoRequest||active.signal.aborted)return;
+    if(!['Polygon','MultiPolygon'].includes(data.geometry?.type)||!Array.isArray(data.bounds)||data.bounds.length!==4||!data.bounds.every(Number.isFinite))throw Error('The server did not return a valid polygon.');
+    state.scope='area';state.geometry=data.geometry;state.bounds=data.bounds;state.lat=state.lon=null;
+    state.name=data.name;state.placeText='';state.dirty=false;
+    $('place').value='';$('place-results').replaceChildren();$('find-place').disabled=false;
+    $('world-search').setAttribute('aria-pressed','false');$('location-title').textContent=data.name;
+    $('coordinates').textContent='Study area · '+data.features+' polygon feature'+(data.features===1?'':'s');
+    if(map){if(marker){map.removeLayer(marker);marker=null;}if(aoiLayer)map.removeLayer(aoiLayer);
+      aoiLayer=L.geoJSON(data.geometry,{interactive:false,style:{color:'#ffca76',weight:3,fillOpacity:.07}}).addTo(map);
+      map.fitBounds(aoiLayer.getBounds(),{padding:[45,45],maxZoom:15});
+    }
+    EWGlobe.setPosition({...state});invalidate();$('clear-aoi').hidden=false;
+    $('aoi-status').textContent=data.name+' · '+data.features+' features · '+data.vertices.toLocaleString()+' vertices · '+data.sourceCRS+' → WGS 84';
+    $('search-notice').textContent='Boundary ready. Choose your capture date, then Find satellite images. Results intersect the polygon; full coverage is not guaranteed.';
+  }catch(e){if(request===state.geoRequest)$('aoi-status').textContent=active.signal.aborted?'Boundary import timed out. Retry or simplify the polygon.':e.message;}
+  finally{clearTimeout(timer);if(aoiController===active){aoiController=null;$('aoi-file').disabled=false;}}
+}
+$('aoi-file').addEventListener('change',uploadAoi);
+$('clear-aoi').onclick=()=>wholeWorld(false);
 function showResultLocations(){
   EWGlobe.footprints(orderedScenes().slice(0,state.shown),state.selected);
   if(!map||!resultFootprints)return;resultFootprints.clearLayers();
@@ -109,25 +162,29 @@ async function lookupPlace(q){
 }
 function parseCoords(q) {const m=q.trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);if(!m)return null;const lat=Number(m[1]),lon=Number(m[2]);if(lat < -90||lat>90||lon < -180||lon>180)throw Error('Use latitude from −90 to 90 and longitude from −180 to 180.');return [lat,lon];}
 async function findPlace() {if($('find-place').disabled)return false;const q=$('place').value.trim();if(!q){wholeWorld(false);return true;}const request=++state.geoRequest;try {const coords=parseCoords(q);if(coords){setPlace(...coords,q);return true;}$('find-place').disabled=true;$('search-notice').textContent='Finding places…';const results=await lookupPlace(q);if(request!==state.geoRequest)return false;$('place-results').replaceChildren();if(!Array.isArray(results)||!results.length)throw Error('No matching place found. Try another name or enter latitude, longitude.');if(results.length===1){setPlace(Number(results[0].lat),Number(results[0].lon),results[0].display_name);return true;}for(const place of results){const b=text('button',place.display_name);b.type='button';b.onclick=()=>setPlace(Number(place.lat),Number(place.lon),place.display_name);$('place-results').append(b);}$('search-notice').textContent='Choose the matching location above, then find images.';return false;}catch(e){if(request===state.geoRequest)$('search-notice').textContent=e.name==='TimeoutError'?'Place lookup timed out. Try coordinates or click the map.':e.message;return false;}finally{if(request===state.geoRequest)$('find-place').disabled=false;}}
-function searchParams() {const date=$('date').value,time=$('time').value;if(!date||!time)throw Error('Choose a date and UTC time.');const target=new Date(`${date}T${time}:00Z`);if(!Number.isFinite(+target))throw Error('Choose a valid date and UTC time.');if(date>today)throw Error('Future imagery is not available. Choose today or an earlier date.');if(date<'1982-01-01')throw Error('Choose a date from 1982 onward.');const days=Number($('window').value);const start=new Date(`${date}T00:00:00Z`);start.setUTCDate(start.getUTCDate()-days);const end=new Date(`${date}T23:59:59.999Z`);end.setUTCDate(end.getUTCDate()+days);return {date,time,days,target:+target,start:start.toISOString(),end:new Date(Math.min(+end,Date.now())).toISOString(),cloud:Number($('cloud').value),resolution:Number($('resolution').value),scope:state.scope,bounds:state.bounds,lat:state.lat,lon:state.lon};}
+function searchParams() {const date=$('date').value,time=$('time').value;if(!date||!time)throw Error('Choose a date and UTC time.');const target=new Date(`${date}T${time}:00Z`);if(!Number.isFinite(+target))throw Error('Choose a valid date and UTC time.');if(date>today)throw Error('Future imagery is not available. Choose today or an earlier date.');if(date<'1982-01-01')throw Error('Choose a date from 1982 onward.');const days=Number($('window').value);const start=new Date(`${date}T00:00:00Z`);start.setUTCDate(start.getUTCDate()-days);const end=new Date(`${date}T23:59:59.999Z`);end.setUTCDate(end.getUTCDate()+days);return {date,time,days,target:+target,start:start.toISOString(),end:new Date(Math.min(+end,Date.now())).toISOString(),cloud:Number($('cloud').value),resolution:Number($('resolution').value),scope:state.scope,bounds:state.bounds,geometry:state.geometry,lat:state.lat,lon:state.lon};}
 async function fetchSource(q,s,signal){
   const params=new URLSearchParams({collections:s.collection,...EW.spatialQuery(q),datetime:EW.requestRange(q,s),limit:s.pageSize||100,...(s.sort===false?{}:{sortby:'-datetime'})});
   let url=s.endpoint+'?'+params,features=[],truncated=false,complete=false;
+  let postBody=q.geometry?{collections:[s.collection],intersects:q.geometry,datetime:EW.requestRange(q,s),limit:s.pageSize||100,...(s.sort===false?{}:{sortby:[{field:'datetime',direction:'desc'}]})}:null;
+  if(postBody)url=s.endpoint;
   const local=new AbortController(),abort=()=>local.abort();signal.addEventListener('abort',abort,{once:true});if(signal.aborted)local.abort();const timeout=setTimeout(abort,45000);
   try{for(let page=0;page<3;page++){
-    const data=await fetchJSON(url,local.signal);if(!Array.isArray(data.features))throw Error('Unexpected archive response.');
+    const response=postBody?await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/geo+json, application/json'},body:JSON.stringify(postBody),signal:local.signal}):null;
+    if(response&&!response.ok)throw Error('This archive could not search the polygon.');
+    const data=response?await response.json():await fetchJSON(url,local.signal);if(!Array.isArray(data.features))throw Error('Unexpected archive response.');
     features.push(...data.features.map(f=>EW.attach(f,s)));
     const next=data.links?.find(l=>l.rel==='next');if(!next){complete=true;break;}
     const href=EW.https(next.href),expected=new URL(s.endpoint);
-    if(!href||new URL(href).origin!==expected.origin||!new URL(href).pathname.startsWith(expected.pathname.slice(0,expected.pathname.lastIndexOf('/')+1))||(next.method&&next.method!=='GET')){truncated=true;break;}
-    url=href;if(page===2)truncated=true;
+    if(!href||new URL(href).origin!==expected.origin||!new URL(href).pathname.startsWith(expected.pathname.slice(0,expected.pathname.lastIndexOf('/')+1))||(next.method&&!['GET','POST'].includes(next.method))){truncated=true;break;}
+    url=href;postBody=next.method==='POST'?(next.merge?{...postBody,...next.body}:next.body):null;if(next.method==='POST'&&!postBody){truncated=true;break;}if(page===2)truncated=true;
   }return {id:s.id,name:s.name,status:complete?'complete':'partial',features,truncated};}
   catch(e){return {id:s.id,name:s.name,status:features.length?'partial':'unavailable',features,truncated:!!features.length,error:'Could not finish checking this archive. Retry to check its coverage.'};}
   finally{clearTimeout(timeout);signal.removeEventListener('abort',abort);}
 }
 async function fetchScenes(q,signal,onProgress){
   await loadSources();
-  if(window.EARTH_WINDOW_PYTHON)return fetchJSON('/api/search?'+new URLSearchParams({scope:q.scope,...(q.scope==='point'?{lat:q.lat,lon:q.lon}:q.scope==='area'?{bounds:q.bounds.join(',')}:{}),date:q.date,time:q.time,window:q.days,cloud:q.cloud,resolution:q.resolution}),signal);
+  if(window.EARTH_WINDOW_PYTHON&&!q.geometry)return fetchJSON('/api/search?'+new URLSearchParams({scope:q.scope,...(q.scope==='point'?{lat:q.lat,lon:q.lon}:q.scope==='area'?{bounds:q.bounds.join(',')}:{}),date:q.date,time:q.time,window:q.days,cloud:q.cloud,resolution:q.resolution}),signal);
   const progress=SOURCES.map(s=>({id:s.id,name:s.name,status:'pending',features:[]}));
   const results=await Promise.all(SOURCES.map((s,i)=>fetchSource(q,s,signal).then(result=>{progress[i]=result;if(!signal.aborted)onProgress?.({features:progress.flatMap(r=>r.features),sources:progress.map(({features,...r})=>r)});return result;})));
   return {features:results.flatMap(r=>r.features),sources:results.map(({features,...r})=>r),truncated:results.some(r=>r.truncated)};
@@ -226,7 +283,7 @@ initMap();
 EWGlobe.init({
   onPoint:(lat,lon)=>setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false),
   onScene:openScene,
-  onMode:is3D=>{if(!is3D&&map){map.invalidateSize();if(state.scope==='world')map.setView([18,20],2);else if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}}updateMapLayer();},
+  onMode:is3D=>{const leaving3D=was3D&&!is3D;was3D=is3D;if(!is3D&&map){map.invalidateSize();if(leaving3D){if(state.scope==='world')map.setView([18,20],2);else if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}}}updateMapLayer();},
   onReady:()=>{EWGlobe.setPosition(state,state.scope!=='world');showResultLocations();}
 });
 loadSources().then(()=>{$('result-summary').textContent='Search any place or the whole world to discover available captures.';}).catch(e=>{$('search-notice').textContent=e.message;});

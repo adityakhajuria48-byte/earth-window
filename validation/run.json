@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-09-22T04:28:21.336879+00:00",
+  "fingerprint": "576126907b6d92500615dff3ebc32795ac63353a0d68ae45568d2f018af1e0c8",
+  "zooms": [
+    8,
+    14,
+    19
+  ],
+  "terrain_zoom": 12,
+  "workers": 6,
+  "max_requests_per_second": 6,
+  "max_attempts_per_tile": 3,
+  "max_parent_depth": 6,
+  "reporting_fixes": [
+    {
+      "at": "2026-09-22T15:34:00.207711+00:00",
+      "previous_fingerprint": "15b267fe84dd0877f7640195b724660a400ce9f1ef4d871a30616aa2fedc55e0",
+      "new_fingerprint": "576126907b6d92500615dff3ebc32795ac63353a0d68ae45568d2f018af1e0c8",
+      "change": "Sort CSV export by string ID to support explicit landmark IDs. Provider request and validation logic unchanged."
+    }
+  ]
+}

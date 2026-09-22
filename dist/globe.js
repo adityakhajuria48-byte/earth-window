@@ -3,8 +3,8 @@
 const EWGlobe = (() => {
   const CDN = 'https://cesium.com/downloads/cesiumjs/releases/1.127/Build/Cesium/';
   let viewer, config, ready=false, active=false, requested=true, loading;
-  let place, scenes=[], selected, layerKey='', point, shapes=[];
-  let tilted=false, observer, baseLayer, terrainProvider;
+  let place, scenes=[], selected, layerKey='', point, shapes=[],aoiShapes=[];
+  let tilted=false, observer, baseLayer, terrainProvider,terrainRevision=0;
   let surfaceLayers=[],surfaceRevision=0;
   const MIN_CLEARANCE=250,MAX_HEIGHT=40000000;
   function zoomAmount(height,ground,inward,exaggeration=1,relativeHeight=0){
@@ -25,7 +25,7 @@ const EWGlobe = (() => {
   }
   function detailNote(){
     const el=document.getElementById('globe-detail-note');
-    el.hidden=!active||surfaceLayers.length>0||document.getElementById('map-layer').value==='streets'||viewer.camera.positionCartographic.height>100000;
+    el.hidden=!active||surfaceLayers.length>0||!['reference','nasa'].includes(document.getElementById('map-layer').value)||viewer.camera.positionCartographic.height>100000;
   }
   const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const status=message=>{const el=document.getElementById('globe-status');el.textContent=message;el.hidden=!message;};
@@ -64,6 +64,8 @@ const EWGlobe = (() => {
     place=value;
     if(!ready)return;
     if(point)viewer.entities.remove(point);point=null;
+    for(const entity of aoiShapes)viewer.entities.remove(entity);aoiShapes=[];
+    for(const ring of rings(value.geometry))aoiShapes.push(viewer.entities.add({polyline:{clampToGround:true,positions:Cesium.Cartesian3.fromDegreesArray(ring.flatMap(c=>[c[0],c[1]])),width:3,material:Cesium.Color.fromCssColorString('#ffca76'),arcType:Cesium.ArcType.GEODESIC}}));
     if(value.scope==='point'){
       point=viewer.entities.add({position:Cesium.Cartesian3.fromDegrees(value.lon,value.lat),point:{heightReference:Cesium.HeightReference.CLAMP_TO_GROUND,pixelSize:12,color:Cesium.Color.fromCssColorString('#b8f56b'),outlineColor:Cesium.Color.WHITE,outlineWidth:3,disableDepthTestDistance:0}});
       if(fly)move(Cesium.Cartesian3.fromDegrees(value.lon,value.lat,45000),true,{heading:0,pitch:-Math.PI/2,roll:0});
@@ -72,21 +74,23 @@ const EWGlobe = (() => {
     if(fly){tilted=false;document.getElementById('globe-tilt').setAttribute('aria-pressed','false');}
     render();
   }
-  function setLayer(kind,date){
+  async function setLayer(kind,date){
     if(!ready)return;
-    const key=kind+date;if(key===layerKey)return;layerKey=key;
-    status('');if(baseLayer)viewer.imageryLayers.remove(baseLayer,true);
-    const street=kind==='streets',reference=kind==='reference';
-    const provider=new Cesium.UrlTemplateImageryProvider({
-      url:street?'https://tile.openstreetmap.org/{z}/{x}/{y}.png':reference?'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg':`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
-      tilingScheme:new Cesium.WebMercatorTilingScheme(),maximumLevel:street?19:reference?8:9,
-      credit:street?'© OpenStreetMap contributors':reference?'NASA GIBS · Blue Marble reference mosaic':'NASA GIBS · Terra / MODIS',enablePickFeatures:false
-    });
-    provider.errorEvent.addEventListener(()=>{if(key===layerKey)status('Overview tiles could not load. Try another map layer. Archive search is separate.');});
-    baseLayer=viewer.imageryLayers.addImageryProvider(provider,0);
-    detailNote();
-    if(!street&&!reference&&date<'2000-02-24')status('This date predates Terra/MODIS. Choose Street map to locate historical scenes.');
-    render();
+    const key=kind+(kind==='nasa'?date:'');if(key===layerKey)return;layerKey=key;
+    status('Loading map imagery…');
+    try{
+      const spec=EWBasemaps.layer(kind,date);
+      // Cached ArcGIS services advertise their own levels; Cesium ignores a maximumLevel option here.
+      const provider=kind==='detailed'?await Cesium.ArcGisMapServerImageryProvider.fromUrl(EWBasemaps.worldImagery,{enablePickFeatures:false}):new Cesium.UrlTemplateImageryProvider({url:spec.url,tilingScheme:new Cesium.WebMercatorTilingScheme(),maximumLevel:spec.maxLevel,credit:spec.credit,enablePickFeatures:false});
+      if(key!==layerKey)return;
+      provider.errorEvent.addEventListener(error=>{if(key!==layerKey)return;if(error.timesRetried<2)error.retry=true;else status('Some map tiles could not load. Try another map layer. Archive search remains available.');});
+      const previous=baseLayer;
+      baseLayer=viewer.imageryLayers.addImageryProvider(provider,0);
+      if(previous)viewer.imageryLayers.remove(previous,true);
+      status('');detailNote();
+      if(kind==='nasa'&&date<'2000-02-24')status('This date predates Terra/MODIS. Choose a reference map to locate historical scenes.');
+      render();
+    }catch(error){if(key===layerKey){layerKey='';status('The requested map could not load. Any previous map remains visible; choose another layer or retry.');}}
   }
   function footprints(features,selection){
     scenes=features;selected=selection;if(!ready)return;
@@ -120,13 +124,24 @@ const EWGlobe = (() => {
     if(window.EWStudio)EWStudio.onMode(active);
     if(ready)detailNote();
   }
-  function setTerrain(enabled){
+  async function setTerrain(enabled){
     if(!ready)return;
+    const revision=++terrainRevision;
     const note=document.getElementById('terrain-status');
     if(enabled){
       note.textContent='Loading terrain elevation…';
-      terrainProvider=EWTerrain.create(Cesium,message=>{if(viewer.terrainProvider===terrainProvider)note.textContent=message;});
-      viewer.terrainProvider=terrainProvider;
+      try{
+        const provider=await Cesium.ArcGISTiledElevationTerrainProvider.fromUrl(EWBasemaps.worldTerrain);
+        if(revision!==terrainRevision)return;
+        terrainProvider=provider;viewer.terrainProvider=provider;
+        note.textContent='Terrain on · Esri World Elevation';
+        provider.errorEvent.addEventListener(error=>{if(revision!==terrainRevision)return;if(error.timesRetried<2)error.retry=true;else note.textContent='Some elevation tiles are unavailable. Turn terrain off for a smooth globe.';});
+      }catch(error){
+        if(revision!==terrainRevision)return;
+        note.textContent='Primary elevation unavailable · Loading Mapzen fallback…';
+        terrainProvider=EWTerrain.create(Cesium,message=>{if(revision===terrainRevision)note.textContent='Fallback · '+message;});
+        viewer.terrainProvider=terrainProvider;
+      }
     }else{viewer.terrainProvider=new Cesium.EllipsoidTerrainProvider();note.textContent='Terrain off · Smooth ellipsoid';}
     render();
   }
@@ -184,6 +199,9 @@ const EWGlobe = (() => {
       viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#050d16');
       viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#183a4b');
       viewer.scene.globe.enableLighting=false;
+      viewer.scene.globe.maximumScreenSpaceError=1.5;
+      viewer.scene.globe.tileCacheSize=200;
+      viewer.scene.globe.preloadAncestors=true;
       const controls=viewer.scene.screenSpaceCameraController;
       controls.minimumZoomDistance=MIN_CLEARANCE;
       controls.maximumZoomDistance=MAX_HEIGHT;

@@ -1,0 +1,1001 @@
+id,name,country,lat,lon,initial_all_ok,latest_all_ok,rechecked,zoom8_source_initial,zoom14_source_initial,zoom19_source_initial,terrain_initial_ok,terrain_latest_ok,terrain_min_m_latest,terrain_max_m_latest
+1007311,Durban,ZA,-29.8579,31.0292,True,True,False,8,14,19,True,True,0.591,101.545
+1033356,Nampula,MZ,-15.11646,39.2666,True,True,False,8,14,16,True,True,293.662,441.659
+1039854,Matola,MZ,-25.96222,32.45889,True,True,False,8,14,19,True,True,-10.539,52.283
+1040652,Maputo,MZ,-25.96553,32.58322,True,True,False,8,14,19,True,True,-2.379,68.444
+104515,Makkah,SA,21.42664,39.82563,True,True,False,8,14,19,True,True,249.076,858.488
+1049261,Chimoio,MZ,-19.11639,33.48333,True,True,False,8,14,17,True,True,594.942,732.153
+1052373,Beira,MZ,-19.84361,34.83889,True,True,False,8,14,17,True,True,0.0,11.6
+1053384,Toamasina,MG,-18.1492,49.40234,True,True,False,8,14,17,True,True,0.752,11.457
+105343,Jeddah,SA,21.49012,39.18624,True,True,False,8,14,19,True,True,-4.92,19.082
+1062663,Mahajanga,MG,-15.71667,46.31667,True,True,False,8,14,17,True,True,0.0,50.215
+1064890,Fianarantsoa,MG,-21.45267,47.08569,True,True,False,8,14,17,True,True,1068.958,1513.475
+1069166,Antsirabe,MG,-19.86586,47.03333,True,True,False,8,14,17,True,True,1450.962,1739.735
+1070940,Antananarivo,MG,-18.91368,47.53613,True,True,False,8,14,19,True,True,1246.904,1434.757
+108410,Riyadh,SA,24.68773,46.72185,True,True,False,8,14,19,True,True,585.271,666.166
+1085510,Epworth,ZW,-17.89,31.1475,True,True,False,8,14,19,True,True,1481.634,1600.717
+10858926,Kyengera,UG,0.29517,32.50159,True,True,False,8,14,19,True,True,1147.671,1312.198
+1090225,Koungou,YT,-12.73361,45.20417,True,True,False,8,14,17,True,True,1.697,563.583
+1090239,Kaouéni,YT,-12.77121,45.22419,True,True,False,8,14,17,True,True,1.697,563.583
+1090242,Mtsapéré,YT,-12.78636,45.21732,True,True,False,8,14,17,True,True,1.697,563.583
+1090275,Labattoir,YT,-12.77698,45.28234,True,True,False,8,14,17,True,True,1.419,202.089
+109223,Madinah,SA,24.46861,39.61417,True,True,False,8,14,19,True,True,583.374,1066.78
+10943053,Nansana,UG,0.36389,32.52861,True,True,False,8,14,19,True,True,1136.951,1285.235
+110336,Dammam,SA,26.43442,50.10326,True,True,False,8,14,19,True,True,-1.786,8.12
+11048319,Sector 3,RO,44.4234,26.16874,True,True,False,8,14,19,True,True,59.234,85.631
+11048323,Sector 6,RO,44.43579,26.01649,True,True,False,8,14,19,True,True,64.632,92.597
+1106542,Chitungwiza,ZW,-18.01274,31.07555,True,True,False,8,14,17,True,True,1382.23,1468.12
+11111027,Shengavit,AM,40.1557,44.4779,True,True,False,8,14,19,True,True,888.782,1316.158
+11244752,Ban Khoan,LA,20.35008,100.09022,True,True,False,8,14,18,True,True,358.36,698.771
+112931,Tehran,IR,35.69439,51.42151,True,True,False,8,14,19,True,True,1133.429,1394.335
+1133616,Mazār-e Sharīf,AF,36.70904,67.11087,True,True,False,8,14,19,True,True,341.679,460.65
+1135689,Kunduz,AF,36.72895,68.857,True,True,False,8,14,18,True,True,373.605,449.231
+113646,Tabriz,IR,38.08,46.2919,True,True,False,8,14,19,True,True,1337.562,1679.922
+1138336,Kandahār,AF,31.61332,65.71013,True,True,False,8,14,19,True,True,979.942,1321.56
+1138958,Kabul,AF,34.52813,69.17233,True,True,False,8,14,19,True,True,1780.895,2190.429
+1139715,Jalālābād,AF,34.42647,70.45153,True,True,False,8,14,19,True,True,550.24,715.13
+1140026,Herāt,AF,34.34817,62.19967,True,True,False,8,14,19,True,True,903.28,1162.202
+11496397,Dar Naim,MR,18.10808,-15.92666,True,True,False,8,14,19,True,True,-5.837,19.479
+1166993,Rawalpindi,PK,33.59733,73.0479,True,True,False,8,14,19,True,True,430.591,521.22
+1168197,Peshawar,PK,34.008,71.57849,True,True,False,8,14,19,True,True,309.513,379.167
+11703857,Providenciales,TC,21.78254,-72.25206,True,True,False,8,14,18,True,True,-2.639,46.38
+1172451,Lahore,PK,31.558,74.35071,True,True,False,8,14,19,True,True,199.558,223.924
+1174872,Karachi,PK,24.8608,67.0104,True,True,False,8,14,19,True,True,-0.078,119.982
+1179400,Faisalabad,PK,31.41554,73.08969,True,True,False,8,14,19,True,True,171.681,190.917
+11808941,Sekondi,GH,4.93422,-1.71454,True,True,False,8,14,18,True,True,-13.819,71.811
+1185128,Rajshahi,BD,24.374,88.60114,True,True,False,8,14,19,True,True,12.174,22.199
+1185188,Rangpur,BD,25.74664,89.25166,True,True,False,8,14,19,True,True,26.953,37.662
+1185241,Dhaka,BD,23.7104,90.40744,True,True,False,8,14,19,True,True,-1.214,18.739
+11903636,Donaustadt,AT,48.2333,16.46002,True,True,False,8,14,19,True,True,151.465,199.04
+1200109,Gazipur,BD,23.99844,90.42234,True,True,False,8,14,19,True,True,2.26,20.257
+1205733,Chattogram,BD,22.3384,91.83168,True,True,False,8,14,19,True,True,-1.49,56.217
+1214520,Medan,ID,3.58333,98.66667,True,True,False,8,14,19,True,True,16.958,55.284
+1216265,Samarkand,UZ,39.65456,66.96445,True,True,False,8,14,18,True,True,646.258,743.968
+1218667,Mary,TM,37.59378,61.83031,True,True,False,8,14,17,True,True,214.319,230.857
+1219649,Türkmenabat,TM,39.07328,63.57861,True,True,False,8,14,17,True,True,186.59,197.41
+1220253,Istaravshan,TJ,39.9142,69.00328,True,True,False,8,14,17,True,True,794.265,1192.282
+1221194,Kŭlob,TJ,37.91459,69.78454,True,True,False,8,14,18,True,True,499.057,783.679
+1221874,Dushanbe,TJ,38.53575,68.77905,True,True,False,8,14,19,True,True,715.525,798.662
+12226438,Ciudad de la Paz,GQ,1.5925,10.82361,True,True,False,8,14,18,True,True,595.508,854.686
+12242643,Al Maţār al ‘Atīq,QA,25.25138,51.55569,True,True,False,8,14,19,True,True,-15.107,23.215
+1234569,Dehiwala-Mount Lavinia,LK,6.84019,79.87116,True,True,False,8,14,19,True,True,0.823,29.587
+1234633,Moratuwa,LK,6.773,79.8816,True,True,False,8,14,19,True,True,0.886,26.702
+1236854,Maharagama,LK,6.848,79.9265,True,True,False,8,14,19,True,True,-18.31,39.823
+1242833,Jaffna,LK,9.66845,80.00742,True,True,False,8,14,19,True,True,-1.07,16.775
+124665,Mashhad,IR,36.29807,59.60567,True,True,False,8,14,19,True,True,936.602,1057.363
+1248991,Colombo,LK,6.93548,79.84868,True,True,False,8,14,19,True,True,-5.127,33.168
+1252416,Thimphu,BT,27.46609,89.64191,True,True,False,8,14,19,True,True,2283.956,4165.338
+1252479,Punākha,BT,27.59137,89.87743,True,True,False,8,14,17,True,True,1202.357,2498.186
+1252484,Phuntsholing,BT,26.85164,89.38837,True,True,False,8,14,18,True,True,196.321,1784.536
+1252608,Tsirang,BT,27.0219,90.12291,True,True,False,8,14,18,True,True,416.844,2342.385
+12640502,Talinding,GM,13.42558,-16.67261,True,True,False,8,14,19,True,True,-2.634,30.207
+1269843,Hyderabad,IN,17.38405,78.45636,True,True,False,8,14,19,True,True,483.105,607.36
+1273294,Delhi,IN,28.65195,77.23149,True,True,False,8,14,19,True,True,201.265,263.254
+12747063,New Territories,HK,22.42441,114.11095,True,True,False,8,14,19,True,True,-0.415,953.532
+12747064,Hong Kong Island,HK,22.26302,114.18419,True,True,False,8,14,19,True,True,0.522,521.865
+1275339,Mumbai,IN,19.07283,72.88261,True,True,False,8,14,19,True,True,-2.719,206.149
+1277333,Bengaluru,IN,12.97194,77.59369,True,True,False,8,14,19,True,True,799.746,930.582
+1279233,Ahmedabad,IN,23.02579,72.58727,True,True,False,8,14,19,True,True,35.005,69.805
+1282027,Male,MV,4.17521,73.50916,True,True,False,8,14,19,True,True,-0.538,13.103
+1282898,Pokhara,NP,28.26689,83.96851,True,True,False,8,14,18,True,True,793.92,1995.839
+1282931,Pātan,NP,27.67658,85.31417,True,True,False,8,14,19,True,True,1244.048,2245.292
+1283240,Kathmandu,NP,27.70169,85.3206,True,True,False,8,14,19,True,True,1275.738,2098.766
+1283581,Birgañj,NP,27.01736,84.88047,True,True,False,8,14,17,True,True,75.172,88.763
+1283613,Bharatpur,NP,27.68027,84.43647,True,True,False,8,14,18,True,True,173.954,218.77
+128747,Karaj,IR,35.83266,50.99155,True,True,False,8,14,19,True,True,1314.845,2245.104
+12908892,New Taipei City,TW,25.06199,121.45703,True,True,False,8,14,19,True,True,-1.804,272.295
+1298824,Yangon,MM,16.80528,96.15611,True,True,False,8,14,19,True,True,0.545,44.658
+1308465,Mawlamyine,MM,16.49051,97.62825,True,True,False,8,14,18,True,True,0.585,121.382
+1311874,Mandalay,MM,21.97473,96.08359,True,True,False,8,14,19,True,True,61.036,221.832
+13308487,Bandariba,CW,12.09257,-68.83092,True,True,False,8,14,19,True,True,-0.815,187.591
+1336135,Khulna,BD,22.80979,89.56439,True,True,False,8,14,19,True,True,-0.502,11.605
+13512674,Lusail,QA,25.4175,51.5075,True,True,False,8,14,19,True,True,-22.025,18.342
+13526998,Kola'a,SB,-9.44112,159.97002,True,True,False,8,14,17,True,True,-0.027,93.775
+13527002,Tandai,SB,-9.44666,159.94549,True,True,False,8,14,17,True,True,-0.744,405.74
+13527317,Sé,MO,22.19089,113.54733,True,True,False,8,14,19,True,True,-8.605,382.998
+13607830,Pontbuiten,SR,5.78808,-55.20895,True,True,False,8,14,19,True,True,0.723,19.503
+13607831,Latour,SR,5.79668,-55.20858,True,True,False,8,14,19,True,True,-0.052,21.609
+13645741,Bairro Militar,GW,11.8746,-15.6158,True,True,False,8,14,19,True,True,1.51,40.708
+146054,Stróvolos,CY,35.14867,33.33384,True,True,False,8,14,19,True,True,122.742,240.216
+146268,Nicosia,CY,35.17284,33.35397,True,True,False,8,14,19,True,True,122.742,240.216
+146384,Limassol,CY,34.68406,33.03794,True,True,False,8,14,19,True,True,0.493,396.997
+146400,Larnaca,CY,34.9221,33.62794,True,True,False,8,14,19,True,True,-1.272,95.676
+146617,Famagusta,CY,35.12489,33.94135,True,True,False,8,14,18,True,True,0.0,24.95
+1486209,Yekaterinburg,RU,56.85733,60.61529,True,True,False,8,14,19,True,True,243.485,312.13
+148730,Zanzibar,TZ,-6.16394,39.19793,True,True,False,8,14,18,True,True,-0.002,9.957
+1496747,Novosibirsk,RU,55.02259,82.93175,True,True,False,8,14,19,True,True,87.566,191.055
+1512296,Yunusobod,UZ,41.37139,69.27944,True,True,False,8,14,19,True,True,440.797,505.333
+1512569,Tashkent,UZ,41.26465,69.21627,True,True,False,8,14,19,True,True,393.209,459.201
+1513157,Namangan,UZ,40.9983,71.67257,True,True,False,8,14,18,True,True,408.13,672.016
+1514588,Andijon,UZ,40.78338,72.35067,True,True,False,8,14,18,True,True,456.442,656.941
+1514891,Konibodom,TJ,40.29414,70.43122,True,True,False,8,14,17,True,True,358.872,721.267
+1514896,Isfara,TJ,40.12649,70.62526,True,True,False,8,14,17,True,True,730.355,1142.816
+1518980,Shymkent,KZ,42.30988,69.60042,True,True,False,8,14,17,True,True,434.14,573.691
+152224,Mwanza,TZ,-2.51667,32.9,True,True,False,8,14,19,True,True,1133.0,1318.57
+1526273,Astana,KZ,51.1801,71.44598,True,True,False,8,14,19,True,True,345.257,377.002
+1526384,Almaty,KZ,43.25249,76.9115,True,True,False,8,14,19,True,True,768.96,1266.697
+1527199,Tokmok,KG,42.84194,75.30149,True,True,False,8,14,18,True,True,784.86,1005.092
+1527534,Osh,KG,40.52828,72.7985,True,True,False,8,14,17,True,True,903.89,1152.495
+1528121,Karakol,KG,42.49047,78.39197,True,True,False,8,14,18,True,True,1628.403,1809.547
+1528249,Manas,KG,40.94498,72.99313,True,True,False,8,14,18,True,True,734.978,1083.333
+1528675,Bishkek,KG,42.87,74.59,True,True,False,8,14,19,True,True,735.785,915.975
+1546102,Port-aux-Français,TF,-49.34916,70.21937,True,True,False,8,14,17,True,True,-2.578,69.997
+1566083,Ho Chi Minh City,VN,10.82302,106.62965,True,True,False,8,14,19,True,True,-0.521,18.347
+1580240,Huế,VN,16.4619,107.59546,True,True,False,8,14,18,True,True,-1.658,151.128
+1581130,Hanoi,VN,21.0245,105.84117,True,True,False,8,14,19,True,True,1.183,17.447
+1581298,Haiphong,VN,20.86481,106.68345,True,True,False,8,14,19,True,True,-0.488,114.944
+1586203,Cần Thơ,VN,10.03711,105.78825,True,True,False,8,14,19,True,True,-7.791,6.788
+160196,Dodoma,TZ,-6.17221,35.73947,True,True,False,8,14,19,True,True,1092.992,1372.592
+160263,Dar es Salaam,TZ,-6.82349,39.26951,True,True,False,8,14,19,True,True,-0.002,107.834
+1606590,Samut Prakan,TH,13.5976,100.5972,True,True,False,8,14,19,True,True,-3.982,9.502
+1607508,Phra Pradaeng,TH,13.65855,100.53362,True,True,False,8,14,19,True,True,-7.162,11.289
+1608133,Mueang Nonthaburi,TH,13.86075,100.51477,True,True,False,8,14,19,True,True,-2.565,9.292
+1609350,Bangkok,TH,13.75398,100.50144,True,True,False,8,14,19,True,True,-2.17,11.875
+1611110,Chon Buri,TH,13.3622,100.98345,True,True,False,8,14,19,True,True,-1.066,29.162
+161325,Arusha,TZ,-3.36667,36.68333,True,True,False,8,14,17,True,True,1251.735,1967.987
+162183,Ashgabat,TM,37.95,58.38333,True,True,False,8,14,19,True,True,182.352,303.681
+1625822,Surabaya,ID,-7.24917,112.75083,True,True,False,8,14,19,True,True,0.171,22.34
+1626459,Suai,TL,-9.31286,125.25648,True,True,False,8,14,17,True,True,-0.02,305.036
+1636670,Maliana,TL,-8.99167,125.21972,True,True,False,8,14,18,True,True,119.551,755.368
+1637730,Likisá,TL,-8.5875,125.34194,True,True,False,8,14,18,True,True,0.0,1390.166
+1642911,Jakarta,ID,-6.21462,106.84513,True,True,False,8,14,19,True,True,-4.139,22.629
+1645457,Dili,TL,-8.55861,125.57361,True,True,False,8,14,19,True,True,-1.945,353.751
+1649378,Bekasi,ID,-6.2349,106.9896,True,True,False,8,14,19,True,True,9.804,42.338
+1650357,Bandung,ID,-6.92222,107.60694,True,True,False,8,14,19,True,True,674.25,1326.161
+1651816,Aileu,TL,-8.72806,125.56639,True,True,False,8,14,18,True,True,640.687,1316.379
+1651944,Vientiane,LA,17.96667,102.6,True,True,False,8,14,19,True,True,160.906,187.543
+1653316,Savannakhet,LA,16.5703,104.7622,True,True,False,8,14,19,True,True,133.658,201.85
+1654379,Pakse,LA,15.12022,105.79898,True,True,False,8,14,18,True,True,90.502,157.521
+1655199,Thakhèk,LA,17.41027,104.83068,False,False,True,8,14,17,False,False,,
+1668341,Taipei,TW,25.05306,121.52639,True,True,False,8,14,19,True,True,-1.449,140.655
+1668355,Tainan,TW,22.99083,120.21333,True,True,False,8,14,19,True,True,-0.671,26.786
+1668399,Taichung,TW,24.1469,120.6839,True,True,False,8,14,19,True,True,60.88,472.079
+1673820,Kaohsiung,TW,22.61626,120.31333,True,True,False,8,14,19,True,True,-0.37,348.791
+1684308,Taguig,PH,14.5243,121.0792,True,True,False,8,14,19,True,True,-1.561,54.629
+1692192,Quezon City,PH,14.6488,121.0509,True,True,False,8,14,19,True,True,0.804,93.691
+169577,Homs,SY,34.72405,36.72559,True,True,False,8,14,19,True,True,472.617,565.895
+170063,Aleppo,SY,36.20124,37.16117,True,True,False,8,14,19,True,True,356.698,467.939
+1701668,Manila,PH,14.6042,120.9822,True,True,False,8,14,19,True,True,-7.391,19.646
+170654,Damascus,SY,33.5102,36.29128,True,True,False,8,14,19,True,True,678.884,1148.956
+1715348,Davao,PH,7.07306,125.61278,True,True,False,8,14,19,True,True,0.477,130.527
+1720151,Caloocan,PH,14.64953,120.96788,True,True,False,8,14,19,True,True,-1.86,37.485
+172955,Ar Raqqah,SY,35.95283,39.00788,True,True,False,8,14,19,True,True,235.96,343.272
+1732752,Johor Bahru,MY,1.4655,103.7578,True,True,False,8,14,19,True,True,-0.754,81.155
+1734634,Ipoh,MY,4.5841,101.0829,True,True,False,8,14,19,True,True,-11.825,492.556
+1735158,Petaling Jaya,MY,3.10726,101.60671,True,True,False,8,14,19,True,True,11.989,256.896
+1735161,Kuala Lumpur,MY,3.1412,101.68653,True,True,False,8,14,19,True,True,11.989,256.896
+173576,Latakia,SY,35.53125,35.79088,True,True,False,8,14,19,True,True,-0.087,72.191
+1771023,Kampung Baru Subang,MY,3.15,101.53333,True,True,False,8,14,19,True,True,4.431,124.245
+1796236,Shanghai,CN,31.22222,121.45806,True,True,False,8,14,19,True,True,-3.91,14.659
+1809858,Guangzhou,CN,23.11667,113.25,True,True,False,8,14,19,True,True,-0.77,117.694
+181032,Ruiru,KE,-1.14665,36.96087,True,True,False,8,14,19,True,True,1489.619,1588.907
+1814906,Chongqing,CN,29.56026,106.55771,True,True,False,8,14,19,True,True,164.917,593.813
+1815286,Chengdu,CN,30.66667,104.06667,True,True,False,8,14,19,True,True,464.166,539.888
+1816670,Beijing,CN,39.9075,116.39723,True,True,False,8,14,19,True,True,25.435,53.306
+1819609,Kowloon,HK,22.31667,114.18333,True,True,False,8,14,19,True,True,-13.028,594.096
+1819729,Hong Kong,HK,22.27832,114.17469,True,True,False,8,14,19,True,True,-13.028,594.096
+1820071,Tutong,BN,4.80278,114.64917,True,True,False,8,14,19,True,True,-8.71,79.389
+1820491,Kuala Belait,BN,4.58361,114.2312,True,True,False,8,14,18,True,True,0.0,33.84
+1820575,Sengkurong,BN,4.88333,114.83333,True,True,False,8,14,19,True,True,0.0,127.604
+1820635,Mentiri,BN,4.97058,115.02078,True,True,False,8,14,19,True,True,-2.771,175.041
+1820906,Bandar Seri Begawan,BN,4.89035,114.94006,True,True,False,8,14,19,True,True,-1.8,206.306
+1821263,Taipa,MO,22.15583,113.55694,True,True,False,8,14,19,True,True,-1.346,162.87
+1821274,Macau,MO,22.20056,113.54611,True,True,False,8,14,19,True,True,-8.605,382.998
+1821292,Luhuan,MO,22.11806,113.55194,True,True,False,8,14,19,True,True,-8.124,451.55
+1821294,Zhuojiacun,MO,22.16139,113.55639,True,True,False,8,14,19,True,True,-1.346,162.87
+1821306,Phnom Penh,KH,11.56245,104.91601,True,True,False,8,14,19,True,True,2.059,20.189
+1821940,Takeo,KH,10.99081,104.78498,True,True,False,8,14,17,True,True,-1.435,13.79
+1822214,Siem Reap,KH,13.36179,103.86056,True,True,False,8,14,17,True,True,1.994,48.921
+1830194,Paoy Paet,KH,13.65805,102.56365,True,True,False,8,14,19,True,True,35.615,137.869
+1831797,Battambang,KH,13.10271,103.19822,True,True,False,8,14,18,True,True,5.845,23.364
+1835235,Daejeon,KR,36.34913,127.38493,True,True,False,8,14,19,True,True,28.425,410.522
+1835329,Daegu,KR,35.87028,128.59111,True,True,False,8,14,19,True,True,23.393,466.035
+1835848,Seoul,KR,37.566,126.9784,True,True,False,8,14,19,True,True,2.255,288.499
+1838524,Busan,KR,35.10168,129.03004,True,True,False,8,14,19,True,True,-8.036,380.198
+1843564,Incheon,KR,37.45646,126.70515,True,True,False,8,14,19,True,True,0.24,193.41
+184622,Nakuru,KE,-0.30719,36.07225,True,True,False,8,14,19,True,True,1763.52,2083.911
+184745,Nairobi,KE,-1.28333,36.81667,True,True,False,8,14,19,True,True,1645.998,1860.883
+1848354,Yokohama,JP,35.43333,139.65,True,True,False,8,14,19,True,True,-9.645,90.399
+1850147,Tokyo,JP,35.6895,139.69171,True,True,False,8,14,19,True,True,-2.798,44.252
+1853909,Osaka,JP,34.69379,135.50107,True,True,False,8,14,19,True,True,-2.851,40.536
+1856057,Nagoya,JP,35.18147,136.90641,True,True,False,8,14,19,True,True,-1.115,19.278
+186301,Mombasa,KE,-4.05466,39.66359,True,True,False,8,14,19,True,True,0.0,29.975
+1869012,Sunch’ŏn,KP,39.43167,125.93278,True,True,False,8,14,18,True,True,28.974,202.753
+1871859,Pyongyang,KP,39.03385,125.75432,True,True,False,8,14,19,True,True,2.653,136.447
+1873757,Namp’o,KP,38.7375,125.40778,True,True,False,8,14,18,True,True,1.191,124.147
+1877030,Hŭngnam,KP,39.84198,127.63206,True,True,False,8,14,18,True,True,-0.784,219.266
+1877449,Hamhŭng,KP,39.91833,127.53639,True,True,False,8,14,18,True,True,6.069,388.539
+1880159,Ulu Bedok,SG,1.33333,103.93333,True,True,False,8,14,19,True,True,-4.55,49.641
+1880216,Tampines Estate,SG,1.35806,103.94028,True,True,False,8,14,19,True,True,-4.55,49.641
+1880252,Singapore,SG,1.28967,103.85007,True,True,False,8,14,19,True,True,-3.495,92.655
+1884382,Bedok New Town,SG,1.32639,103.94167,True,True,False,8,14,19,True,True,-4.55,49.641
+1931681,Victoria,HK,22.2875,114.14417,True,True,False,8,14,19,True,True,-10.417,542.472
+195272,Kakamega,KE,0.28422,34.75229,True,True,False,8,14,19,True,True,1419.896,1602.968
+201521,Musanze,RW,-1.49984,29.63497,True,True,False,8,14,18,True,True,1566.93,2008.139
+201650,Nyagatare,RW,-1.2952,30.3226,True,True,False,8,14,18,True,True,1329.278,1642.446
+202061,Kigali,RW,-1.94995,30.05885,True,True,False,8,14,19,True,True,1336.996,1805.385
+202217,Gitarama,RW,-2.07444,29.75667,True,True,False,8,14,18,True,True,1629.672,2189.549
+2028462,Ulan Bator,MN,47.90771,106.88324,True,True,False,8,14,19,True,True,1279.719,1661.812
+202905,Gisenyi,RW,-1.70278,29.25639,True,True,False,8,14,18,True,True,1461.445,1765.615
+2029901,Nalayh,MN,47.76667,107.28333,True,True,False,8,14,17,True,True,1374.894,1722.255
+2031405,Erdenet,MN,49.03333,104.08333,True,True,False,8,14,16,True,True,1258.58,1525.688
+2031964,Darhan,MN,49.48667,105.92278,True,True,False,8,14,17,True,True,679.165,926.866
+2032054,Choibalsan,MN,48.07257,114.53264,True,True,False,8,14,17,True,True,733.547,775.718
+2063523,Perth,AU,-31.95224,115.8614,True,True,False,8,14,19,True,True,-0.029,72.269
+2078025,Adelaide,AU,-34.92866,138.59863,True,True,False,8,14,19,True,True,2.331,54.637
+2078127,Flying Fish Cove,CX,-10.42172,105.67912,True,True,False,8,14,18,True,True,-0.488,312.767
+2081986,Palikir,FM,6.92477,158.16109,True,True,False,8,14,16,True,True,-0.016,708.902
+2088122,Port Moresby,PG,-9.47723,147.15089,True,True,False,8,14,19,True,True,0.704,245.429
+2088163,Popondetta,PG,-8.76536,148.23252,True,True,False,8,14,17,True,True,68.542,406.7
+2090409,Mount Hagen,PG,-5.85746,144.23058,True,True,False,8,14,17,True,True,1593.159,2029.073
+209228,Mbuji-Mayi,CD,-6.13603,23.58979,True,True,False,8,14,19,True,True,510.025,723.983
+2092740,Lae,PG,-6.72333,146.99611,True,True,False,8,14,17,True,True,-0.155,322.464
+2100633,Arawa,PG,-6.22977,155.56598,True,True,False,8,14,17,True,True,9.117,1582.179
+2104533,Panatina,SB,-9.43215,160.00607,True,True,False,8,14,17,True,True,-0.027,93.775
+2105033,Nggosi,SB,-9.43056,159.92103,True,True,False,8,14,17,True,True,-0.744,405.74
+2108502,Honiara,SB,-9.43333,159.95,True,True,False,8,14,17,True,True,-0.744,405.74
+2110257,Tarawa,KI,1.3278,172.97696,True,True,False,8,14,17,True,True,1.734,6.857
+2110394,Funafuti,TV,-8.52425,179.19417,True,True,False,8,14,17,True,True,-0.04,16.8
+2113779,Majuro,MH,7.08971,171.38027,True,True,False,8,14,17,True,True,0.698,12.403
+212730,Kisangani,CD,0.51528,25.19099,True,True,False,8,14,17,True,True,379.468,446.683
+2128295,Sapporo,JP,43.06667,141.35,True,True,False,8,14,19,True,True,5.973,442.557
+2135171,Port-Vila,VU,-17.73648,168.31366,True,True,False,8,14,19,True,True,0.0,144.345
+2139521,Nouméa,NC,-22.27407,166.44884,True,True,False,8,14,19,True,True,0.444,130.132
+2140066,Mont-Dore,NC,-22.26257,166.56621,True,True,False,8,14,19,True,True,0.449,765.699
+2141394,Dumbéa,NC,-22.15757,166.4572,True,True,False,8,14,19,True,True,-25.183,628.001
+214481,Kananga,CD,-5.89624,22.41659,True,True,False,8,14,17,True,True,561.818,703.652
+2147714,Sydney,AU,-33.86785,151.20732,True,True,False,8,14,19,True,True,-13.568,108.301
+2158177,Melbourne,AU,-37.814,144.96332,True,True,False,8,14,19,True,True,-5.51,59.358
+2161314,Kingston,NF,-29.05459,167.96628,True,True,False,8,14,18,True,True,-5.039,150.834
+2165087,Gold Coast,AU,-28.00029,153.43088,True,True,False,8,14,19,True,True,-2.857,41.969
+2174003,Brisbane,AU,-27.46794,153.02809,True,True,False,8,14,19,True,True,-3.73,102.985
+2179537,Wellington,NZ,-41.28664,174.77557,True,True,False,8,14,19,True,True,-1.002,406.309
+2185964,North Shore,NZ,-36.8,174.75,True,True,False,8,14,19,True,True,-1.143,90.149
+2187404,Manukau City,NZ,-36.99282,174.87986,True,True,False,8,14,19,True,True,-1.764,110.392
+2192362,Christchurch,NZ,-43.53333,172.63333,True,True,False,8,14,19,True,True,-0.178,283.564
+2193733,Auckland,NZ,-36.84853,174.76349,True,True,False,8,14,19,True,True,-2.786,190.2
+2198148,Suva,FJ,-18.13683,178.42531,True,True,False,8,14,19,True,True,1.334,423.061
+2202064,Nadi,FJ,-17.80309,177.41617,True,True,False,8,14,19,True,True,1.336,40.591
+2204506,Lautoka,FJ,-17.61686,177.45049,True,True,False,8,14,19,True,True,1.159,113.224
+2204582,Labasa,FJ,-16.4332,179.36451,True,True,False,8,14,17,True,True,-2.23,229.649
+220782,Tadjoura,DJ,11.78778,42.88222,True,True,False,8,14,17,True,True,0.0,780.159
+2208485,Zliten,LY,32.46739,14.56874,True,True,False,8,14,17,True,True,6.865,123.233
+2210247,Tripoli,LY,32.88743,13.18733,True,True,False,8,14,19,True,True,-0.543,42.833
+2214846,Misratah,LY,32.37535,15.09254,True,True,False,8,14,19,True,True,0.523,28.312
+2219905,Al Khums,LY,32.64861,14.26191,True,True,False,8,14,17,True,True,0.14,91.02
+2220957,Yaoundé,CM,3.86667,11.51667,True,True,False,8,14,19,True,True,637.43,822.341
+2228373,Maroua,CM,10.59095,14.31593,True,True,False,8,14,18,True,True,390.31,870.187
+2232593,Douala,CM,4.04827,9.70428,True,True,False,8,14,19,True,True,-3.83,45.342
+2234974,Bamenda,CM,5.9597,10.14597,True,True,False,8,14,18,True,True,1199.972,2333.441
+2235189,Bafoussam,CM,5.47775,10.41759,True,True,False,8,14,18,True,True,1145.75,1544.799
+2236500,Viana,AO,-8.90553,13.37499,True,True,False,8,14,19,True,True,30.442,147.192
+223817,Djibouti,DJ,11.58901,43.14503,True,True,False,8,14,19,True,True,-1.537,126.189
+223890,Dikhil,DJ,11.10454,42.36971,True,True,False,8,14,18,True,True,458.883,691.089
+2239888,Maianga,AO,-8.84693,13.23698,True,True,False,8,14,19,True,True,0.0,90.841
+2240449,Luanda,AO,-8.83682,13.23432,True,True,False,8,14,19,True,True,0.0,81.717
+2244322,Touba,SN,14.86229,-15.87532,True,True,False,8,14,17,True,True,38.337,54.039
+2244802,Thiès,SN,14.78944,-16.92602,True,True,False,8,14,17,True,True,34.224,101.835
+2246678,Pikine,SN,14.76457,-17.39071,True,True,False,8,14,19,True,True,-1.089,19.964
+225284,Ali Sabih,DJ,11.15583,42.7125,True,True,False,8,14,18,True,True,619.466,1031.89
+2253354,Dakar,SN,14.6937,-17.44406,True,True,False,8,14,19,True,True,-0.558,43.605
+2255414,Pointe-Noire,CG,-4.77609,11.86352,True,True,False,8,14,17,True,True,-1.976,21.396
+2258261,Dolisie,CG,-4.19834,12.66664,True,True,False,8,14,17,True,True,289.561,519.527
+2259383,Kayes,CG,-4.20493,13.28608,True,True,False,8,14,17,True,True,119.18,264.229
+2260535,Brazzaville,CG,-4.26613,15.28318,True,True,False,8,14,19,True,True,267.865,467.731
+2267057,Lisbon,PT,38.72509,-9.1498,True,True,False,8,14,19,True,True,-4.332,212.917
+2271772,Amadora,PT,38.75382,-9.23083,True,True,False,8,14,19,True,True,-0.003,212.32
+2274895,Monrovia,LR,6.30054,-10.7969,True,True,False,8,14,18,True,True,-1.259,29.499
+2276086,Kakata,LR,6.53104,-10.35368,True,True,False,8,14,18,True,True,64.798,127.5
+2277060,Gbarnga,LR,6.99543,-9.47122,True,True,False,8,14,18,True,True,206.662,284.437
+2277241,Ganta,LR,7.235,-8.98444,True,True,False,8,14,18,True,True,250.372,347.535
+2278158,Buchanan,LR,5.87693,-10.04964,True,True,False,8,14,18,True,True,-1.864,14.457
+2286304,Korhogo,CI,9.45803,-5.62961,True,True,False,8,14,18,True,True,347.659,557.947
+2290486,Daloa,CI,6.87735,-6.45022,True,True,False,8,14,18,True,True,223.119,289.159
+2290956,Bouaké,CI,7.69385,-5.03031,True,True,False,8,14,18,True,True,268.845,403.07
+2293521,Abobo,CI,5.41613,-4.0159,True,True,False,8,14,19,True,True,-0.819,124.033
+2293538,Abidjan,CI,5.35444,-4.00167,True,True,False,8,14,19,True,True,-0.819,124.033
+2294877,Tamale,GH,9.40079,-0.8393,False,False,True,8,14,19,False,False,,
+2294915,Takoradi,GH,4.89816,-1.76029,True,True,False,8,14,18,True,True,-1.896,39.795
+2298890,Kumasi,GH,6.68848,-1.62443,True,True,False,8,14,19,True,True,227.555,314.172
+2306104,Accra,GH,5.55602,-0.1969,True,True,False,8,14,19,True,True,0.348,63.366
+2309332,Ebebiyin,GQ,2.15218,11.33013,False,False,True,8,14,17,False,False,,
+2309527,Malabo,GQ,3.75578,8.78166,True,True,False,8,14,18,True,True,-1.935,453.451
+2310046,Bata,GQ,1.86391,9.76582,True,True,False,8,14,18,True,True,-2.431,55.609
+231165,Kira,UG,0.4,32.63333,True,True,False,8,14,19,True,True,1113.847,1273.916
+2314302,Kinshasa,CD,-4.32758,15.31357,True,True,False,8,14,19,True,True,265.222,379.917
+232422,Kampala,UG,0.31628,32.58219,True,True,False,8,14,19,True,True,1141.395,1317.068
+2324774,Port Harcourt,NG,4.77742,7.0134,True,True,False,8,14,19,True,True,-4.791,18.784
+2332459,Lagos,NG,6.45407,3.39467,True,True,False,8,14,19,True,True,-2.929,10.31
+2335204,Kano,NG,12.00012,8.51672,True,True,False,8,14,19,True,True,453.428,533.048
+2339354,Ibadan,NG,7.37756,3.90591,True,True,False,8,14,19,True,True,157.937,276.126
+234179,Bunamwaya,UG,0.25344,32.55723,True,True,False,8,14,19,True,True,1134.168,1313.748
+2352778,Abuja,NG,9.05785,7.49508,True,True,False,8,14,19,True,True,428.662,937.692
+2356157,Saaba,BF,12.37136,-1.41468,True,True,False,8,14,19,True,True,282.997,319.131
+2357043,Ouahigouya,BF,13.5769,-2.41786,True,True,False,8,14,18,True,True,310.786,357.585
+2357048,Ouagadougou,BF,12.36566,-1.53388,True,True,False,8,14,19,True,True,285.227,335.2
+235715,Karonga,MW,-9.93333,33.93333,True,True,False,8,14,18,True,True,474.4,490.251
+2358946,Koudougou,BF,12.25188,-2.36694,True,True,False,8,14,18,True,True,284.9,343.98
+2359608,Kaya,BF,13.0883,-1.08368,True,True,False,8,14,18,True,True,312.712,456.698
+2362344,Bobo-Dioulasso,BF,11.18064,-4.29489,True,True,False,8,14,18,True,True,352.596,460.461
+2364104,Sokodé,TG,8.98333,1.13333,True,True,False,8,14,18,True,True,346.883,482.784
+2365267,Lomé,TG,6.12874,1.22154,True,True,False,8,14,19,True,True,1.311,23.37
+2365560,Kpalimé,TG,6.9,0.63333,True,True,False,8,14,18,True,True,160.661,396.793
+2366152,Kara,TG,9.55111,1.18611,True,True,False,8,14,18,True,True,245.591,688.193
+2367886,Atakpamé,TG,7.53333,1.13333,True,True,False,8,14,18,True,True,173.274,691.125
+2370317,Reino de Bandim,GW,11.85,-15.6,True,True,False,8,14,19,True,True,0.965,39.994
+2372532,Gabú,GW,12.28,-14.22222,True,True,False,8,14,17,True,True,24.254,74.435
+2373235,Contumo,GW,11.85,-15.61667,True,True,False,8,14,19,True,True,0.965,39.994
+2374775,Bissau,GW,11.86357,-15.59767,True,True,False,8,14,19,True,True,0.965,39.994
+2377450,Nouakchott,MR,18.08581,-15.9785,True,True,False,8,14,19,True,True,-5.837,19.479
+2377457,Nouadhibou,MR,20.94188,-17.03842,True,True,False,8,14,17,True,True,-2.161,21.032
+2377539,Néma,MR,16.61702,-7.25649,True,True,False,8,14,17,True,True,234.795,417.465
+2378538,Kiffa,MR,16.62073,-11.40208,True,True,False,8,14,17,True,True,103.954,160.301
+2387495,Carnot,CF,4.94273,15.87735,True,True,False,8,14,17,True,True,445.213,663.472
+2388873,Bimbo,CF,4.25671,18.41583,True,True,False,8,14,17,True,True,356.245,449.74
+2389086,Berbérati,CF,4.26116,15.79216,True,True,False,8,14,17,True,True,496.183,611.991
+2389422,Bégoua,CF,4.45437,18.53475,True,True,False,8,14,17,True,True,341.77,593.747
+2389853,Bangui,CF,4.36122,18.55496,True,True,False,8,14,17,True,True,336.406,614.623
+2392087,Porto-Novo,BJ,6.49646,2.60359,True,True,False,8,14,18,True,True,-0.666,45.44
+2392204,Parakou,BJ,9.33716,2.63031,True,True,False,8,14,18,True,True,330.577,401.165
+2394092,Godomè,BJ,6.38948,2.34581,True,True,False,8,14,19,True,True,-0.53,16.423
+2394819,Cotonou,BJ,6.36536,2.41833,True,True,False,8,14,19,True,True,-1.787,7.594
+2395914,Abomey-Calavi,BJ,6.44852,2.35566,True,True,False,8,14,19,True,True,-0.2,33.843
+2396518,Port-Gentil,GA,-0.71933,8.78151,True,True,False,8,14,18,True,True,-0.009,18.788
+2396646,Oyem,GA,1.5995,11.57933,True,True,False,8,14,18,True,True,605.243,791.003
+2396657,Owendo,GA,0.29123,9.50465,True,True,False,8,14,18,True,True,-2.089,95.377
+2399697,Libreville,GA,0.39241,9.45356,True,True,False,8,14,18,True,True,-0.674,109.904
+2400555,Franceville,GA,-1.63333,13.58357,False,False,True,8,14,18,False,False,,
+2406407,Makeni,SL,8.88605,-12.04417,True,True,False,8,14,18,True,True,62.738,285.436
+2407656,Koidu,SL,8.64387,-10.9714,True,True,False,8,14,18,True,True,176.57,530.991
+2407790,Kenema,SL,7.87687,-11.19025,True,True,False,8,14,17,True,True,122.476,444.232
+2409306,Freetown,SL,8.48714,-13.2356,True,True,False,8,14,19,True,True,-0.697,746.686
+2410048,Bo,SL,7.96472,-11.73833,True,True,False,8,14,18,True,True,58.578,144.293
+2410763,São Tomé,ST,0.33756,6.7299,True,True,False,8,14,18,True,True,0.0,353.45
+241131,Victoria,SC,-4.62001,55.45501,True,True,False,8,14,17,True,True,0.826,902.111
+2411585,Gibraltar,GI,36.14474,-5.35257,True,True,False,8,14,19,True,True,-0.095,412.49
+2411880,Sukuta,GM,13.41033,-16.70815,True,True,False,8,14,19,True,True,-2.393,33.411
+2411989,Serekunda,GM,13.43833,-16.67806,True,True,False,8,14,19,True,True,-2.634,30.207
+2413709,Bununka Kunda,GM,13.42722,-16.68528,True,True,False,8,14,19,True,True,-2.634,30.207
+2413753,Brikama,GM,13.27136,-16.64944,True,True,False,8,14,19,True,True,-1.082,39.046
+2416969,Nzérékoré,GN,7.75624,-8.8179,True,True,False,8,14,17,True,True,437.133,579.802
+2417786,Manéah,GN,9.73333,-13.41667,True,True,False,8,14,19,True,True,-14.947,977.648
+2419992,Kankan,GN,10.38542,-9.30568,True,True,False,8,14,17,True,True,359.238,471.134
+2422465,Conakry,GN,9.53795,-13.67729,True,True,False,8,14,19,True,True,0.445,129.943
+2422488,Camayenne,GN,9.535,-13.68778,True,True,False,8,14,19,True,True,0.45,17.853
+2425791,Sarh,TD,9.14555,18.38331,True,True,False,8,14,17,True,True,352.652,380.064
+2427123,N'Djamena,TD,12.10672,15.0444,True,True,False,8,14,19,True,True,285.102,304.253
+2427455,Moundou,TD,8.57437,16.07722,True,True,False,8,14,17,True,True,392.014,452.112
+2430506,Kelo,TD,9.30859,15.80658,True,True,False,8,14,17,True,True,363.183,404.922
+2437798,Zinder,NE,13.80716,8.9881,True,True,False,8,14,18,True,True,424.667,507.776
+2439376,Tahoua,NE,14.8888,5.2692,True,True,False,8,14,18,True,True,347.887,399.349
+2440485,Niamey,NE,13.51366,2.1098,True,True,False,8,14,19,True,True,178.158,233.054
+2441291,Maradi,NE,13.5,7.10174,True,True,False,8,14,18,True,True,331.605,384.898
+2448085,Agadez,NE,16.97333,7.99111,True,True,False,8,14,17,True,True,478.273,549.556
+2451185,Sikasso,ML,11.31755,-5.66654,True,True,False,8,14,17,True,True,334.185,465.47
+2451478,Ségou,ML,13.44032,-6.25947,True,True,False,8,14,17,True,True,277.473,301.807
+2454268,Koutiala,ML,12.38723,-5.46507,True,True,False,8,14,17,True,True,341.416,402.449
+2455518,Kayes,ML,14.44776,-11.44393,True,True,False,8,14,17,True,True,21.422,57.357
+245785,Abéché,TD,13.82916,20.8324,True,True,False,8,14,17,True,True,532.343,708.262
+2460596,Bamako,ML,12.60915,-7.97522,True,True,False,8,14,19,True,True,307.75,444.415
+2461993,El Marsa,EH,27.09611,-13.41583,True,True,False,8,14,17,True,True,-4.811,38.789
+2462881,Laayoune,EH,27.1418,-13.18797,True,True,False,8,14,16,True,True,-10.076,77.524
+2463029,Boujdour,EH,26.13073,-14.48513,False,False,True,8,14,17,False,False,,
+2463447,Dakhla,EH,23.68477,-15.95798,True,True,False,8,14,17,True,True,-2.041,20.534
+2464470,Tunis,TN,36.81897,10.16579,True,True,False,8,14,19,True,True,-0.445,234.638
+2464915,Sousse,TN,35.82539,10.63699,True,True,False,8,14,19,True,True,-0.681,40.239
+2464960,Sukrah,TN,36.87744,10.2468,True,True,False,8,14,19,True,True,-0.946,12.268
+2467454,Sfax,TN,34.74056,10.76028,True,True,False,8,14,19,True,True,-3.663,56.293
+2473449,Kairouan,TN,35.6781,10.09633,True,True,False,8,14,18,True,True,36.756,76.216
+248583,Ḩayy Khildā,JO,31.99202,35.84002,True,True,False,8,14,19,True,True,698.101,1097.484
+2485926,Oran,DZ,35.69906,-0.63588,True,True,False,8,14,19,True,True,-1.184,440.035
+248946,Irbid,JO,32.55556,35.85,True,True,False,8,14,19,True,True,252.862,611.137
+250090,Zarqa,JO,32.07275,36.08796,True,True,False,8,14,19,True,True,504.647,796.09
+2501152,Constantine,DZ,36.365,6.61472,True,True,False,8,14,18,True,True,358.095,931.369
+2503769,Blida,DZ,36.47004,2.8277,True,True,False,8,14,19,True,True,109.891,1341.049
+250441,Amman,JO,31.95522,35.94503,True,True,False,8,14,19,True,True,736.304,1083.392
+2506999,Annaba,DZ,36.9,7.76667,True,True,False,8,14,18,True,True,-1.415,415.503
+2507480,Algiers,DZ,36.73225,3.08746,True,True,False,8,14,19,True,True,-0.692,136.775
+2509954,Valencia,ES,39.47391,-0.37966,True,True,False,8,14,19,True,True,-4.667,87.203
+2510911,Sevilla,ES,37.38283,-5.97317,True,True,False,8,14,19,True,True,3.745,37.772
+2523920,Palermo,IT,38.1166,13.3636,True,True,False,8,14,19,True,True,-1.334,826.394
+2530335,Tangier,MA,35.76727,-5.79975,True,True,False,8,14,19,True,True,-0.272,374.352
+2538475,Rabat,MA,34.01325,-6.83255,True,True,False,8,14,19,True,True,-0.136,165.834
+2542997,Marrakesh,MA,31.63416,-7.99994,True,True,False,8,14,19,True,True,416.098,515.202
+2548885,Fes,MA,34.03313,-5.00028,True,True,False,8,14,19,True,True,185.202,535.126
+255274,Piraeus,GR,37.94203,23.64619,True,True,False,8,14,19,True,True,-0.472,276.795
+2553604,Casablanca,MA,33.58831,-7.61138,True,True,False,8,14,19,True,True,-2.349,63.155
+255683,Pátra,GR,38.2462,21.73508,False,False,True,8,14,19,False,False,,
+2562501,Sliema,MT,35.91247,14.50175,True,True,False,8,14,19,True,True,-1.09,142.969
+2562541,San Pawl il-Baħar,MT,35.95064,14.41561,True,True,False,8,14,19,True,True,-1.09,142.969
+2562629,Qormi,MT,35.87601,14.472,True,True,False,8,14,19,True,True,-1.089,233.05
+2562704,Mosta,MT,35.90942,14.42566,True,True,False,8,14,19,True,True,-1.09,142.969
+2563191,Birkirkara,MT,35.89706,14.46115,True,True,False,8,14,19,True,True,-1.09,142.969
+258576,Lárisa,GR,39.62847,22.42112,True,True,False,8,14,19,True,True,67.66,104.807
+2591957,Camama,AO,-8.93611,13.26518,True,True,False,8,14,19,True,True,14.605,113.427
+2595778,Guédiawaye,SN,14.77446,-17.40212,True,True,False,8,14,19,True,True,-1.089,19.964
+2611396,Tórshavn,FO,62.00973,-6.77164,True,True,False,8,14,19,True,True,-3.408,347.818
+2615876,Odense,DK,55.39594,10.38831,True,True,False,8,14,19,True,True,-0.977,23.378
+2618425,Copenhagen,DK,55.67594,12.56553,True,True,False,8,14,19,True,True,-5.278,33.688
+2621942,Frederiksberg,DK,55.67938,12.53463,True,True,False,8,14,19,True,True,1.634,40.428
+2624652,Århus,DK,56.15674,10.21076,True,True,False,8,14,19,True,True,-4.284,72.007
+2624886,Aalborg,DK,57.048,9.9187,True,True,False,8,14,19,True,True,-0.996,61.757
+2633274,Akureyri,IS,65.68353,-18.0878,True,True,False,8,14,18,True,True,-3.499,463.338
+2638077,Sheffield,GB,53.38297,-1.4659,True,True,False,8,14,19,True,True,50.411,227.522
+2643123,Manchester,GB,53.48095,-2.23743,True,True,False,8,14,19,True,True,21.575,63.374
+264371,Athens,GR,37.98376,23.72784,True,True,False,8,14,19,True,True,-0.472,276.795
+2643743,London,GB,51.50853,-0.12574,True,True,False,8,14,19,True,True,-3.642,43.503
+2648579,Glasgow,GB,55.86515,-4.25763,True,True,False,8,14,19,True,True,-0.477,76.845
+2655603,Birmingham,GB,52.48142,-1.89983,True,True,False,8,14,19,True,True,98.092,167.037
+2657896,Zürich,CH,47.36667,8.55,True,True,False,8,14,19,True,True,400.303,700.878
+2659994,Lausanne,CH,46.516,6.63282,True,True,False,8,14,19,True,True,372.126,855.84
+2660646,Geneva,CH,46.20222,6.14569,True,True,False,8,14,19,True,True,367.575,474.897
+2661552,Bern,CH,46.94809,7.44744,True,True,False,8,14,19,True,True,480.94,838.129
+2661604,Basel,CH,47.55839,7.57327,True,True,False,8,14,19,True,True,244.801,378.159
+2666199,Uppsala,SE,59.85882,17.63889,True,True,False,8,14,18,True,True,2.901,40.759
+266826,Tripoli,LB,34.43352,35.84415,True,True,False,8,14,19,True,True,-0.967,308.192
+267008,Tyre,LB,33.27333,35.19389,True,True,False,8,14,18,True,True,-0.133,133.088
+2673730,Stockholm,SE,59.32938,18.06871,True,True,False,8,14,19,True,True,0.153,49.642
+268064,Sidon,LB,33.55751,35.37148,True,True,False,8,14,19,True,True,0.095,348.139
+268743,Ra’s Bayrūt,LB,33.9,35.48333,True,True,False,8,14,19,True,True,0.095,96.668
+2692969,Malmö,SE,55.60587,13.00073,True,True,False,8,14,19,True,True,-2.009,15.959
+2694762,Linköping,SE,58.41086,15.62157,True,True,False,8,14,18,True,True,28.104,86.084
+2711537,Gothenburg,SE,57.70716,11.96679,True,True,False,8,14,19,True,True,-3.543,102.994
+2729907,Longyearbyen,SJ,78.22334,15.64689,True,True,False,8,14,17,True,True,0.0,418.688
+2735943,Porto,PT,41.1485,-8.61097,True,True,False,8,14,19,True,True,-1.399,201.099
+2740637,Coimbra,PT,40.20686,-8.41996,True,True,False,8,14,19,True,True,13.836,459.088
+2742032,Braga,PT,41.5514,-8.42311,True,True,False,8,14,19,True,True,64.294,568.516
+2745912,Utrecht,NL,52.09083,5.12222,True,True,False,8,14,19,True,True,-3.762,11.61
+2747373,The Hague,NL,52.07667,4.29861,True,True,False,8,14,19,True,True,-2.487,30.672
+2747891,Rotterdam,NL,51.9225,4.47917,True,True,False,8,14,19,True,True,-6.274,13.0
+2755251,Groningen,NL,53.21917,6.56667,True,True,False,8,14,19,True,True,-3.879,10.516
+2759794,Amsterdam,NL,52.37403,4.88969,True,True,False,8,14,19,True,True,-5.516,9.539
+2761369,Vienna,AT,48.20849,16.37208,True,True,False,8,14,19,True,True,153.45,244.228
+276781,Beirut,LB,33.89332,35.50157,True,True,False,8,14,19,True,True,0.095,96.668
+2772400,Linz,AT,48.30639,14.28611,True,True,False,8,14,19,True,True,245.162,635.163
+2778067,Graz,AT,47.06733,15.44197,True,True,False,8,14,19,True,True,338.779,751.513
+2779469,Floridsdorf,AT,48.25,16.4,True,True,False,8,14,19,True,True,156.734,404.228
+2792413,Liège,BE,50.63373,5.56749,True,True,False,8,14,19,True,True,54.857,236.554
+2797656,Gent,BE,51.05,3.71667,True,True,False,8,14,19,True,True,-0.653,26.907
+2800481,Charleroi,BE,50.41136,4.44448,True,True,False,8,14,19,True,True,95.472,215.315
+2800866,Brussels,BE,50.85045,4.34878,True,True,False,8,14,19,True,True,11.413,83.35
+2803138,Antwerp,BE,51.22047,4.40026,True,True,False,8,14,19,True,True,-4.232,18.424
+2803201,Anderlecht,BE,50.83619,4.31454,True,True,False,8,14,19,True,True,14.68,116.849
+281124,Khān Yūnis,PS,31.34018,34.30627,True,True,False,8,14,19,True,True,22.898,101.479
+281129,Jabālyā,PS,31.5272,34.48347,True,True,False,8,14,19,True,True,0.108,86.049
+281133,Gaza,PS,31.50161,34.46672,True,True,False,8,14,19,True,True,24.668,123.227
+281184,Jerusalem,IL,31.76904,35.21633,True,True,False,8,14,19,True,True,528.251,869.695
+285066,Hebron,PS,31.52935,35.0938,True,True,False,8,14,18,True,True,689.62,1017.019
+285629,Ḩawallī,KW,29.33278,48.02861,True,True,False,8,14,19,True,True,-1.568,40.613
+285704,As Sālimīyah,KW,29.33389,48.07611,True,True,False,8,14,19,True,True,-1.568,40.613
+285815,Al Farwānīyah,KW,29.2775,47.95861,True,True,False,8,14,19,True,True,8.938,55.638
+285839,Al Aḩmadī,KW,29.07694,48.08389,True,True,False,8,14,19,True,True,-1.547,94.241
+286621,Şalālah,OM,17.01505,54.09237,True,True,False,8,14,19,True,True,0.275,46.504
+2867714,Munich,DE,48.13743,11.57549,True,True,False,8,14,19,True,True,500.251,549.046
+287286,Muscat,OM,23.58413,58.40778,True,True,False,8,14,19,True,True,1.116,386.668
+287830,‘Ibrī,OM,23.22573,56.51572,True,True,False,8,14,18,True,True,334.642,500.935
+2886242,Köln,DE,50.93333,6.95,True,True,False,8,14,19,True,True,38.885,79.973
+288764,Bawshar,OM,23.57769,58.39982,True,True,False,8,14,19,True,True,1.116,386.668
+288967,Seeb,OM,23.67027,58.18911,True,True,False,8,14,19,True,True,0.254,20.566
+289888,Ar Rayyān,QA,25.29194,51.42444,True,True,False,8,14,19,True,True,-9.654,34.226
+290030,Doha,QA,25.28545,51.53096,True,True,False,8,14,19,True,True,-15.107,23.215
+290104,Sitrah,BH,26.15472,50.62056,True,True,False,8,14,19,True,True,-1.774,52.12
+290215,Jidd Ḩafş,BH,26.21861,50.54778,True,True,False,8,14,19,True,True,-3.279,13.292
+290247,Madīnat Ḩamad,BH,26.11528,50.50694,True,True,False,8,14,19,True,True,-1.274,48.942
+290332,Al Muharraq,BH,26.25722,50.61194,True,True,False,8,14,19,True,True,-3.279,13.292
+290340,Manama,BH,26.22787,50.58565,True,True,False,8,14,19,True,True,-3.279,13.292
+2911298,Hamburg,DE,53.55073,9.99302,True,True,False,8,14,19,True,True,-4.254,33.528
+292223,Dubai,AE,25.07725,55.30927,True,True,False,8,14,19,True,True,16.38,60.325
+292261,Dayrah,AE,25.27143,55.30207,True,True,False,8,14,19,True,True,-9.934,21.173
+2925533,Frankfurt am Main,DE,50.11552,8.68417,True,True,False,8,14,19,True,True,87.899,149.802
+292672,Sharjah,AE,25.3342,55.41221,True,True,False,8,14,19,True,True,-3.418,23.589
+292913,Al Ain City,AE,24.19167,55.76056,True,True,False,8,14,19,True,True,185.293,401.959
+292932,Ajman,AE,25.40177,55.47878,True,True,False,8,14,19,True,True,-0.795,43.944
+292968,Abu Dhabi,AE,24.45118,54.39696,True,True,False,8,14,19,True,True,-13.934,25.766
+293397,Tel Aviv,IL,32.08088,34.78057,True,True,False,8,14,19,True,True,-2.954,46.97
+293703,Rishon LeTsiyyon,IL,31.97102,34.78939,True,True,False,8,14,19,True,True,-1.142,69.03
+294801,Haifa,IL,32.81303,34.99928,True,True,False,8,14,19,True,True,-1.525,395.414
+2950159,Berlin,DE,52.52437,13.41053,True,True,False,8,14,19,True,True,28.597,76.526
+2960316,Luxembourg,LU,49.60982,6.13268,True,True,False,8,14,19,True,True,243.419,333.736
+2960596,Esch-sur-Alzette,LU,49.49583,5.98056,True,True,False,8,14,19,True,True,275.863,432.014
+2960634,Dudelange,LU,49.48056,6.0875,True,True,False,8,14,19,True,True,203.18,427.298
+2962943,Limerick,IE,52.66472,-8.62306,True,True,False,8,14,19,True,True,-26.818,34.705
+2964180,Galway,IE,53.27245,-9.05095,True,True,False,8,14,19,True,True,-2.988,40.853
+2964574,Dublin,IE,53.33306,-6.24889,True,True,False,8,14,19,True,True,0.104,54.323
+2965140,Cork,IE,51.89797,-8.47061,True,True,False,8,14,19,True,True,-2.19,140.159
+2972315,Toulouse,FR,43.60426,1.44367,True,True,False,8,14,19,True,True,124.247,205.573
+2988507,Paris,FR,48.85341,2.3488,True,True,False,8,14,19,True,True,26.34,102.752
+2990440,Nice,FR,43.70313,7.26608,True,True,False,8,14,19,True,True,-0.41,227.167
+2992741,Monte-Carlo,MC,43.73976,7.42732,True,True,False,8,14,19,True,True,-0.467,1145.512
+2993458,Monaco,MC,43.73718,7.42145,True,True,False,8,14,19,True,True,-0.467,1145.512
+2995469,Marseille,FR,43.29695,5.38107,True,True,False,8,14,19,True,True,-1.572,384.894
+2996944,Lyon,FR,45.74906,4.84789,True,True,False,8,14,19,True,True,161.221,221.645
+3040051,les Escaldes,AD,42.50729,1.53414,True,True,False,8,14,19,True,True,954.333,2327.048
+3041563,Andorra la Vella,AD,42.50779,1.52109,True,True,False,8,14,19,True,True,954.333,2327.048
+3041732,Mariehamn,AX,60.09726,19.93481,True,True,False,8,14,16,True,True,0.085,41.374
+3042030,Vaduz,LI,47.14151,9.52154,True,True,False,8,14,19,True,True,448.576,1985.754
+3042091,Saint Helier,JE,49.18804,-2.10491,True,True,False,8,14,19,True,True,0.423,93.086
+3042237,Douglas,IM,54.15,-4.48333,True,True,False,8,14,19,True,True,-0.23,221.657
+3042287,Saint Peter Port,GG,49.45981,-2.53527,True,True,False,8,14,19,True,True,-3.25,92.215
+3046446,Pest,HU,47.5,19.08333,True,True,False,8,14,19,True,True,96.721,146.357
+3054643,Budapest,HU,47.49835,19.04045,True,True,False,8,14,19,True,True,96.494,439.447
+3054667,Buda,HU,47.5,19.03333,True,True,False,8,14,19,True,True,96.494,439.447
+3058213,Petržalka,SK,48.12331,17.12866,True,True,False,8,14,19,True,True,125.228,284.877
+3058531,Nitra,SK,48.30763,18.08453,True,True,False,8,14,19,True,True,135.332,499.954
+3060972,Bratislava,SK,48.14816,17.10674,True,True,False,8,14,19,True,True,125.228,284.877
+3067696,Prague,CZ,50.08804,14.42076,True,True,False,8,14,19,True,True,168.765,299.13
+3068160,Pilsen,CZ,49.74747,13.37759,True,True,False,8,14,18,True,True,291.084,416.34
+3068799,Ostrava,CZ,49.83465,18.28204,True,True,False,8,14,19,True,True,205.164,283.977
+3071961,Liberec,CZ,50.76711,15.05619,True,True,False,8,14,19,True,True,332.058,740.984
+3078610,Brno,CZ,49.19522,16.60796,True,True,False,8,14,19,True,True,196.446,414.905
+3081368,Wrocław,PL,51.10286,17.03006,True,True,False,8,14,19,True,True,110.152,154.071
+3088171,Poznań,PL,52.40692,16.92993,True,True,False,8,14,19,True,True,50.817,91.149
+3093133,Łódź,PL,51.77058,19.47395,True,True,False,8,14,19,True,True,178.716,243.627
+3094802,Kraków,PL,50.06143,19.93658,True,True,False,8,14,19,True,True,198.411,313.003
+3104324,Zaragoza,ES,41.65606,-0.87734,True,True,False,8,14,19,True,True,185.276,287.228
+311046,İzmir,TR,38.41273,27.13838,True,True,False,8,14,19,True,True,-5.192,229.08
+3117735,Madrid,ES,40.4165,-3.70256,True,True,False,8,14,19,True,True,566.078,707.019
+3128760,Barcelona,ES,41.38879,2.15899,True,True,False,8,14,19,True,True,0.0,515.454
+3133880,Trondheim,NO,63.43049,10.39506,True,True,False,8,14,18,True,True,1.347,253.103
+3137115,Stavanger,NO,58.97005,5.73332,True,True,False,8,14,19,True,True,-6.957,79.757
+3143244,Oslo,NO,59.91273,10.74609,True,True,False,8,14,19,True,True,-2.531,199.043
+314830,Gaziantep,TR,37.05944,37.3825,True,True,False,8,14,19,True,True,767.248,946.727
+3149318,Kristiansand,NO,58.14671,7.9956,True,True,False,8,14,18,True,True,-0.846,204.434
+3161732,Bergen,NO,60.39299,5.32415,True,True,False,8,14,19,True,True,-0.418,557.121
+3165524,Turin,IT,45.07049,7.68682,True,True,False,8,14,19,True,True,206.756,712.22
+3168070,San Marino,SM,43.93667,12.44639,True,True,False,8,14,19,True,True,118.87,730.409
+3169070,Rome,IT,41.89193,12.51133,True,True,False,8,14,19,True,True,9.596,75.061
+3172394,Naples,IT,40.85216,14.26811,True,True,False,8,14,19,True,True,0.597,194.603
+3173435,Milan,IT,45.46427,9.18951,True,True,False,8,14,19,True,True,108.253,146.81
+3183719,Vlorë,AL,40.4696,19.48379,True,True,False,8,14,19,True,True,-4.871,235.535
+3183875,Tirana,AL,41.32744,19.81866,True,True,False,8,14,19,True,True,69.939,292.85
+3184081,Shkodër,AL,42.06828,19.51258,True,True,False,8,14,18,True,True,3.77,516.309
+3184862,Lushnjë,AL,40.94194,19.705,True,True,False,8,14,18,True,True,6.995,289.974
+3185728,Durrës,AL,41.32355,19.45469,True,True,False,8,14,19,True,True,-2.137,176.809
+3186573,Zenica,BA,44.20169,17.90397,True,True,False,8,14,17,True,True,306.744,957.456
+3186886,Zagreb,HR,45.81444,15.97798,True,True,False,8,14,19,True,True,106.628,236.64
+3186952,Zadar,HR,44.11578,15.22514,True,True,False,8,14,18,True,True,-0.827,121.563
+3188582,Tuzla,BA,44.53842,18.66709,True,True,False,8,14,18,True,True,214.865,543.281
+3190261,Split,HR,43.50891,16.43915,True,True,False,8,14,19,True,True,-0.583,108.018
+3191281,Sarajevo,BA,43.84864,18.35644,True,True,False,8,14,19,True,True,471.253,878.369
+3191648,Rijeka,HR,45.32673,14.44241,True,True,False,8,14,18,True,True,-1.31,365.73
+3193044,Podgorica,ME,42.44124,19.26309,True,True,False,8,14,19,True,True,22.247,628.251
+3193161,Pljevlja,ME,43.3567,19.35843,True,True,False,8,14,18,True,True,618.423,1311.008
+3193935,Osijek,HR,45.55066,18.6942,True,True,False,8,14,18,True,True,78.193,114.145
+3194360,Novi Sad,RS,45.25167,19.83694,True,True,False,8,14,18,True,True,71.082,203.074
+3194494,Nikšić,ME,42.7731,18.94446,True,True,False,8,14,18,True,True,602.478,965.007
+3194828,Mostar,BA,43.34333,17.80806,True,True,False,8,14,19,True,True,38.566,864.496
+3195506,Maribor,SI,46.55583,15.64593,True,True,False,8,14,19,True,True,232.507,401.019
+3196359,Ljubljana,SI,46.05108,14.50513,True,True,False,8,14,19,True,True,272.113,456.042
+3197378,Kranj,SI,46.23887,14.35561,True,True,False,8,14,19,True,True,344.238,644.497
+3197753,Koper,SI,45.5482,13.72963,True,True,False,8,14,19,True,True,-2.355,228.091
+3199394,Herceg Novi,ME,42.45306,18.5375,True,True,False,8,14,19,True,True,-0.422,772.62
+3202781,Celje,SI,46.23092,15.26044,True,True,False,8,14,19,True,True,224.022,707.663
+3203106,Budva,ME,42.28721,18.83922,True,True,False,8,14,18,True,True,-0.684,473.302
+3204222,Bihać,BA,44.81694,15.87083,True,True,False,8,14,19,True,True,208.253,627.699
+3204541,Banja Luka,BA,44.77879,17.20629,True,True,False,8,14,18,True,True,135.51,410.577
+323786,Ankara,TR,39.91987,32.85427,True,True,False,8,14,19,True,True,825.043,1019.085
+330186,Nazrēt,ET,8.55,39.26667,True,True,False,8,14,17,True,True,1555.657,1972.376
+330546,Massawa,ER,15.60811,39.47455,True,True,False,8,14,17,True,True,-0.02,8.915
+331180,Mek'ele,ET,13.49667,39.47528,True,True,False,8,14,18,True,True,1941.153,2514.948
+333287,Keren,ER,15.77792,38.45107,True,True,False,8,14,17,True,True,1066.497,2038.789
+333795,Jijiga,ET,9.35,42.8,True,True,False,8,14,18,True,True,1604.283,2144.886
+334717,Himora,ER,14.30427,36.60601,True,True,False,8,14,18,True,True,536.46,681.691
+3352136,Windhoek,NA,-22.55941,17.08323,True,True,False,8,14,19,True,True,1605.613,1968.47
+3352844,Swakopmund,NA,-22.67842,14.52663,True,True,False,8,14,17,True,True,-0.04,75.95
+3353383,Rundu,NA,-17.91796,19.77314,True,True,False,8,14,17,True,True,1060.375,1118.032
+3354021,Oshakati,NA,-17.78833,15.70436,True,True,False,8,14,17,True,True,1089.989,1098.32
+3359638,Walvis Bay,NA,-22.9575,14.50528,True,True,False,8,14,17,True,True,-2.427,67.19
+336014,Gonder,ET,12.6,37.46667,True,True,False,8,14,18,True,True,1956.753,2527.581
+3369157,Cape Town,ZA,-33.92584,18.42322,True,True,False,8,14,19,True,True,-12.638,650.553
+3370903,Jamestown,SH,-15.92488,-5.71816,True,True,False,8,14,17,True,True,0.0,632.2
+3374036,Bridgetown,BB,13.10732,-59.62021,True,True,False,8,14,19,True,True,1.807,139.281
+3374333,Praia,CV,14.93152,-23.51254,True,True,False,8,14,19,True,True,-0.249,256.675
+3374462,Mindelo,CV,16.89014,-24.98042,True,True,False,8,14,18,True,True,-7.04,265.875
+3374888,Assomada,CV,15.1,-23.68333,True,True,False,8,14,18,True,True,104.021,1234.04
+3376762,New Amsterdam,GY,6.24924,-57.51578,True,True,False,8,14,17,True,True,-2.615,24.947
+3377408,Linden,GY,6.00815,-58.30724,True,True,False,8,14,17,True,True,-13.923,100.049
+3378644,Georgetown,GY,6.80448,-58.15527,True,True,False,8,14,19,True,True,-2.758,15.8
+3380387,Saint-Laurent-du-Maroni,GF,5.50153,-54.02916,True,True,False,8,14,16,True,True,-0.08,72.87
+3380892,Rémire-Montjoly,GF,4.91667,-52.26667,True,True,False,8,14,17,True,True,-0.231,132.746
+3380965,Matoury,GF,4.84921,-52.32355,True,True,False,8,14,17,True,True,-3.872,247.323
+3381303,Kourou,GF,5.16281,-52.64265,True,True,False,8,14,17,True,True,-0.274,157.76
+3382160,Cayenne,GF,4.9381,-52.33455,True,True,False,8,14,16,True,True,-0.04,108.507
+3383188,Rainville,SR,5.83436,-55.13769,True,True,False,8,14,19,True,True,-0.499,18.35
+3383330,Paramaribo,SR,5.86638,-55.16682,True,True,False,8,14,19,True,True,-0.499,18.35
+3384562,Blauwgrond,SR,5.84342,-55.11929,True,True,False,8,14,19,True,True,-0.499,18.35
+3399415,Fortaleza,BR,-3.71722,-38.54306,True,True,False,8,14,19,True,True,0.01,43.09
+3413829,Reykjavík,IS,64.13548,-21.89541,True,True,False,8,14,19,True,True,-4.721,57.182
+3415212,Kópavogur,IS,64.11234,-21.91298,True,True,False,8,14,19,True,True,-2.196,75.231
+3416706,Hafnarfjörður,IS,64.0671,-21.93774,True,True,False,8,14,19,True,True,-2.196,124.327
+3421319,Nuuk,GL,64.18347,-51.72157,True,True,False,8,13,13,True,True,0.0,104.059
+3424934,Saint-Pierre,PM,46.77914,-56.1773,True,True,False,8,14,17,True,True,-1.108,181.084
+3426466,Grytviken,GS,-54.28111,-36.5092,True,True,False,8,14,17,True,True,0.0,595.305
+3426691,Stanley,FK,-51.69382,-57.85701,True,True,False,8,14,16,True,True,-0.06,135.938
+3430863,Mar del Plata,AR,-38.00042,-57.5562,True,True,False,8,14,17,True,True,-1.235,57.084
+343300,Asmara,ER,15.33805,38.93184,True,True,False,8,14,19,True,True,2239.906,2395.007
+3435910,Buenos Aires,AR,-34.61315,-58.37723,True,True,False,8,14,19,True,True,-6.971,28.944
+3437056,San Lorenzo,PY,-25.33968,-57.50879,True,True,False,8,14,19,True,True,72.167,188.606
+3437863,Lambaré,PY,-25.34682,-57.60647,True,True,False,8,14,19,True,True,53.177,187.476
+3439101,Ciudad del Este,PY,-25.5036,-54.65067,True,True,False,8,14,19,True,True,101.91,247.141
+3439214,Capiatá,PY,-25.3552,-57.44545,True,True,False,8,14,19,True,True,83.057,198.519
+3439389,Asunción,PY,-25.28646,-57.647,True,True,False,8,14,19,True,True,54.264,163.862
+3440714,Salto,UY,-31.38811,-57.95983,True,True,False,8,14,18,True,True,7.034,65.949
+3440781,Rivera,UY,-30.90534,-55.55076,True,True,False,8,14,18,True,True,188.005,374.393
+3441243,Paysandú,UY,-32.3171,-58.08072,True,True,False,8,14,18,True,True,1.887,63.405
+3441575,Montevideo,UY,-34.90328,-56.18816,True,True,False,8,14,19,True,True,0.541,51.676
+3441894,Maldonado,UY,-34.89791,-54.95021,True,True,False,8,14,18,True,True,-1.034,59.435
+344783,Af’abet,ER,16.18834,38.68729,True,True,False,8,14,17,True,True,781.17,1423.618
+3448439,São Paulo,BR,-23.5475,-46.63611,True,True,False,8,14,19,True,True,704.701,821.763
+344979,Addis Ababa,ET,9.02497,38.74689,True,True,False,8,14,19,True,True,2318.956,3017.339
+3450554,Salvador,BR,-12.97563,-38.49096,True,True,False,8,14,19,True,True,0.308,107.47
+3451190,Rio de Janeiro,BR,-22.90642,-43.18223,True,True,False,8,14,19,True,True,-7.258,113.54
+3470127,Belo Horizonte,BR,-19.92083,-43.93778,True,True,False,8,14,19,True,True,686.467,1376.772
+3488465,Spanish Town,JM,17.99107,-76.95742,True,True,False,8,14,19,True,True,1.973,434.88
+3488981,Portmore,JM,17.97102,-76.88691,True,True,False,8,14,19,True,True,-0.343,209.247
+3489297,New Kingston,JM,18.00747,-76.78319,True,True,False,8,14,19,True,True,3.016,880.572
+3489460,Montego Bay,JM,18.47116,-77.91883,True,True,False,8,14,19,True,True,-0.963,575.751
+3489854,Kingston,JM,17.99702,-76.79358,True,True,False,8,14,19,True,True,3.016,880.572
+349076,Shubrā al Khaymah,EG,30.12511,31.25053,True,True,False,8,14,19,True,True,15.343,35.279
+3492908,Santo Domingo,DO,18.47186,-69.89232,True,True,False,8,14,19,True,True,0.997,61.981
+3492914,Santiago de los Caballeros,DO,19.45036,-70.69085,True,True,False,8,14,19,True,True,130.437,319.433
+3493032,San Pedro de Macorís,DO,18.4539,-69.30864,True,True,False,8,14,18,True,True,0.226,25.081
+3513090,Willemstad,CW,12.12246,-68.88641,True,True,False,8,14,19,True,True,-0.815,187.591
+3513392,Philipsburg,SX,18.026,-63.04582,True,True,False,8,14,19,True,True,-0.67,348.867
+3513563,Kralendijk,BQ,12.15,-68.26667,True,True,False,8,14,18,True,True,0.498,135.046
+3521081,Puebla,MX,19.04778,-98.20723,True,True,False,8,14,19,True,True,2076.654,2245.411
+3526683,Iztapalapa,MX,19.35529,-99.06224,True,True,False,8,14,19,True,True,2219.641,2450.707
+3529612,Ecatepec de Morelos,MX,19.60492,-99.06064,True,True,False,8,14,19,True,True,2230.794,2996.971
+3530597,Mexico City,MX,19.42847,-99.12766,True,True,False,8,14,19,True,True,2221.56,2293.516
+3536729,Santiago de Cuba,CU,20.02287,-75.82171,True,True,False,8,14,19,True,True,0.887,129.258
+3553478,Havana,CU,23.13302,-82.38304,True,True,False,8,14,19,True,True,-2.351,75.506
+3556969,Holguín,CU,20.88722,-76.26306,True,True,False,8,14,18,True,True,68.107,327.266
+3557689,Guantánamo,CU,20.14444,-75.20917,True,True,False,8,14,18,True,True,29.103,132.971
+3566067,Camagüey,CU,21.38083,-77.91694,True,True,False,8,14,18,True,True,85.368,123.633
+3569926,Sainte-Marie,MQ,14.78352,-60.99227,True,True,False,8,14,17,True,True,0.445,81.248
+3570412,Le Robert,MQ,14.67751,-60.94228,True,True,False,8,14,17,True,True,0.448,352.373
+3570428,Le Lamentin,MQ,14.61341,-60.99964,True,True,False,8,14,17,True,True,-18.109,592.663
+3570429,Le François,MQ,14.61513,-60.90311,True,True,False,8,14,17,True,True,0.446,116.901
+3570675,Fort-de-France,MQ,14.60365,-61.07418,True,True,False,8,14,17,True,True,-5.645,410.9
+3571824,Nassau,BS,25.05823,-77.34306,True,True,False,8,14,19,True,True,0.978,29.302
+3571971,Lucaya,BS,26.53333,-78.66667,True,True,False,8,14,18,True,True,-1.757,22.996
+3572106,Killarney,BS,25.05,-77.41667,True,True,False,8,14,19,True,True,0.015,35.858
+3572375,Freeport,BS,26.53333,-78.7,True,True,False,8,14,18,True,True,-1.757,22.996
+3573197,Hamilton,BM,32.2949,-64.78303,True,True,False,8,14,19,True,True,2.02,71.699
+3573374,The Valley,AI,18.21704,-63.05783,True,True,False,8,14,17,True,True,-0.123,70.193
+3573738,San Fernando,TT,10.27969,-61.46835,True,True,False,8,14,19,True,True,-0.93,153.258
+3573840,Rio Claro,TT,10.30594,-61.17556,True,True,False,8,14,17,True,True,22.623,82.655
+3573890,Port of Spain,TT,10.66668,-61.51889,True,True,False,8,14,19,True,True,3.582,664.388
+3574116,Mon Repos,TT,10.27979,-61.4459,True,True,False,8,14,19,True,True,-0.93,153.258
+3574810,Chaguanas,TT,10.51667,-61.41667,True,True,False,8,14,19,True,True,-0.036,69.838
+3575551,Basseterre,KN,17.2955,-62.72499,True,True,False,8,14,17,True,True,0.794,257.023
+3575635,Roseau,DM,15.30174,-61.38808,True,True,False,8,14,19,True,True,0.0,796.647
+3576022,Saint John’s,AG,17.12096,-61.84329,True,True,False,8,14,19,True,True,-0.576,335.701
+3576686,Gros Islet,LC,14.06667,-60.95,True,True,False,8,14,19,True,True,0.447,389.118
+3576812,Castries,LC,13.9957,-61.00614,True,True,False,8,14,19,True,True,-0.08,333.608
+3576994,Cockburn Town,TC,21.46122,-71.14188,True,True,False,8,14,18,True,True,0.0,27.212
+3577072,Tanki Leendert,AW,12.53914,-70.02004,True,True,False,8,14,18,True,True,-0.472,154.077
+3577102,Santa Cruz,AW,12.50953,-69.98094,True,True,False,8,14,18,True,True,-0.472,154.077
+3577154,Oranjestad,AW,12.52398,-70.02703,True,True,False,8,14,18,True,True,-0.472,154.077
+3577159,Noord,AW,12.56596,-70.03198,True,True,False,8,14,18,True,True,-0.218,72.115
+3577430,Road Town,VG,18.42693,-64.62079,True,True,False,8,14,19,True,True,-7.991,521.103
+3577887,Kingstown,VC,13.15527,-61.22742,True,True,False,8,14,19,True,True,-9.144,942.441
+3578069,Plymouth,MS,16.70555,-62.21292,True,True,False,8,14,17,True,True,-0.17,960.034
+3578466,Sainte-Anne,GP,16.22564,-61.38098,True,True,False,8,14,17,True,True,0.0,129.11
+3578682,Petit-Bourg,GP,16.19163,-61.5914,True,True,False,8,14,17,True,True,0.0,189.392
+3578851,Marigot,MF,18.06819,-63.08302,True,True,False,8,14,19,True,True,0.007,416.015
+3578959,Les Abymes,GP,16.273,-61.50507,True,True,False,8,14,17,True,True,-0.077,123.012
+3578978,Le Gosier,GP,16.20618,-61.49306,True,True,False,8,14,17,True,True,-0.463,70.378
+3579132,Gustavia,BL,17.89618,-62.84978,True,True,False,8,14,17,True,True,0.782,178.912
+3579767,Baie-Mahault,GP,16.26738,-61.58543,True,True,False,8,14,17,True,True,-0.523,61.99
+3579925,Saint George's,GD,12.05288,-61.75226,True,True,False,8,14,17,True,True,0.495,719.246
+3580477,West Bay,KY,19.38197,-81.39281,True,True,False,8,14,18,True,True,0.034,9.667
+3580661,George Town,KY,19.2866,-81.37436,True,True,False,8,14,17,True,True,0.26,29.898
+3581164,San Pedro,BZ,17.91598,-87.9659,True,True,False,8,14,17,True,True,-3.25,9.492
+3581194,San Ignacio,BZ,17.1588,-89.0696,True,True,False,8,14,18,True,True,47.09,329.027
+3581514,Orange Walk,BZ,18.08124,-88.56328,True,True,False,8,14,18,True,True,-0.46,29.397
+3582672,Belmopan,BZ,17.25376,-88.76401,True,True,False,8,14,19,True,True,23.292,156.857
+3582677,Belize City,BZ,17.49952,-88.19756,True,True,False,8,14,19,True,True,-1.536,24.077
+3583096,Soyapango,SV,13.71024,-89.13989,True,True,False,8,14,19,True,True,463.156,1165.319
+3583334,Santa Ana,SV,13.98827,-89.55685,True,True,False,8,14,19,True,True,441.761,920.824
+3583361,San Salvador,SV,13.68935,-89.18718,True,True,False,8,14,19,True,True,463.156,1165.319
+3583446,San Miguel,SV,13.48261,-88.18211,True,True,False,8,14,18,True,True,79.071,760.656
+3584399,Mejicanos,SV,13.72397,-89.188,True,True,False,8,14,19,True,True,463.156,1165.319
+358619,Port Said,EG,31.26531,32.3019,True,True,False,8,14,17,True,True,-3.494,6.783
+3587902,Villa Nueva,GT,14.52512,-90.58544,True,True,False,8,14,19,True,True,1231.198,1758.146
+3590979,Quetzaltenango,GT,14.84462,-91.52316,True,True,False,8,14,19,True,True,1996.33,3175.25
+3592519,Mixco,GT,14.63077,-90.60711,True,True,False,8,14,19,True,True,1317.798,1910.625
+3598119,Cobán,GT,15.47025,-90.37455,True,True,False,8,14,18,True,True,1082.624,1909.005
+3598132,Guatemala City,GT,14.64072,-90.51327,True,True,False,8,14,19,True,True,1247.75,1704.434
+3600949,Tegucigalpa,HN,14.0818,-87.20681,True,True,False,8,14,19,True,True,921.434,1578.855
+3601782,San Pedro Sula,HN,15.50585,-88.02588,True,True,False,8,14,19,True,True,30.394,824.869
+360630,Cairo,EG,30.06263,31.24967,True,True,False,8,14,19,True,True,15.165,211.699
+3608248,La Ceiba,HN,15.75971,-86.78221,True,True,False,8,14,18,True,True,-1.339,1105.576
+360995,Giza,EG,30.00944,31.20861,True,True,False,8,14,19,True,True,15.165,211.699
+361058,Alexandria,EG,31.20176,29.91582,True,True,False,8,14,19,True,True,-7.003,27.106
+3612907,Danlí,HN,14.03333,-86.58333,True,True,False,8,14,18,True,True,729.506,1666.899
+3617708,Matagalpa,NI,12.92795,-85.91906,True,True,False,8,14,17,True,True,618.378,1429.016
+3617723,Masaya,NI,11.97316,-86.09587,True,True,False,8,14,18,True,True,128.01,347.905
+3617763,Managua,NI,12.13282,-86.2504,True,True,False,8,14,19,True,True,38.736,212.358
+3618030,León,NI,12.43527,-86.87862,True,True,False,8,14,18,True,True,39.517,236.325
+3620381,Chinandega,NI,12.62951,-87.13133,True,True,False,8,14,18,True,True,6.419,111.712
+3621849,San José,CR,9.93388,-84.08489,True,True,False,8,14,19,True,True,994.626,1392.708
+3621911,San Francisco,CR,9.9938,-84.12742,True,True,False,8,14,19,True,True,811.276,1526.372
+3622247,Limón,CR,9.99074,-83.03596,True,True,False,8,14,18,True,True,-0.729,73.562
+3623076,Liberia,CR,10.63517,-85.43779,True,True,False,8,14,18,True,True,44.562,198.624
+3624955,Alajuela,CR,10.01723,-84.21275,True,True,False,8,14,19,True,True,701.151,1220.53
+3625549,Valencia,VE,10.16153,-68.00044,True,True,False,8,14,19,True,True,427.811,843.133
+3633009,Maracaibo,VE,10.64232,-71.61089,True,True,False,8,14,19,True,True,0.183,44.89
+363619,Yei,SS,4.09444,30.67639,True,True,False,8,14,18,True,True,792.385,884.607
+363807,Winejok,SS,9.01222,27.57081,True,True,False,8,14,17,True,True,415.297,421.328
+363885,Wau,SS,7.70111,27.98972,True,True,False,8,14,17,True,True,425.073,494.015
+3645528,Ciudad Guayana,VE,8.35122,-62.64102,True,True,False,8,14,17,True,True,5.329,122.135
+3646738,Caracas,VE,10.48801,-66.87919,True,True,False,8,14,19,True,True,477.623,2626.189
+3648522,Barquisimeto,VE,10.0647,-69.35703,True,True,False,8,14,19,True,True,562.311,921.128
+3651297,Santo Domingo de los Colorados,EC,-0.25368,-79.17628,True,True,False,8,14,18,True,True,420.102,802.32
+365137,Omdurman,SD,15.64453,32.47773,True,True,False,8,14,19,True,True,376.485,419.249
+3652462,Quito,EC,-0.22985,-78.52495,True,True,False,8,14,19,True,True,2647.45,4414.386
+3657509,Guayaquil,EC,-2.19616,-79.88621,True,True,False,8,14,19,True,True,-3.82,90.329
+3658666,Cuenca,EC,-2.8953,-78.9963,True,True,False,8,14,19,True,True,2375.754,3002.265
+3660689,Ambato,EC,-1.24908,-78.61675,True,True,False,8,14,17,True,True,2325.567,3208.996
+3674962,Medellín,CO,6.245,-75.57151,True,True,False,8,14,19,True,True,1430.677,2582.859
+3687925,Cali,CO,3.43054,-76.5199,True,True,False,8,14,19,True,True,943.961,1752.532
+3688689,Bogotá,CO,4.60971,-74.08175,True,True,False,8,14,19,True,True,2550.787,3669.985
+3689147,Barranquilla,CO,10.96854,-74.78132,True,True,False,8,14,19,True,True,-0.672,53.212
+369004,Nyala,SD,12.04888,24.88069,True,True,False,8,14,17,True,True,634.522,790.286
+3691175,Trujillo,PE,-8.11599,-79.02998,True,True,False,8,14,19,True,True,0.992,351.799
+3693528,Piura,PE,-5.18192,-80.65715,True,True,False,8,14,19,True,True,14.075,63.196
+3701329,San Miguelito,PA,9.05032,-79.47068,True,True,False,8,14,19,True,True,3.468,264.511
+3703443,Panama City,PA,8.9936,-79.51973,True,True,False,8,14,19,True,True,-3.783,100.891
+370737,Malakal,SS,9.53342,31.66049,True,True,False,8,14,17,True,True,385.41,394.131
+3708306,Juan Díaz,PA,9.04059,-79.44083,True,True,False,8,14,19,True,True,0.689,147.358
+3711668,David,PA,8.42729,-82.43085,True,True,False,8,14,19,True,True,4.137,271.62
+3712076,Colón,PA,9.36025,-79.90019,True,True,False,8,14,19,True,True,-0.583,172.152
+3718420,Port-de-Paix,HT,19.93984,-72.83037,True,True,False,8,14,18,True,True,-0.218,623.957
+3718426,Port-au-Prince,HT,18.54349,-72.33881,True,True,False,8,14,19,True,True,-0.757,1033.066
+3719028,Pétionville,HT,18.5125,-72.28528,True,True,False,8,14,19,True,True,10.393,1157.026
+3726786,Delmas,HT,18.54478,-72.30036,True,True,False,8,14,19,True,True,10.393,1157.026
+373303,Juba,SS,4.85165,31.58247,True,True,False,8,14,17,True,True,450.883,740.815
+3748746,Calliaqua,VC,13.12867,-61.19178,True,True,False,8,14,19,True,True,-8.272,220.417
+377039,Port Sudan,SD,19.61745,37.21644,True,True,False,8,14,17,True,True,-2.606,39.262
+379251,Khartoum North,SD,15.64925,32.53458,True,True,False,8,14,19,True,True,374.157,389.982
+379252,Khartoum,SD,15.55177,32.53241,True,True,False,8,14,19,True,True,376.927,388.118
+3836873,San Miguel de Tucumán,AR,-26.81601,-65.21051,True,True,False,8,14,19,True,True,420.387,570.091
+3838233,Salta,AR,-24.80645,-65.41999,True,True,False,8,14,19,True,True,1159.534,1462.313
+3838583,Rosario,AR,-32.94682,-60.63932,True,True,False,8,14,19,True,True,-6.226,35.66
+385038,Ar Rifā‘,BH,26.13,50.555,True,True,False,8,14,19,True,True,-1.774,52.12
+3860259,Córdoba,AR,-31.40648,-64.18853,True,True,False,8,14,19,True,True,378.784,470.374
+3868121,Viña del Mar,CL,-33.02457,-71.55183,True,True,False,8,14,19,True,True,1.198,390.874
+3871336,Santiago,CL,-33.45694,-70.64827,True,True,False,8,14,19,True,True,523.366,638.049
+3875024,Puente Alto,CL,-33.61169,-70.57577,True,True,False,8,14,19,True,True,646.113,1555.295
+3880980,Maipú,CL,-33.51421,-70.7651,True,True,False,8,14,19,True,True,411.786,713.921
+3899539,Antofagasta,CL,-23.65094,-70.39752,True,True,False,8,14,19,True,True,3.183,992.855
+3903987,Sucre,BO,-19.03332,-65.26274,True,True,False,8,14,17,True,True,2524.094,3118.755
+3904906,Santa Cruz de la Sierra,BO,-17.78629,-63.18117,True,True,False,8,14,19,True,True,376.834,425.337
+3909234,Oruro,BO,-17.97153,-67.0932,True,True,False,8,14,17,True,True,3698.763,4008.415
+3911925,La Paz,BO,-16.5,-68.15,True,True,False,8,14,19,True,True,3343.348,4207.875
+3919968,Cochabamba,BO,-17.38195,-66.15995,True,True,False,8,14,19,True,True,2546.241,4168.888
+3936456,Lima,PE,-12.04318,-77.02824,True,True,False,8,14,19,True,True,0.166,429.914
+3946083,Callao,PE,-12.05162,-77.13452,True,True,False,8,14,19,True,True,-0.303,91.932
+3947322,Arequipa,PE,-16.39899,-71.53747,True,True,False,8,14,19,True,True,2248.541,2912.039
+3981609,Tijuana,MX,32.5027,-117.00371,True,True,False,8,14,19,True,True,9.766,325.077
+4030723,Adamstown,PN,-25.06597,-130.10147,True,True,False,8,14,17,True,True,-2.997,330.27
+4032402,Nuku‘alofa,TO,-21.13683,-175.20114,True,True,False,8,14,19,True,True,-0.164,30.985
+4033779,Punaauia,PF,-17.63333,-149.6,True,True,False,8,14,19,True,True,0.0,471.696
+4033936,Papeete,PF,-17.5347,-149.56843,True,True,False,8,14,19,True,True,0.0,812.233
+4034561,Faaa,PF,-17.55933,-149.60352,True,True,False,8,14,19,True,True,0.0,106.407
+4034821,Mata-Utu,WF,-13.28163,-176.17453,True,True,False,8,14,16,True,True,-3.718,148.58
+4035413,Apia,WS,-13.83333,-171.76666,True,True,False,8,14,19,True,True,0.608,105.221
+4035715,Avarua,CK,-21.2075,-159.77546,True,True,False,8,14,19,True,True,1.61,614.965
+4036284,Alofi,NU,-19.05294,-169.91957,True,True,False,8,14,17,True,True,0.0,86.123
+4038659,Tamuning-Tumon-Harmon Village,GU,13.48773,144.78138,False,False,True,8,14,19,False,False,,
+4038794,Yigo Village,GU,13.53605,144.88855,True,True,False,8,14,19,True,True,0.0,252.613
+4043909,Dededo Village,GU,13.51777,144.8391,True,True,False,8,14,19,True,True,-0.44,149.432
+411759,Al Manşūrah,QA,25.26807,51.53219,True,True,False,8,14,19,True,True,-15.107,23.215
+412800,Şabāḩ as Sālim,KW,29.25722,48.05722,True,True,False,8,14,19,True,True,2.491,75.416
+415189,Aden,YE,12.77957,45.03852,True,True,False,8,14,19,True,True,-0.64,527.746
+418863,Isfahan,IR,32.65246,51.67462,True,True,False,8,14,19,True,True,1565.173,1878.536
+423549,Rumonge,BI,-3.9736,29.4386,True,True,False,8,14,18,True,True,767.666,929.177
+425378,Bujumbura,BI,-3.38193,29.36142,True,True,False,8,14,19,True,True,779.064,1877.974
+426272,Gitega,BI,-3.42708,29.92463,True,True,False,8,14,18,True,True,1566.189,2012.384
+428632,Mpanda,BI,-3.1703,29.4026,True,True,False,8,14,18,True,True,807.525,1313.791
+430021,Cibitoke,BI,-2.8869,29.1248,True,True,False,8,14,18,True,True,831.813,1530.507
+430569,Ngozi,BI,-2.9075,29.8306,True,True,False,8,14,18,True,True,1543.87,1898.637
+456172,Riga,LV,56.946,24.10589,True,True,False,8,14,19,True,True,0.183,24.107
+4562635,Arecibo,PR,18.47245,-66.71573,True,True,False,8,14,19,True,True,-1.338,290.696
+4562831,Bayamón,PR,18.39856,-66.15572,True,True,False,8,14,19,True,True,-4.269,108.315
+4563243,Carolina,PR,18.38078,-65.95739,True,True,False,8,14,19,True,True,-0.014,347.585
+4566880,Ponce,PR,18.01031,-66.62398,True,True,False,8,14,19,True,True,-1.0,363.85
+4568127,San Juan,PR,18.46633,-66.10572,True,True,False,8,14,19,True,True,-4.269,108.315
+457954,Liepāja,LV,56.50474,21.01085,True,True,False,8,14,19,True,True,-0.207,10.809
+459201,Jūrmala,LV,56.968,23.77038,True,True,False,8,14,19,True,True,-0.506,11.182
+459279,Jelgava,LV,56.65,23.71278,True,True,False,8,14,19,True,True,-0.15,10.728
+460413,Daugavpils,LV,55.88333,26.53333,True,True,False,8,14,19,True,True,87.617,131.05
+4795467,Charlotte Amalie,VI,18.3419,-64.9307,True,True,False,8,14,19,True,True,-2.101,452.126
+4796512,Saint Croix,VI,17.72751,-64.74698,True,True,False,8,14,19,True,True,-1.0,181.426
+4887398,Chicago,US,41.85003,-87.65005,True,True,False,8,14,19,True,True,166.596,194.231
+498817,Saint Petersburg,RU,59.93863,30.31413,True,True,False,8,14,19,True,True,-2.333,9.929
+5110302,Brooklyn,US,40.6501,-73.94958,True,True,False,8,14,19,True,True,-1.62,65.093
+5128581,New York City,US,40.71427,-74.00597,True,True,False,8,14,19,True,True,-3.062,78.002
+5133273,Queens,US,40.68149,-73.83652,True,True,False,8,14,19,True,True,-0.039,58.066
+520555,Nizhniy Novgorod,RU,56.32867,44.00205,True,True,False,8,14,19,True,True,64.819,167.508
+524901,Moscow,RU,55.75204,37.61781,True,True,False,8,14,19,True,True,118.505,165.531
+53654,Mogadishu,SO,2.03711,45.34375,True,True,False,8,14,19,True,True,0.01,165.531
+5368361,Los Angeles,US,34.05223,-118.24368,True,True,False,8,14,19,True,True,49.223,243.059
+55671,Kismayo,SO,-0.35817,42.54536,True,True,False,8,14,17,True,True,-0.004,30.122
+57289,Hargeysa,SO,9.56,44.065,True,True,False,8,14,18,True,True,1218.376,1405.805
+584649,Yevlakh,AZ,40.61832,47.15014,True,True,False,8,14,18,True,True,1.779,28.973
+584923,Sumgayit,AZ,40.58972,49.66861,True,True,False,8,14,19,True,True,-26.806,-2.533
+585514,Mingachevir,AZ,40.76422,47.06227,True,True,False,8,14,18,True,True,2.165,209.576
+585915,Khirdalan,AZ,40.44808,49.75502,True,True,False,8,14,19,True,True,5.324,148.738
+586523,Ganja,AZ,40.68157,46.36134,True,True,False,8,14,18,True,True,319.449,536.8
+587084,Baku,AZ,40.37767,49.89201,True,True,False,8,14,19,True,True,-28.45,71.417
+5881576,Pago Pago,AS,-14.27806,-170.7025,True,True,False,8,14,17,True,True,-0.049,629.853
+588335,Tartu,EE,58.38062,26.72509,True,True,False,8,14,19,True,True,30.943,73.73
+588409,Tallinn,EE,59.43696,24.75353,True,True,False,8,14,19,True,True,-4.838,55.756
+590775,Lasnamäe,EE,59.4336,24.86017,True,True,False,8,14,19,True,True,0.077,54.433
+5913490,Calgary,CA,51.05011,-114.08529,True,True,False,8,14,19,True,True,1043.262,1205.588
+593116,Vilnius,LT,54.68916,25.2798,True,True,False,8,14,19,True,True,82.244,187.259
+5946768,Edmonton,CA,53.55014,-113.46871,True,True,False,8,14,19,True,True,612.744,681.286
+594739,Šiauliai,LT,55.93333,23.31667,True,True,False,8,14,18,True,True,101.278,148.718
+596128,Panevėžys,LT,55.73186,24.35983,True,True,False,8,14,18,True,True,41.802,62.853
+598098,Klaipėda,LT,55.7068,21.13912,True,True,False,8,14,17,True,True,-3.88,36.546
+598316,Kaunas,LT,54.90156,23.90909,True,True,False,8,14,19,True,True,17.279,94.46
+601594,Türkmenbaşy,TM,40.02216,52.95517,True,True,False,8,14,17,True,True,-28.286,214.873
+601734,Daşoguz,TM,41.83625,59.96661,True,True,False,8,14,17,True,True,80.475,95.513
+6077243,Montréal,CA,45.50884,-73.58781,True,True,False,8,14,19,True,True,10.966,232.055
+6094817,Ottawa,CA,45.41117,-75.69812,True,True,False,8,14,19,True,True,41.513,100.574
+609655,Karagandy,KZ,49.80187,73.10211,True,True,False,8,14,17,True,True,511.243,581.898
+610611,Aktobe,KZ,50.27969,57.20718,True,True,False,8,14,17,True,True,208.918,252.265
+611717,Tbilisi,GE,41.69143,44.83412,True,True,False,8,14,19,True,True,362.504,861.942
+611847,Sokhumi,GE,43.00697,40.9893,True,True,False,8,14,18,True,True,4.956,557.513
+612287,Rustavi,GE,41.56271,44.9787,True,True,False,8,14,19,True,True,313.491,761.64
+613607,Kutaisi,GE,42.26791,42.69459,True,True,False,8,14,19,True,True,106.22,331.646
+615532,Batumi,GE,41.64077,41.6306,True,True,False,8,14,19,True,True,-1.074,8.915
+616052,Yerevan,AM,40.17765,44.5126,True,True,False,8,14,19,True,True,888.782,1316.158
+6167865,Toronto,CA,43.70643,-79.39864,True,True,False,8,14,19,True,True,72.214,189.958
+617239,Tiraspol,MD,46.84275,29.6284,True,True,False,8,14,18,True,True,3.595,75.098
+617486,Rîbniţa,MD,47.76817,29.01,True,True,False,8,14,18,True,True,27.2,199.408
+618426,Chisinau,MD,47.00902,28.85938,True,True,False,8,14,19,True,True,30.014,193.262
+618577,Bender,MD,46.83158,29.47671,True,True,False,8,14,18,True,True,3.875,146.452
+618605,Bălţi,MD,47.76291,27.92854,True,True,False,8,14,18,True,True,90.747,211.434
+620127,Vitebsk,BY,55.1904,30.2049,True,True,False,8,14,18,True,True,123.715,181.042
+6201369,Carrefour,HT,18.53333,-72.4,True,True,False,8,14,19,True,True,-0.757,1033.066
+625144,Minsk,BY,53.90019,27.56653,True,True,False,8,14,19,True,True,188.49,243.377
+625665,Mahilyow,BY,53.90876,30.34044,True,True,False,8,14,18,True,True,138.7,209.194
+627904,Hrodna,BY,53.6758,23.82887,True,True,False,8,14,18,True,True,94.026,181.698
+627907,Homyel',BY,52.4345,30.9754,True,True,False,8,14,19,True,True,115.603,156.871
+632453,Vantaa,FI,60.29414,25.04099,True,True,False,8,14,19,True,True,10.146,61.922
+634963,Tampere,FI,61.49911,23.78712,True,True,False,8,14,19,True,True,77.099,152.125
+64021,Borama,SO,9.93611,43.18278,True,True,False,8,14,17,True,True,1352.573,1824.929
+643492,Oulu,FI,65.01236,25.46816,True,True,False,8,14,17,True,True,-0.161,22.043
+64435,Berbera,SO,10.43959,45.01432,True,True,False,8,14,17,True,True,-0.351,114.579
+658225,Helsinki,FI,60.16952,24.93545,True,True,False,8,14,19,True,True,-3.658,43.488
+660158,Espoo,FI,60.2052,24.6522,True,True,False,8,14,19,True,True,3.384,76.827
+6611854,Nay Pyi Taw,MM,19.745,96.12972,True,True,False,8,14,19,True,True,100.388,184.435
+6691831,Vatican City,VA,41.90268,12.45414,True,True,False,8,14,19,True,True,6.735,149.247
+6697759,South Dublin,IE,53.29026,-6.34151,True,True,False,8,14,19,True,True,-4.915,131.284
+675810,Iaşi,RO,47.16667,27.6,True,True,False,8,14,19,True,True,43.662,219.856
+680963,Constanţa,RO,44.18073,28.63432,True,True,False,8,14,19,True,True,-0.503,69.288
+683506,Bucharest,RO,44.43225,26.10626,True,True,False,8,14,19,True,True,59.234,85.631
+698740,Odesa,UA,46.48572,30.74383,True,True,False,8,14,19,True,True,0.759,62.391
+70225,Taiz,YE,13.57952,44.02091,True,True,False,8,14,19,True,True,1116.285,2767.261
+7033318,Kennedy,CO,4.6165,-74.14597,True,True,False,8,14,19,True,True,2534.795,2810.446
+703448,Kyiv,UA,50.45466,30.5238,True,True,False,8,14,19,True,True,82.621,214.863
+706483,Kharkiv,UA,49.98177,36.25475,True,True,False,8,14,19,True,True,98.348,168.004
+709717,Donetsk,UA,48.023,37.80224,True,True,False,8,14,19,True,True,133.374,284.201
+709930,Dnipro,UA,48.46664,35.04066,True,True,False,8,14,19,True,True,44.303,159.667
+71137,Sanaa,YE,15.35452,44.20646,True,True,False,8,14,19,True,True,2238.522,3189.929
+715429,Szeged,HU,46.253,20.14824,True,True,False,8,14,19,True,True,62.549,109.315
+721472,Debrecen,HU,47.53167,21.62444,True,True,False,8,14,18,True,True,112.461,141.12
+723819,Prešov,SK,48.99923,21.2355,True,True,False,8,14,19,True,True,236.726,451.989
+724443,Košice,SK,48.71441,21.25802,True,True,False,8,14,19,True,True,188.758,536.047
+726050,Varna,BG,43.21912,27.91024,True,True,False,8,14,19,True,True,-0.536,340.899
+7266440,Brades,MS,16.79183,-62.21058,True,True,False,8,14,17,True,True,0.0,738.979
+7268049,Mangilao Village,GU,13.44761,144.80109,False,False,True,8,14,19,False,False,,
+726848,Stara Zagora,BG,42.43205,25.64262,True,True,False,8,14,19,True,True,177.335,668.576
+727011,Sofia,BG,42.69751,23.32415,True,True,False,8,14,19,True,True,511.043,586.121
+727523,Ruse,BG,43.84872,25.9534,True,True,False,8,14,19,True,True,13.428,116.358
+728193,Plovdiv,BG,42.15387,24.75001,True,True,False,8,14,19,True,True,149.027,279.487
+7289760,Sengkang New Town,SG,1.39167,103.89444,True,True,False,8,14,19,True,True,-4.55,49.641
+7303419,East Jerusalem,PS,31.78336,35.23388,True,True,False,8,14,19,True,True,528.251,869.695
+7304591,West Island,CC,-12.15681,96.82251,True,True,False,8,14,18,True,True,-0.09,5.541
+732770,Burgas,BG,42.50651,27.46886,True,True,False,8,14,19,True,True,-3.927,70.055
+734077,Thessaloníki,GR,40.64072,22.93493,True,True,False,8,14,19,True,True,-2.181,65.215
+74477,Ibb,YE,13.96667,44.18333,True,True,False,8,14,17,True,True,1651.411,2870.717
+745044,Istanbul,TR,41.01384,28.94966,True,True,False,8,14,19,True,True,-4.448,99.516
+7498240,West Jerusalem,IL,31.78199,35.21961,True,True,False,8,14,19,True,True,528.251,869.695
+750269,Bursa,TR,40.19559,29.06013,True,True,False,8,14,19,True,True,81.063,680.361
+756135,Warsaw,PL,52.22977,21.01178,True,True,False,8,14,19,True,True,77.176,117.021
+7626461,Yaren,NR,-0.55085,166.9252,True,True,False,8,14,17,True,True,3.259,66.155
+7648070,Balbala,DJ,11.56194,43.10666,True,True,False,8,14,19,True,True,-1.537,126.189
+7670934,Malatia-Sebastia,AM,40.17396,44.4457,True,True,False,8,14,19,True,True,832.508,995.157
+7670941,Kentron,AM,40.17806,44.51303,True,True,False,8,14,19,True,True,888.782,1316.158
+7758790,Kikolo,AO,-8.7815,13.33384,True,True,False,8,14,19,True,True,0.0,84.109
+7828758,Saipan,MP,15.21233,145.7545,True,True,False,8,14,17,True,True,-0.093,348.217
+783263,Elbasan,AL,41.11138,20.08224,True,True,False,8,14,18,True,True,78.899,658.589
+7838895,Russeifa,JO,32.01778,36.04639,True,True,False,8,14,19,True,True,585.268,869.08
+783920,Zemun,RS,44.8458,20.40116,True,True,False,8,14,19,True,True,68.624,110.522
+785238,Suva Reka,XK,42.35861,20.825,True,True,False,8,14,18,True,True,355.587,795.41
+785842,Skopje,MK,41.99646,21.43141,True,True,False,8,14,19,True,True,237.848,979.785
+786712,Prizren,XK,42.21389,20.73972,True,True,False,8,14,19,True,True,311.159,1373.882
+786714,Pristina,XK,42.67272,21.16688,True,True,False,8,14,18,True,True,538.426,729.33
+786735,Prilep,MK,41.34558,21.5537,True,True,False,8,14,17,True,True,637.929,1564.054
+7874116,Santo Domingo Oeste,DO,18.5,-70.0,True,True,False,8,14,19,True,True,2.416,119.773
+7874631,Tamuning,GU,13.48754,144.78143,False,False,True,8,14,19,False,False,,
+787607,Novi Beograd,RS,44.80556,20.42417,True,True,False,8,14,19,True,True,68.629,172.191
+787657,Niš,RS,43.32472,21.90333,True,True,False,8,14,18,True,True,186.365,601.832
+788886,Kumanovo,MK,42.13279,21.71585,True,True,False,8,14,17,True,True,287.774,507.275
+789225,Mitrovicë,XK,42.88333,20.86667,True,True,False,8,14,18,True,True,487.961,1005.558
+791646,Gjakovë,XK,42.38028,20.43083,True,True,False,8,14,18,True,True,328.687,441.336
+792578,Bitola,MK,41.03226,21.33553,True,True,False,8,14,18,True,True,582.592,1904.261
+792680,Belgrade,RS,44.80401,20.46513,True,True,False,8,14,19,True,True,68.629,172.191
+79415,Al Ḩudaydah,YE,14.79781,42.95452,True,True,False,8,14,19,True,True,-0.542,21.773
+794965,Mustamäe,EE,59.40482,24.68119,True,True,False,8,14,19,True,True,0.079,30.852
+795155,Kesklinn,EE,59.4355,24.75748,True,True,False,8,14,19,True,True,-4.838,55.756
+8063098,Favoriten,AT,48.16116,16.38233,True,True,False,8,14,19,True,True,154.762,252.092
+8063361,Ngerulmud,PW,7.50077,134.6238,True,True,False,8,14,17,True,True,-0.013,180.017
+8307074,Mulenvos,AO,-8.86695,13.3344,True,True,False,8,14,19,True,True,51.471,131.479
+833262,Čair,MK,42.01528,21.44111,True,True,False,8,14,19,True,True,237.848,979.785
+8347657,Dalap-Uliga-Dorrit,MH,7.087,171.377,True,True,False,8,14,17,True,True,0.698,12.403
+8521334,Nkayi,CG,-4.18396,13.2859,True,True,False,8,14,17,True,True,119.18,264.229
+8521418,Espargos,CV,16.75524,-22.9446,True,True,False,8,14,18,True,True,-0.771,218.529
+8556321,La Ceiba,HN,15.76667,-86.83333,True,True,False,8,14,18,True,True,-1.339,1105.576
+8601412,Santo Domingo Este,DO,18.48511,-69.84757,True,True,False,8,14,19,True,True,0.943,55.197
+8644037,Reykjanesbær,IS,63.99813,-22.56111,True,True,False,8,14,18,True,True,-2.358,48.434
+866152,Erebuni,AM,40.13309,44.53009,True,True,False,8,14,19,True,True,888.782,1316.158
+866153,Nor Nork,AM,40.19661,44.5669,True,True,False,8,14,19,True,True,1221.916,1743.458
+8740157,Hlaingthaya,MM,16.85,96.06667,True,True,False,8,14,19,True,True,-0.061,43.391
+8740209,Nasinu,FJ,-18.07051,178.51313,True,True,False,8,14,19,True,True,1.334,28.157
+88319,Benghazi,LY,32.11486,20.06859,True,True,False,8,14,19,True,True,-1.302,21.153
+884979,Mutare,ZW,-18.9707,32.67086,True,True,False,8,14,17,True,True,1046.803,1735.051
+890299,Harare,ZW,-17.82772,31.05337,True,True,False,8,14,19,True,True,1432.471,1553.222
+894701,Bulawayo,ZW,-20.15,28.58333,True,True,False,8,14,17,True,True,1320.492,1449.485
+897045,Solwezi,ZM,-12.1688,26.38938,True,True,False,8,14,17,True,True,1299.715,1423.479
+901344,Ndola,ZM,-12.95867,28.63659,True,True,False,8,14,17,True,True,1235.185,1376.556
+909137,Lusaka,ZM,-15.40669,28.28713,True,True,False,8,14,19,True,True,1219.209,1295.517
+911148,Kitwe,ZM,-12.80243,28.21323,True,True,False,8,14,17,True,True,1169.581,1253.905
+918702,Chipata,ZM,-13.63333,32.65,True,True,False,8,14,17,True,True,1033.596,1624.577
+921753,Moutsamoudou,KM,-12.16672,44.39944,True,True,False,8,14,17,True,True,0.0,1375.13
+921772,Moroni,KM,-11.70216,43.25506,True,True,False,8,14,17,True,True,0.0,1777.905
+921815,Mamoudzou,YT,-12.78234,45.22878,True,True,False,8,14,17,True,True,1.697,563.583
+921889,Fomboni,KM,-12.28759,43.74344,True,True,False,8,14,17,True,True,1.671,568.203
+922704,Lubumbashi,CD,-11.66089,27.47938,True,True,False,8,14,19,True,True,1191.903,1331.878
+923295,Zomba,MW,-15.38596,35.3188,True,True,False,8,14,18,True,True,851.688,1436.688
+925475,Mzuzu,MW,-11.46556,34.02071,True,True,False,8,14,18,True,True,888.363,1600.23
+927967,Lilongwe,MW,-13.96692,33.78725,True,True,False,8,14,19,True,True,999.414,1141.178
+931755,Blantyre,MW,-15.78499,35.00854,True,True,False,8,14,18,True,True,781.627,1599.73
+932438,Mohale's Hoek,LS,-30.15137,27.47691,True,True,False,8,14,18,True,True,1445.085,2158.549
+932505,Maseru,LS,-29.31667,27.48333,True,True,False,8,14,19,True,True,1470.643,1860.843
+932521,Maputsoe,LS,-28.8866,27.89915,True,True,False,8,14,18,True,True,1525.774,1818.451
+932614,Mafeteng,LS,-29.82299,27.23744,True,True,False,8,14,18,True,True,1479.173,1892.274
+932698,Hlotse,LS,-28.87185,28.04501,True,True,False,8,14,18,True,True,1547.286,1892.046
+933305,Molepolole,BW,-24.40659,25.49508,True,True,False,8,14,17,True,True,1075.802,1222.053
+933331,Mogoditshane,BW,-24.62694,25.86556,True,True,False,8,14,19,True,True,976.386,1100.601
+933366,Maun,BW,-19.98333,23.41667,True,True,False,8,14,17,True,True,929.945,955.041
+933773,Gaborone,BW,-24.65451,25.90859,True,True,False,8,14,19,True,True,976.386,1100.601
+933778,Francistown,BW,-21.17,27.50778,True,True,False,8,14,17,True,True,977.119,1074.188
+933945,Vacoas,MU,-20.29806,57.47833,True,True,False,8,14,19,True,True,11.881,745.389
+934131,Quatre Bornes,MU,-20.26381,57.4791,True,True,False,8,14,19,True,True,11.881,745.389
+934154,Port Louis,MU,-20.16194,57.49889,True,True,False,8,14,19,True,True,0.75,780.338
+934570,Curepipe,MU,-20.31628,57.52594,True,True,False,8,14,19,True,True,406.868,676.728
+934765,Beau Bassin-Rose Hill,MU,-20.23325,57.46609,True,True,False,8,14,19,True,True,11.881,745.389
+934985,Mbabane,SZ,-26.31667,31.13333,True,True,False,8,14,18,True,True,915.81,1517.414
+934995,Manzini,SZ,-26.49884,31.38004,True,True,False,8,14,18,True,True,444.257,839.658
+935048,Lobamba,SZ,-26.46667,31.2,True,True,False,8,14,18,True,True,663.178,1272.373
+935214,Saint-Pierre,RE,-21.3393,55.47811,True,True,False,8,14,19,True,True,0.908,754.321
+935221,Saint-Paul,RE,-21.00961,55.27134,True,True,False,8,14,19,True,True,0.902,458.822
+935264,Saint-Denis,RE,-20.88231,55.4504,True,True,False,8,14,19,True,True,0.91,1388.884
+935268,Saint-André,RE,-20.96333,55.65031,True,True,False,8,14,19,True,True,0.88,587.033
+935582,Le Tampon,RE,-21.2766,55.51766,True,True,False,8,14,19,True,True,117.322,1360.138
+953781,Soweto,ZA,-26.26781,27.85849,True,True,False,8,14,19,True,True,1570.917,1719.064
+95446,Erbil,IQ,36.19117,44.00943,True,True,False,8,14,19,True,True,373.011,461.035
+964137,Pretoria,ZA,-25.74486,28.18783,True,True,False,8,14,19,True,True,1256.973,1548.045
+98182,Baghdad,IQ,33.34058,44.40088,True,True,False,8,14,19,True,True,25.752,45.255
+99071,Al Mawşil al Jadīdah,IQ,36.33271,43.10555,True,True,False,8,14,19,True,True,210.479,306.584
+99072,Mosul,IQ,36.335,43.11889,True,True,False,8,14,19,True,True,210.479,306.584
+993800,Johannesburg,ZA,-26.20227,28.04363,True,True,False,8,14,19,True,True,1556.467,1805.464
+99532,Basrah,IQ,30.50852,47.7804,True,True,False,8,14,19,True,True,-0.285,9.58
+landmark-aconcagua,Aconcagua,AR,-32.6532,-70.0109,True,True,False,8,14,18,True,True,3977.244,6926.598
+landmark-everest,Mount Everest,NP,27.9881,86.925,True,True,False,8,14,19,True,True,5123.912,8826.127
+landmark-krakatau,Anak Krakatau,ID,-6.1009,105.4233,True,True,False,8,14,18,True,True,0.0,462.117
+landmark-udhampur,Udhampur test centre,IN,32.916,75.141,True,True,False,8,14,18,True,True,529.443,1082.302

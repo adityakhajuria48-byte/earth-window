@@ -5,16 +5,18 @@ export async function handleRequest(request, env, assets = {}) {
   const json = (status, error) => Response.json({error}, {status, headers:{'Cache-Control':'no-store'}});
   if (path.startsWith('/api/')) {
     if (!request.headers.get('oai-authenticated-user-id')) return json(401, 'Sign in to Earth Window to process a crop.');
-    if (!['/api/crop', '/api/preview', '/api/health'].includes(path)) return json(404, 'Unknown endpoint.');
+    if (!['/api/crop', '/api/preview', '/api/aoi', '/api/health'].includes(path)) return json(404, 'Unknown endpoint.');
     if (request.method !== (path === '/api/health' ? 'GET' : 'POST')) return json(405, 'Method not allowed.');
     if (!configured) return json(503, 'Crop processing is not connected yet.');
     const origin = request.headers.get('Origin');
     if ((origin && origin !== url.origin) || request.headers.get('Sec-Fetch-Site') === 'cross-site') return json(403, 'Start the export from Earth Window.');
+    const upload = path === '/api/aoi', maxBody = upload ? 10 * 1024 * 1024 : 8192;
+    const requestType = upload ? 'application/zip' : 'application/json';
     let body;
     if (path !== '/api/health') {
-      if (!(request.headers.get('Content-Type') || '').startsWith('application/json')) return json(400, 'Expected a JSON crop request.');
+      if (!(request.headers.get('Content-Type') || '').startsWith(requestType)) return json(400, upload ? 'Upload a zipped shapefile.' : 'Expected a JSON crop request.');
       const declared = Number(request.headers.get('Content-Length'));
-      if (declared > 8192) return json(413, 'Crop request is too large.');
+      if (declared > maxBody) return json(413, upload ? 'Upload a ZIP smaller than 10 MB.' : 'Crop request is too large.');
       // Do not buffer an unbounded request when Content-Length is absent or incorrect.
       const reader = request.body?.getReader();
       if (!reader) return json(400, 'Missing crop request.');
@@ -23,7 +25,7 @@ export async function handleRequest(request, env, assets = {}) {
         while (true) {
           const {done, value} = await reader.read(); if (done) break;
           size += value.byteLength;
-          if (size > 8192) { await reader.cancel(); return json(413, 'Crop request is too large.'); }
+          if (size > maxBody) { await reader.cancel(); return json(413, upload ? 'Upload a ZIP smaller than 10 MB.' : 'Crop request is too large.'); }
           chunks.push(value);
         }
       } finally { reader.releaseLock(); }
@@ -36,7 +38,7 @@ export async function handleRequest(request, env, assets = {}) {
       upstream.pathname = path; upstream.search = '';
       const response = await fetch(upstream, {
         method: request.method, body, redirect:'error', signal:AbortSignal.timeout(145000),
-        headers:{'Content-Type':'application/json', Authorization:'Basic '+btoa('earth-window:'+env.EARTH_WINDOW_PROCESSOR_PASSWORD)},
+        headers:{'Content-Type':requestType, Authorization:'Basic '+btoa('earth-window:'+env.EARTH_WINDOW_PROCESSOR_PASSWORD)},
       });
       const contentType = response.headers.get('Content-Type') || '';
       if (!contentType.includes('application/json') && !contentType.includes('image/tiff')) return json(502, 'The crop service is waking up or unavailable. Please retry shortly.');

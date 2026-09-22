@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-09-22T15:48:01.152608+00:00",
+  "initial_failed_locations": 9,
+  "rechecked_locations": 9,
+  "recovered_locations": 0,
+  "still_failed": [
+    "2400555",
+    "2294877",
+    "2463029",
+    "255683",
+    "2309332",
+    "4038659",
+    "1655199",
+    "7874631",
+    "7268049"
+  ]
+}

@@ -1,0 +1,4 @@
+requests==2.34.2
+Pillow==12.3.0
+numpy==2.5.3
+lerc==4.0.1

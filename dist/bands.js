@@ -77,7 +77,7 @@ window.EarthBands = (() => {
     cropBody.append(el('p','Keep original pixels, map coordinates, no-data and calibration metadata in a single-band GeoTIFF. No colour stretch or resampling.','detail-note'));
     const cropBounds=el('div','','crop-bounds'),coords=[];
     let initial=previewBounds(f,query),extentLabel='Starts with a 0.02° box at this scene’s bounding-box centre. Change the coordinates if needed.';
-    if(query?.scope==='area'){initial=query.bounds;extentLabel='Starts with your searched map area. Reduce it if needed.';}
+    if(query?.scope==='area'){initial=query.bounds;extentLabel=query.geometry?'Starts with your shapefile’s bounding rectangle, not a polygon mask. Reduce it if needed.':'Starts with your searched map area. Reduce it if needed.';}
     else if(query?.scope==='point'){initial=[query.lon-.01,query.lat-.01,query.lon+.01,query.lat+.01];extentLabel='Starts with a 0.02° box around your searched point.';}
     ['West','South','East','North'].forEach((name,i)=>{const label=el('label',name+' (°)'),input=el('input','');input.type='number';input.step='any';input.min=i%2?-90:-180;input.max=i%2?90:180;input.setAttribute('aria-label','Crop '+name.toLowerCase());if(initial)input.value=Math.max(Number(input.min),Math.min(Number(input.max),initial[i])).toFixed(5);label.append(input);cropBounds.append(label);coords.push(input);});
     cropBody.append(el('p',extentLabel+' Maximum 2° per side and 4 million native pixels. The rectangle is snapped outward to source pixels and clipped at the tile edge.','detail-note'),cropBounds);

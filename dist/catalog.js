@@ -3,6 +3,7 @@
   'use strict';
   const DAY=86400000;
   function spatialQuery(q){
+    if(q.geometry){if(!['Polygon','MultiPolygon'].includes(q.geometry.type))throw Error('Invalid study area.');return {intersects:JSON.stringify(q.geometry)};}
     if(q.scope==='world')return {};
     if(q.scope==='area'){
       const b=q.bounds;

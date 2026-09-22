@@ -53,3 +53,13 @@ test('area preview uses the same authenticated bounded gateway',async()=>{
  globalThis.fetch=async(url,options)=>{assert.equal(url.pathname,'/api/preview');assert.equal(options.method,'POST');return Response.json({width:1,height:1,data:[42]});};
  try{const r=await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'{}'}),env);assert.equal(r.status,200);assert.deepEqual((await r.json()).data,[42]);}finally{globalThis.fetch=old;}
 });
+
+test('shapefile uploads retain ZIP bytes and enforce identity, origin and byte limits',async()=>{
+  const headers={'oai-authenticated-user-id':'test','Content-Type':'application/zip',Origin:'https://site.example'};
+  assert.equal((await handleRequest(request('/api/aoi',{method:'POST'}),env)).status,401);
+  assert.equal((await handleRequest(request('/api/aoi',{method:'POST',headers:{...headers,Origin:'https://foreign.example'}}),env)).status,403);
+  assert.equal((await handleRequest(request('/api/aoi',{method:'POST',headers,body:new Uint8Array(10*1024*1024+1)}),env)).status,413);
+  const old=globalThis.fetch;
+  globalThis.fetch=async(url,options)=>{assert.equal(url.pathname,'/api/aoi');assert.equal(options.headers['Content-Type'],'application/zip');assert.deepEqual(Array.from(options.body),[80,75,3,4]);return Response.json({name:'test'});};
+  try{assert.equal((await handleRequest(request('/api/aoi',{method:'POST',headers,body:new Uint8Array([80,75,3,4])}),env)).status,200);}finally{globalThis.fetch=old;}
+});

@@ -415,14 +415,14 @@ class Handler(SimpleHTTPRequestHandler):
             except (URLError, TimeoutError, OSError):
                 self.json_response(502, {"error": "Place search is partly unavailable. Retry, enter latitude, longitude, or click the map." if parsed.path == "/api/geocode" else "Imagery provider is unreachable. Please retry."})
             return
-        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css", "/basemaps.js"}:
+        if parsed.path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css", "/basemaps.js", "/aoi-client.js", "/aoi-reader.js", "/aoi-worker.js", "/shp-vendor.js", "/fflate-vendor.js", "/proj4-vendor.js", "/sample-study-area.zip"}:
             self.send_error(404)
             return
         super().do_GET()
 
     def do_HEAD(self) -> None:
         if not self.authorized(): return
-        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css", "/basemaps.js"}:
+        if urlparse(self.path).path not in {"/", "/index.html", "/styles.css", "/app.js", "/catalog.js", "/bands.js", "/sources.json", "/landmarks.json", "/geocoding.js", "/globe.js", "/terrain.js", "/surface.js", "/studio.js", "/workspace.css", "/basemaps.js", "/aoi-client.js", "/aoi-reader.js", "/aoi-worker.js", "/shp-vendor.js", "/fflate-vendor.js", "/proj4-vendor.js", "/sample-study-area.zip"}:
             self.send_error(404)
             return
         super().do_HEAD()

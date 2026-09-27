@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workspace.css">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script defer src="/backend-config.js"></script><script defer src="/catalog.js"></script><script defer src="/bands.js"></script><script defer src="/geocoding.js"></script><script defer src="/basemaps.js"></script><script defer src="/terrain.js"></script><script defer src="/surface.js"></script><script defer src="/globe.js"></script><script defer src="/studio.js"></script><script defer src="/app.js"></script>
+  <script defer src="/backend-config.js"></script><script defer src="/catalog.js"></script><script defer src="/bands.js"></script><script defer src="/geocoding.js"></script><script defer src="/basemaps.js"></script><script defer src="/terrain.js"></script><script defer src="/surface.js"></script><script defer src="/globe.js"></script><script defer src="/studio.js"></script><script defer src="/aoi-client.js"></script><script defer src="/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#search-form">Skip to image search</a>
@@ -34,10 +34,12 @@
         <summary>Upload a study area <span>Shapefile ZIP</span></summary>
         <label for="aoi-file">Polygon boundary</label>
         <input id="aoi-file" type="file" accept=".zip,application/zip" aria-describedby="aoi-help aoi-status">
+        <button id="sample-aoi" type="button">Try sample · Udhampur</button>
         <p id="aoi-help" class="hint">ZIP one layer’s .shp, .shx, .dbf and .prj files together. Up to 10 MB; geographic and projected coordinate systems supported.</p>
         <p id="aoi-status" class="hint notice" role="status">Upload a boundary, choose a date, then find images.</p>
+        <button id="focus-aoi" type="button" hidden>Zoom to boundary</button>
         <button id="clear-aoi" type="button" hidden>Remove boundary</button>
-        <p class="hint">Search checks polygon intersections, including holes. A scene may cover only part of your area. Exports use a bounding rectangle, not a polygon mask. Uploads are processed temporarily; reload to clear.</p>
+        <p class="hint">Search checks polygon intersections, including holes. A scene may cover only part of your area. Exports use a bounding rectangle, not a polygon mask. ZIP reading stays on your device. Searching sends only the boundary to satellite catalogues. Reload to clear.</p>
       </details>
       <label for="date">Capture date <span class="label-note">UTC</span></label>
       <input id="date" type="date" required min="1982-01-01">

@@ -107,3 +107,28 @@ test('shapefile query sends polygon holes by POST and follows POST pagination',a
   vm.runInContext("state.geometry=geometry;setPlace(1,2,'test')",context);
   assert.equal(vm.runInContext('state.geometry',context),null);
 });
+
+// 100 real decoded ZIP results drive the application's upload-to-map path.
+for(const item of JSON.parse(fs.readFileSync('validation/shapefile-results.json')).filter(x=>!x.reject)){
+ test(`study-area map flow ${item.id} · ${item.kind}`,async()=>{
+  const {context,calls,get,globeStub}=environment(),fits=[],layers=[];
+  context.window.innerWidth=1400;
+  get('search-panel').hidden=false;get('search-panel').getBoundingClientRect=()=>({right:420});get('results-panel').hidden=true;
+  get('date').value='2025-09-10';get('time').value='12:00';get('window').value='7';
+  context.mapStub={setView(){},invalidateSize(){},fitBounds(bounds,options){fits.push({bounds,options});},removeLayer(){}};
+  context.L={geoJSON:(geometry,options)=>({addTo(){layers.push({geometry,options});return this;}})};
+  context.EWArea={read:async()=>({name:item.id,geometry:item.geometry,bounds:item.bounds,features:item.features,vertices:item.vertices,skipped:0})};
+  context.file={name:item.id+'.zip',size:1000};
+  vm.runInContext('map=mapStub',context);
+  await vm.runInContext('uploadAoi(file)',context);
+  assert.equal(get('location-title').textContent,item.id);
+  assert.equal(get('clear-aoi').hidden,false);assert.equal(get('focus-aoi').hidden,false);
+  assert.equal(layers.length,1);assert.equal(layers[0].options.pane,'studyArea');
+  assert.equal(fits.length,1);assert.equal(fits[0].options.paddingTopLeft[0],444);
+  assert.deepEqual(Array.from(fits[0].bounds[0]),[item.bounds[1],item.bounds[0]]);
+  assert.equal(JSON.stringify(calls.at(-1)[0].geometry),JSON.stringify(item.geometry));
+  const q=vm.runInContext('searchParams()',context);assert.equal(JSON.stringify(q.geometry),JSON.stringify(item.geometry));
+  globeStub.options.onPoint(0,0);assert.equal(get('location-title').textContent,item.id);
+  vm.runInContext('wholeWorld(false)',context);assert.equal(vm.runInContext('state.geometry',context),null);
+ });
+}

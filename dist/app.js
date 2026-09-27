@@ -64,7 +64,8 @@ function initMap() {
   streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
   streets.on('tileerror',()=>{if($('map-layer').value==='streets')warnMap('Street-map tiles could not load. You can still search by place or coordinates.');});
   resultFootprints=L.layerGroup().addTo(map);
-  map.on('click',e=>{const lon=((e.latlng.lng+180)%360+360)%360-180;const lat=Math.max(-90,Math.min(90,e.latlng.lat));setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false);});
+  map.createPane('studyArea');map.getPane('studyArea').style.zIndex=450;map.getPane('studyArea').style.pointerEvents='none';
+  map.on('click',e=>{if(state.geometry)return;const lon=((e.latlng.lng+180)%360+360)%360-180;const lat=Math.max(-90,Math.min(90,e.latlng.lat));setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false);});
   map.on('moveend zoomend',updateMapDetail);
   updateMapLayer();
 }
@@ -97,19 +98,17 @@ function searchMapArea(){
 function clearAoi(){
   aoiController?.abort();aoiController=null;state.geometry=null;
   if(aoiLayer&&map)map.removeLayer(aoiLayer);aoiLayer=null;
-  $('aoi-file').value='';$('aoi-file').disabled=false;$('clear-aoi').hidden=true;
+  $('aoi-file').value='';$('aoi-file').disabled=false;$('clear-aoi').hidden=true;$('focus-aoi').hidden=true;
   $('aoi-status').textContent='Upload a boundary, choose a date, then find images.';
 }
-async function uploadAoi(){
-  const file=$('aoi-file').files[0];if(!file)return;
+async function uploadAoi(file=$('aoi-file').files[0]){
+  if(!file)return;
   if(!file.name.toLowerCase().endsWith('.zip')||file.size>10*1024*1024){$('aoi-status').textContent='Choose a shapefile ZIP smaller than 10 MB.';return;}
   aoiController?.abort();const active=new AbortController();aoiController=active;
-  const request=++state.geoRequest,timer=setTimeout(()=>active.abort(),150000);
-  $('aoi-file').disabled=true;$('aoi-status').textContent='Reading the boundary and its coordinate system…';
+  const request=++state.geoRequest,timer=setTimeout(()=>active.abort(),35000);
+  $('aoi-file').disabled=true;$('aoi-status').textContent='Reading the boundary on your device…';
   try{
-    const response=await fetch('/api/aoi',{method:'POST',headers:{'Content-Type':'application/zip'},body:file,signal:active.signal});
-    if(!(response.headers.get('Content-Type')||'').includes('application/json'))throw Error('Boundary processing is unavailable. Please retry shortly.');
-    const data=await response.json();if(!response.ok)throw Error(data.error||'Could not import this shapefile.');
+    const data=await EWArea.read(file,active.signal);
     if(request!==state.geoRequest||active.signal.aborted)return;
     if(!['Polygon','MultiPolygon'].includes(data.geometry?.type)||!Array.isArray(data.bounds)||data.bounds.length!==4||!data.bounds.every(Number.isFinite))throw Error('The server did not return a valid polygon.');
     state.scope='area';state.geometry=data.geometry;state.bounds=data.bounds;state.lat=state.lon=null;
@@ -118,16 +117,26 @@ async function uploadAoi(){
     $('world-search').setAttribute('aria-pressed','false');$('location-title').textContent=data.name;
     $('coordinates').textContent='Study area · '+data.features+' polygon feature'+(data.features===1?'':'s');
     if(map){if(marker){map.removeLayer(marker);marker=null;}if(aoiLayer)map.removeLayer(aoiLayer);
-      aoiLayer=L.geoJSON(data.geometry,{interactive:false,style:{color:'#ffca76',weight:3,fillOpacity:.07}}).addTo(map);
-      map.fitBounds(aoiLayer.getBounds(),{padding:[45,45],maxZoom:15});
+      aoiLayer=L.geoJSON(data.geometry,{pane:'studyArea',interactive:false,style:{color:'#ffca76',weight:3,fillOpacity:.07}}).addTo(map);
+      if(!EWGlobe.active)focusArea();
     }
-    EWGlobe.setPosition({...state});invalidate();$('clear-aoi').hidden=false;
-    $('aoi-status').textContent=data.name+' · '+data.features+' features · '+data.vertices.toLocaleString()+' vertices · '+data.sourceCRS+' → WGS 84';
+    try{EWGlobe.setPosition({...state});}catch{ $('aoi-status').textContent='Boundary loaded. Use 2D map if 3D is unavailable.';}invalidate();$('clear-aoi').hidden=false;$('focus-aoi').hidden=false;
+    $('aoi-status').textContent=data.name+' · '+data.features+' features · '+data.vertices.toLocaleString()+' vertices · '+'WGS 84'+(data.skipped?' · '+data.skipped+' empty records skipped':'');
     $('search-notice').textContent='Boundary ready. Choose your capture date, then Find satellite images. Results intersect the polygon; full coverage is not guaranteed.';
+    if(window.matchMedia?.('(max-width: 760px)').matches)EWStudio.openPanel('search',false);
   }catch(e){if(request===state.geoRequest)$('aoi-status').textContent=active.signal.aborted?'Boundary import timed out. Retry or simplify the polygon.':e.message;}
-  finally{clearTimeout(timer);if(aoiController===active){aoiController=null;$('aoi-file').disabled=false;}}
+  finally{clearTimeout(timer);if(aoiController===active){aoiController=null;$('aoi-file').disabled=false;$('aoi-file').value='';}}
 }
-$('aoi-file').addEventListener('change',uploadAoi);
+function focusArea(){
+  if(!map||!state.bounds)return;map.invalidateSize();
+  const [w,s,e,n]=state.bounds,wide=window.innerWidth>760;
+  const left=wide&&!$('search-panel').hidden?$('search-panel').getBoundingClientRect().right+24:36;
+  const right=wide&&!$('results-panel').hidden?window.innerWidth-$('results-panel').getBoundingClientRect().left+24:36;
+  map.fitBounds([[s,w],[n,e<w?e+360:e]],{paddingTopLeft:[left,100],paddingBottomRight:[right,100],maxZoom:15,animate:false});
+}
+$('focus-aoi').onclick=()=>{if(EWGlobe.active)EWGlobe.setPosition(state);else focusArea();};
+$('aoi-file').addEventListener('change',()=>uploadAoi());
+$('sample-aoi').onclick=async()=>{try{const response=await fetch('/sample-study-area.zip');if(!response.ok)throw Error('Sample boundary unavailable.');await uploadAoi(new File([await response.blob()],'sample-study-area.zip',{type:'application/zip'}));}catch(error){$('aoi-status').textContent=error.message;}};
 $('clear-aoi').onclick=()=>wholeWorld(false);
 function showResultLocations(){
   EWGlobe.footprints(orderedScenes().slice(0,state.shown),state.selected);
@@ -281,9 +290,9 @@ $('export').onclick=()=>{const payload={type:'FeatureCollection',search:state.qu
 EWStudio.init();
 initMap();
 EWGlobe.init({
-  onPoint:(lat,lon)=>setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false),
+  onPoint:(lat,lon)=>{if(!state.geometry)setPlace(lat,lon,`${lat.toFixed(4)}, ${lon.toFixed(4)}`,false);},
   onScene:openScene,
-  onMode:is3D=>{const leaving3D=was3D&&!is3D;was3D=is3D;if(!is3D&&map){map.invalidateSize();if(leaving3D){if(state.scope==='world')map.setView([18,20],2);else if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){const [w,s,e,n]=state.bounds;map.fitBounds([[s,w],[n,e<w?e+360:e]]);}}}updateMapLayer();},
+  onMode:is3D=>{const leaving3D=was3D&&!is3D;was3D=is3D;if(!is3D&&map){map.invalidateSize();if(leaving3D){if(state.scope==='world')map.setView([18,20],2);else if(state.scope==='point')map.setView([state.lat,state.lon],8);else if(state.scope==='area'){focusArea();}}}updateMapLayer();},
   onReady:()=>{EWGlobe.setPosition(state,state.scope!=='world');showResultLocations();}
 });
 loadSources().then(()=>{$('result-summary').textContent='Search any place or the whole world to discover available captures.';}).catch(e=>{$('search-notice').textContent=e.message;});

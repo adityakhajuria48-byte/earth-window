@@ -401,3 +401,12 @@ Existing band choices and GeoTIFF downloads apply to the results. The export rec
 Local development: `python -m venv .venv`, install `requirements-raster.txt` in that environment, then `npm run dev`. The development upload route invokes the same bounded importer. Hosted uploads pass through the owner-authenticated Worker to the authenticated Render Python service. No credentials belong in client assets.
 
 Validation: 52 JavaScript checks passed; 42 Python checks passed (including geographic polygons with holes, UTM reprojection, missing components, corrupt/nonpolygon/self-crossing records, date-line rejection, ZIP expansion/path checks and hostile point counts). The browser file-upload interaction was interrupted and is **not verified**. Current 3D rendering remains unverified in the available browser. See `validation/REPORT.md` for the earlier 1,000-location map/terrain checks and their nine unresolved terrain failures.
+
+
+## Shapefile display repair — 24 September 2026
+
+Boundary ZIP reading now runs on the user's device, using a bounded Web Worker and pinned, locally served Shapefile.js, fflate and Proj4 libraries. It no longer requires the remote Python upload service. `.shp`, `.shx`, `.dbf` and `.prj` remain required together in one ZIP. Projected boundaries are explicitly transformed to WGS 84. Attributes are not read; only the boundary is sent to catalogues when the user searches. This supersedes the hosted-upload description above; the Python importer remains available separately.
+
+Map clicks retain the active boundary, a dedicated pane keeps its outline above satellite footprints, map fitting accounts for open panels, and **Zoom to boundary** restores the view. A **Try sample · Udhampur** button processes a clearly identified sample through the same reader. Mobile controls close after a successful upload. Existing rectangle export limits and date-line restrictions remain; no polygon mask or automatic scene mosaic was added.
+
+**100 valid ZIPs + 20 invalid ZIPs** were checked by the Python and shipped JavaScript readers. **152 JavaScript tests** (including 100 upload-to-map cases) and **42 Python tests** passed. Full browser/GPU rendering remains unverified because the browser tool stalled during file selection. See [the detailed shapefile report](validation/SHAPEFILE-REPORT.md) and its reproducible fixtures/results.

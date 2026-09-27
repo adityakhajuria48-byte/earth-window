@@ -1,6 +1,7 @@
 import {readFile, readdir, mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.zip':'application/zip'};
+import './prepare-aoi.mjs';
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.zip':'application/zip','.txt':'text/plain; charset=utf-8'};
 const assets={};
 for(const file of await readdir('dist')) {
   const ext=path.extname(file); if(!types[ext] || file==='backend-config.js') continue;

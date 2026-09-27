@@ -1,0 +1,1642 @@
+[
+  {
+    "id": "area-001",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      75.11,
+      32.9,
+      75.17,
+      32.94
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "c663cc8665cad70d3eb04f62ebf46add07b5e4c63ed1c6453bcb814f9dd9bfb0",
+    "python": "passed"
+  },
+  {
+    "id": "area-002",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      75.11,
+      32.9,
+      75.17,
+      32.94
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "180c674966e0ec62f16a4654f060a24ccac4bb6640b38fefba672f622cd36eb2",
+    "python": "passed"
+  },
+  {
+    "id": "area-003",
+    "kind": "multipart UTM",
+    "crs": 32643,
+    "expected_bounds": [
+      75.11,
+      32.9,
+      75.26,
+      32.94
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "e12e5a9a8a62bdd0346306bf1984bf808531957e739e14fe47ea999c38bfa5aa",
+    "python": "passed"
+  },
+  {
+    "id": "area-004",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      75.11,
+      32.9,
+      75.17,
+      32.94
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "6c0bbf410758ef5a3bd1c55e9e1bf3ce77020e6f0653f57c1983506c8f323a65",
+    "python": "passed"
+  },
+  {
+    "id": "area-005",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      105.3933,
+      -6.1209,
+      105.4533,
+      -6.0809
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "14c730bee80281024122321ac4ad61aecd2fe07d7223b7cd7eb099a9cd5b8cbb",
+    "python": "passed"
+  },
+  {
+    "id": "area-006",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      105.3933,
+      -6.1209,
+      105.4533,
+      -6.0809
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "2b3c4bc77728aac7f45a6c46da8834b1c7dd2df5c7c1e460f67e4d2f3314dc48",
+    "python": "passed"
+  },
+  {
+    "id": "area-007",
+    "kind": "multipart UTM",
+    "crs": 32748,
+    "expected_bounds": [
+      105.3933,
+      -6.1209,
+      105.5433,
+      -6.0809
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "5109a8f1a6ade88d7fd48f3805c17176be2cac26bfa259dcf3ae9d988edc7abd",
+    "python": "passed"
+  },
+  {
+    "id": "area-008",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      105.3933,
+      -6.1209,
+      105.4533,
+      -6.0809
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "8abd14b552f2896d53fae58693c768d3df448eb3caf36b034c47bf0040342757",
+    "python": "passed"
+  },
+  {
+    "id": "area-009",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -165.03,
+      -50.02,
+      -164.97,
+      -49.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "541fbed5f17e6113e652e327e822130c450fcaa11f9b7a380c61bc85f96e37a9",
+    "python": "passed"
+  },
+  {
+    "id": "area-010",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -165.03,
+      -50.02,
+      -164.97,
+      -49.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "70128f0017a44c88655399c271f5bada636e98d43835342161a1f55c9a18b95c",
+    "python": "passed"
+  },
+  {
+    "id": "area-011",
+    "kind": "multipart UTM",
+    "crs": 32703,
+    "expected_bounds": [
+      -165.03,
+      -50.02,
+      -164.88,
+      -49.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "83a19eb23a9ae8e6aa82b628f7d2076c166fca1e03e110e0d3dcc885665240d2",
+    "python": "passed"
+  },
+  {
+    "id": "area-012",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -165.03,
+      -50.02,
+      -164.97,
+      -49.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "6f7484648e3375fbc6a6c1133a7bfaf067158f71b78b915e40a0da1edcfacfb1",
+    "python": "passed"
+  },
+  {
+    "id": "area-013",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -151.03,
+      -33.02,
+      -150.97,
+      -32.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "5001d44df964f4747b76b582b26cb3ea4f71a50a34432e0b61aeabcfbf1d656c",
+    "python": "passed"
+  },
+  {
+    "id": "area-014",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -151.03,
+      -33.02,
+      -150.97,
+      -32.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "a83ceede82c7671d47c8eef4f034d0a46720e3f794763f9d150195505bdbf7ec",
+    "python": "passed"
+  },
+  {
+    "id": "area-015",
+    "kind": "multipart UTM",
+    "crs": 32705,
+    "expected_bounds": [
+      -151.03,
+      -33.02,
+      -150.88,
+      -32.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "8025db5656ac29d1f060149af994cb54688668becfeb281972e0839f8f47a656",
+    "python": "passed"
+  },
+  {
+    "id": "area-016",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -151.03,
+      -33.02,
+      -150.97,
+      -32.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "848ef9f08cdccda2086255e5f48cd8a8dfacea0beeae27cc37966cd6485d1f7b",
+    "python": "passed"
+  },
+  {
+    "id": "area-017",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -137.03,
+      -16.02,
+      -136.97,
+      -15.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "f1c1ac79a1dd87e7b4495e174d0bac288046d845efb15aada8745a21fe39ba41",
+    "python": "passed"
+  },
+  {
+    "id": "area-018",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -137.03,
+      -16.02,
+      -136.97,
+      -15.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "cac24d38c3c4ff803269f97ba2616ba08535cdeb995e2d4ff0597869ad0eefec",
+    "python": "passed"
+  },
+  {
+    "id": "area-019",
+    "kind": "multipart UTM",
+    "crs": 32708,
+    "expected_bounds": [
+      -137.03,
+      -16.02,
+      -136.88,
+      -15.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "d384ad4eb7184436c708c3f3d3a6cd08bd224ddd5206672dee253f8a7484fdb6",
+    "python": "passed"
+  },
+  {
+    "id": "area-020",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -137.03,
+      -16.02,
+      -136.97,
+      -15.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "75ed81b7e4a765c5422f6279a897cddf91521fb95b8ff4a829dade64602f9b1c",
+    "python": "passed"
+  },
+  {
+    "id": "area-021",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -123.03,
+      0.98,
+      -122.97,
+      1.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "f7b00b873e229ec832e3971b248183b3ee32de7f72163d02072d2fed51d1f7bc",
+    "python": "passed"
+  },
+  {
+    "id": "area-022",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -123.03,
+      0.98,
+      -122.97,
+      1.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "b9f0d6bb007f6d2346cd4ec96706c852f9e137e6ccce8a82c425a9f0cd540167",
+    "python": "passed"
+  },
+  {
+    "id": "area-023",
+    "kind": "multipart UTM",
+    "crs": 32610,
+    "expected_bounds": [
+      -123.03,
+      0.98,
+      -122.88,
+      1.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "8269a9eb1fa42c9b59b4e20bb3a246c90b1c4a05d317d6b4388b9e414b238920",
+    "python": "passed"
+  },
+  {
+    "id": "area-024",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -123.03,
+      0.98,
+      -122.97,
+      1.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "77b7f358327211f27e2a708e88547b4d84a7632db32eaf4f7dca3be0e1ab8d1b",
+    "python": "passed"
+  },
+  {
+    "id": "area-025",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -109.03,
+      17.98,
+      -108.97,
+      18.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "4b3e480f9ff7105bccbe8b99438fc79b25b80d7b54c8c530a825dcfbc49f71ce",
+    "python": "passed"
+  },
+  {
+    "id": "area-026",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -109.03,
+      17.98,
+      -108.97,
+      18.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "62095f506ce6a738d9948ff9a596b5e95932ba094a1c47879dc5cf9e3d319453",
+    "python": "passed"
+  },
+  {
+    "id": "area-027",
+    "kind": "multipart UTM",
+    "crs": 32612,
+    "expected_bounds": [
+      -109.03,
+      17.98,
+      -108.88,
+      18.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "33adf8555fabfa1b7a6ed3bdb3e5593d0fcbb822f1e2d408267f513543b40f8c",
+    "python": "passed"
+  },
+  {
+    "id": "area-028",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -109.03,
+      17.98,
+      -108.97,
+      18.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "5bd274398117f00cd21d50e571c3875c658555d242c1673ef748c1ae1048fa25",
+    "python": "passed"
+  },
+  {
+    "id": "area-029",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -95.03,
+      34.98,
+      -94.97,
+      35.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "89f79c9464a3286fd69a48bc9ccd9ad9cf5dcc756c24de37b6798c31c8a70fef",
+    "python": "passed"
+  },
+  {
+    "id": "area-030",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -95.03,
+      34.98,
+      -94.97,
+      35.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "969a11f11d5f556509d7825d039d51f35cb9fadab735334c74a019ab375fb34a",
+    "python": "passed"
+  },
+  {
+    "id": "area-031",
+    "kind": "multipart UTM",
+    "crs": 32615,
+    "expected_bounds": [
+      -95.03,
+      34.98,
+      -94.88,
+      35.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "9ea08af8d2f269114e7cdff7d2d7e41227a1a69f3eab6b0fb857dcbc5d4d2d4f",
+    "python": "passed"
+  },
+  {
+    "id": "area-032",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -95.03,
+      34.98,
+      -94.97,
+      35.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "db1e6d39eabe7acd1d450ada9d9b4b4e11f92eac7aac583a6ccb0bc148cd994b",
+    "python": "passed"
+  },
+  {
+    "id": "area-033",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -81.03,
+      51.98,
+      -80.97,
+      52.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "ada7b824f97840ff3e6aa76e70fb4ca9c3585d72487a42a0325c70d3cc254a5d",
+    "python": "passed"
+  },
+  {
+    "id": "area-034",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -81.03,
+      51.98,
+      -80.97,
+      52.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "93501cb181754d28cdab115da45312034c35b82bbf24c5c221f472c848ffa3b4",
+    "python": "passed"
+  },
+  {
+    "id": "area-035",
+    "kind": "multipart UTM",
+    "crs": 32617,
+    "expected_bounds": [
+      -81.03,
+      51.98,
+      -80.88,
+      52.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "ab029d46ec3eef9806ca7bec667401a9bbd6ef491803f8ae4b1cad1fce6bfc8b",
+    "python": "passed"
+  },
+  {
+    "id": "area-036",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -81.03,
+      51.98,
+      -80.97,
+      52.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "184dec5099e0f1e65b8b729ff20b7c378233f76777cd1bb0fe63d7b1c544d47a",
+    "python": "passed"
+  },
+  {
+    "id": "area-037",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -67.03,
+      68.98,
+      -66.97,
+      69.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "64de6ca6db8e27ec168d39d17fdd78fe1fa4391d5fc732edb1b0626f95aaf118",
+    "python": "passed"
+  },
+  {
+    "id": "area-038",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -67.03,
+      68.98,
+      -66.97,
+      69.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "bbebfa09f3b7330df397ce47a6d76cb3f51f60640f6e29a766f41d5a28176dfd",
+    "python": "passed"
+  },
+  {
+    "id": "area-039",
+    "kind": "multipart UTM",
+    "crs": 32619,
+    "expected_bounds": [
+      -67.03,
+      68.98,
+      -66.88,
+      69.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "971c5781fc7f7ccdc844258d82a4c5d4f4f829b4afd465053a074e4de22e7a8e",
+    "python": "passed"
+  },
+  {
+    "id": "area-040",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -67.03,
+      68.98,
+      -66.97,
+      69.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "ee2834fffebb1c61445d3ec358e7be01a8d030e8d136df47afd40c334ba5df24",
+    "python": "passed"
+  },
+  {
+    "id": "area-041",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -53.03,
+      -34.02,
+      -52.97,
+      -33.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "246e82907a3292577f5d4b8c7c5eccdec1bd0893987993cd799321ed3e705b18",
+    "python": "passed"
+  },
+  {
+    "id": "area-042",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -53.03,
+      -34.02,
+      -52.97,
+      -33.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "b38a0a85a5420e42f175f796df2888fc18f667ded21366430f104a31152e8c2d",
+    "python": "passed"
+  },
+  {
+    "id": "area-043",
+    "kind": "multipart UTM",
+    "crs": 32722,
+    "expected_bounds": [
+      -53.03,
+      -34.02,
+      -52.88,
+      -33.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "55c6598885fcb47aaea3b9002534bc1607ca28c7de1417e4c43f1e4fe779a99d",
+    "python": "passed"
+  },
+  {
+    "id": "area-044",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -53.03,
+      -34.02,
+      -52.97,
+      -33.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "2f548b7ea473e7a2676a52aa3178bc76febcf076fb94429659630a0dd4c30f82",
+    "python": "passed"
+  },
+  {
+    "id": "area-045",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -39.03,
+      -17.02,
+      -38.97,
+      -16.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "d8af640091c171337491f5236bc2adce070c8228f9cc7c17ec848b5dfab16235",
+    "python": "passed"
+  },
+  {
+    "id": "area-046",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -39.03,
+      -17.02,
+      -38.97,
+      -16.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "d64fff6123ca775f43800f55acfb0ba1746d2379c94063b962e9a405d6ee7285",
+    "python": "passed"
+  },
+  {
+    "id": "area-047",
+    "kind": "multipart UTM",
+    "crs": 32724,
+    "expected_bounds": [
+      -39.03,
+      -17.02,
+      -38.88,
+      -16.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "ee68f79fca66b94baa32c416d0fe83427d8b448ab06e17272673a71f604b5ba6",
+    "python": "passed"
+  },
+  {
+    "id": "area-048",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -39.03,
+      -17.02,
+      -38.97,
+      -16.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "155fe056e5b9a8790c7ccaa7ca543e8201f6509ab0cc95c68049190990ecf8d4",
+    "python": "passed"
+  },
+  {
+    "id": "area-049",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -25.03,
+      -0.02,
+      -24.97,
+      0.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "48ac9ecfd4263ab779fc66e8d00360b79d7449620d3401eb1934f2acdd36013f",
+    "python": "passed"
+  },
+  {
+    "id": "area-050",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -25.03,
+      -0.02,
+      -24.97,
+      0.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "783a56f37900ba7f19da4926832eea761c93954b4a10a21699874f10ed8ba13c",
+    "python": "passed"
+  },
+  {
+    "id": "area-051",
+    "kind": "multipart UTM",
+    "crs": 32626,
+    "expected_bounds": [
+      -25.03,
+      -0.02,
+      -24.88,
+      0.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "a2773a425bcedb49a4981a80e171ffe613fc2c776ccbfa1aa05e4ab46828d892",
+    "python": "passed"
+  },
+  {
+    "id": "area-052",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -25.03,
+      -0.02,
+      -24.97,
+      0.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "53368f97857b02e6d01b4c3292dbe68e5bbddea361bd139a4a199a3a4a15c214",
+    "python": "passed"
+  },
+  {
+    "id": "area-053",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      -11.03,
+      16.98,
+      -10.97,
+      17.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "69f2dfde2c2daebbf5079ca9bed4caf57032c45e47219e99af69d3e2edcc2085",
+    "python": "passed"
+  },
+  {
+    "id": "area-054",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      -11.03,
+      16.98,
+      -10.97,
+      17.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "708d7405c7d72a21286c42571f6dccee9daebbe0e4d652c9edab55210591a38e",
+    "python": "passed"
+  },
+  {
+    "id": "area-055",
+    "kind": "multipart UTM",
+    "crs": 32629,
+    "expected_bounds": [
+      -11.03,
+      16.98,
+      -10.88,
+      17.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "46853e9323927414d046d31b1d9792607971a5ca69f66452be16239e2cfb5633",
+    "python": "passed"
+  },
+  {
+    "id": "area-056",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      -11.03,
+      16.98,
+      -10.97,
+      17.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "4245c494a9b63716f82b494866f8e546326d6435b7ac5680064ef36e72869161",
+    "python": "passed"
+  },
+  {
+    "id": "area-057",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      2.97,
+      33.98,
+      3.03,
+      34.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "14128abf492212e95b160a9481a12979d14f9d097bfc84dfc01203de5a354f66",
+    "python": "passed"
+  },
+  {
+    "id": "area-058",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      2.97,
+      33.98,
+      3.03,
+      34.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "6fe21136b5d727217b0579539af049e4cc28212d4f6d89e46b5829dc24d7c439",
+    "python": "passed"
+  },
+  {
+    "id": "area-059",
+    "kind": "multipart UTM",
+    "crs": 32631,
+    "expected_bounds": [
+      2.97,
+      33.98,
+      3.12,
+      34.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "50fc3c742a55728e54d9182b9b8a2c12d852cf9a36575a2e1473af53a85a95d0",
+    "python": "passed"
+  },
+  {
+    "id": "area-060",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      2.97,
+      33.98,
+      3.03,
+      34.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "de432471ea52eaae38c38b3b63dbe8979353cbe552466c3f71f605332ae7c954",
+    "python": "passed"
+  },
+  {
+    "id": "area-061",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      16.97,
+      50.98,
+      17.03,
+      51.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "d995d2bf305e644d0eca93d83f0d2288ca7e2220362d1dab23d69d6fcb270e1c",
+    "python": "passed"
+  },
+  {
+    "id": "area-062",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      16.97,
+      50.98,
+      17.03,
+      51.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "97e049939944a27f5df11fd7ae2408e3df07008e77a4ce49c00418621e77c7be",
+    "python": "passed"
+  },
+  {
+    "id": "area-063",
+    "kind": "multipart UTM",
+    "crs": 32633,
+    "expected_bounds": [
+      16.97,
+      50.98,
+      17.12,
+      51.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "93be3872314753c3733cc74f5c4f94610bb59c6f8bab95504b33d735fca88b15",
+    "python": "passed"
+  },
+  {
+    "id": "area-064",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      16.97,
+      50.98,
+      17.03,
+      51.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "e9712090d7283c6485c5c28d003a436da34fa89dbbb560a6b0bb3d5702760900",
+    "python": "passed"
+  },
+  {
+    "id": "area-065",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      30.97,
+      67.98,
+      31.03,
+      68.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "bdc219fd976107e0ee446471b0094c52091379651f7fab5e9f25b06aa495f9d3",
+    "python": "passed"
+  },
+  {
+    "id": "area-066",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      30.97,
+      67.98,
+      31.03,
+      68.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "635c7f145b0be86d4aafcb29ec717350e8216bd2576eb3a58a140ed0f2ec5504",
+    "python": "passed"
+  },
+  {
+    "id": "area-067",
+    "kind": "multipart UTM",
+    "crs": 32636,
+    "expected_bounds": [
+      30.97,
+      67.98,
+      31.12,
+      68.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "1cc5547219506782c8513dfd6afdd1e89c857832f25a752b6169eaf73ca6cad5",
+    "python": "passed"
+  },
+  {
+    "id": "area-068",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      30.97,
+      67.98,
+      31.03,
+      68.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "15a04270fde952b4da0d7d32c72670b6e3d277e1b7c616dc759aa5f431574b43",
+    "python": "passed"
+  },
+  {
+    "id": "area-069",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      44.97,
+      -35.02,
+      45.03,
+      -34.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "ff0697fef934963a0721e0debae60f0aca3dbc66948d29f2a9525113ebe38f60",
+    "python": "passed"
+  },
+  {
+    "id": "area-070",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      44.97,
+      -35.02,
+      45.03,
+      -34.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "7640d7d951108efcecff37e8895a305e6c6355947c9c4e91346caa22e694cc8e",
+    "python": "passed"
+  },
+  {
+    "id": "area-071",
+    "kind": "multipart UTM",
+    "crs": 32738,
+    "expected_bounds": [
+      44.97,
+      -35.02,
+      45.12,
+      -34.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "883b49a920eef5d452f0a372aa42f74896e0ac05a554d64d61eeb4ecd16c7489",
+    "python": "passed"
+  },
+  {
+    "id": "area-072",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      44.97,
+      -35.02,
+      45.03,
+      -34.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "622cb59e794df3dc8886ba4f48a2e7cc85d857954dcd6a06c63a2384cec1a597",
+    "python": "passed"
+  },
+  {
+    "id": "area-073",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      58.97,
+      -18.02,
+      59.03,
+      -17.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "1dff716144cf48adab4bbb3b2b0c772988796efed5dc11d1d09f34b46fc16453",
+    "python": "passed"
+  },
+  {
+    "id": "area-074",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      58.97,
+      -18.02,
+      59.03,
+      -17.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "2f24968b90995be04e4a9b7b0794f8cf40ff1524ff160c6f75e3d5c354c5298a",
+    "python": "passed"
+  },
+  {
+    "id": "area-075",
+    "kind": "multipart UTM",
+    "crs": 32740,
+    "expected_bounds": [
+      58.97,
+      -18.02,
+      59.12,
+      -17.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "65714698a241a15e82129ed13f73b123c9838bfa6add153f1ea3ad765ee4c39c",
+    "python": "passed"
+  },
+  {
+    "id": "area-076",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      58.97,
+      -18.02,
+      59.03,
+      -17.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "448133d00c026e62d0c647f80d27400b729a7d5e3c29cd2a569b6763cf358ef2",
+    "python": "passed"
+  },
+  {
+    "id": "area-077",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      72.97,
+      -1.02,
+      73.03,
+      -0.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "50f36c7be8b13b46d319433171e0eafd4a033dcebbd1f207c4e2bb9cb410c00d",
+    "python": "passed"
+  },
+  {
+    "id": "area-078",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      72.97,
+      -1.02,
+      73.03,
+      -0.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "b68ab074a52d20766679981711b0a5e925efbcfae398d9293982002e006fad0f",
+    "python": "passed"
+  },
+  {
+    "id": "area-079",
+    "kind": "multipart UTM",
+    "crs": 32743,
+    "expected_bounds": [
+      72.97,
+      -1.02,
+      73.12,
+      -0.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "bf912d5acc0ff25f2296bbaa6b64bd8134b6e110f485e09d20bc5a369e6bc92d",
+    "python": "passed"
+  },
+  {
+    "id": "area-080",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      72.97,
+      -1.02,
+      73.03,
+      -0.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "83cf35f5a166b15f178bbd887c0708b95de4dbea5ada1bafddb1f7b514a3dbac",
+    "python": "passed"
+  },
+  {
+    "id": "area-081",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      86.97,
+      15.98,
+      87.03,
+      16.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "daf0951c24d9f15ee52e20a6adb8f4f9aa04ea29e4789f42f60d2c3dd0dd4ea4",
+    "python": "passed"
+  },
+  {
+    "id": "area-082",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      86.97,
+      15.98,
+      87.03,
+      16.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "6f183ebfecdcacf5bd88bc62a835fc7bc8a2c3053ec35bd4a903b4bf6876be9d",
+    "python": "passed"
+  },
+  {
+    "id": "area-083",
+    "kind": "multipart UTM",
+    "crs": 32645,
+    "expected_bounds": [
+      86.97,
+      15.98,
+      87.12,
+      16.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "a7fa1d1b33a8a46eacad26eb609b1fc483f9026a47eec1bc0ee23c7993cd077e",
+    "python": "passed"
+  },
+  {
+    "id": "area-084",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      86.97,
+      15.98,
+      87.03,
+      16.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "444e9e94c27d9e709871035b9900004fee0c507295984c45c95148577a27dd36",
+    "python": "passed"
+  },
+  {
+    "id": "area-085",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      100.97,
+      32.98,
+      101.03,
+      33.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "bb07bd034fdf5bafc178c560aa80f7cf63fca2db478e52f3bbaf591987fb3c52",
+    "python": "passed"
+  },
+  {
+    "id": "area-086",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      100.97,
+      32.98,
+      101.03,
+      33.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "b90de6be7aa70b0d48c38e7d0f581c321de907c754421764048a2263a992fb7b",
+    "python": "passed"
+  },
+  {
+    "id": "area-087",
+    "kind": "multipart UTM",
+    "crs": 32647,
+    "expected_bounds": [
+      100.97,
+      32.98,
+      101.12,
+      33.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "50940be79d9131cb651f0272f3f99dab2e676a123d1640f7df80b35d46276029",
+    "python": "passed"
+  },
+  {
+    "id": "area-088",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      100.97,
+      32.98,
+      101.03,
+      33.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "78f8224d6d7509183dc3e86f8ef41a9f523a28189ccc7b30f572a9d692f8d657",
+    "python": "passed"
+  },
+  {
+    "id": "area-089",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      114.97,
+      49.98,
+      115.03,
+      50.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "b3a699e936a7b9850ff97caed30e191ff01f57e8583526d86dd76911f9142d24",
+    "python": "passed"
+  },
+  {
+    "id": "area-090",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      114.97,
+      49.98,
+      115.03,
+      50.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "1140f0946e23c545f36fcb847a7c7f4fa8ec824b27a28f7dd6045746d1a6f77a",
+    "python": "passed"
+  },
+  {
+    "id": "area-091",
+    "kind": "multipart UTM",
+    "crs": 32650,
+    "expected_bounds": [
+      114.97,
+      49.98,
+      115.12,
+      50.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "39e5ed8155c14d5fb59d1ee1725dc204f7c70a2f93d951e3224b5389849848a5",
+    "python": "passed"
+  },
+  {
+    "id": "area-092",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      114.97,
+      49.98,
+      115.03,
+      50.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "f21a7e86ee3f28fdb6921afde9469610e785684d7ff7a2a40bee9ed870e674c9",
+    "python": "passed"
+  },
+  {
+    "id": "area-093",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      128.97,
+      66.98,
+      129.03,
+      67.02
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "bc6ad0a2816080465b1b9d92ca05de3af8db775b8df2fb3058ead6ec061aa3ab",
+    "python": "passed"
+  },
+  {
+    "id": "area-094",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      128.97,
+      66.98,
+      129.03,
+      67.02
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "2b8b3b08122f0046ce5e26d3eafbf368e3bca42786d7c533ea0eb1ea616b3c6b",
+    "python": "passed"
+  },
+  {
+    "id": "area-095",
+    "kind": "multipart UTM",
+    "crs": 32652,
+    "expected_bounds": [
+      128.97,
+      66.98,
+      129.12,
+      67.02
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "85d4bf3757975b14d087e6a3e4aefba03efe83ed53669ccf73b7e64f87cc231b",
+    "python": "passed"
+  },
+  {
+    "id": "area-096",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      128.97,
+      66.98,
+      129.03,
+      67.02
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "68e49b10713a4804c2bd8c7bfccc48e02729952f70dc2466566a4c03cd65a889",
+    "python": "passed"
+  },
+  {
+    "id": "area-097",
+    "kind": "polygon",
+    "crs": 4326,
+    "expected_bounds": [
+      142.97,
+      -36.02,
+      143.03,
+      -35.98
+    ],
+    "features": 1,
+    "vertices": 5,
+    "sha256": "360c7d895e4238874aaed9880abd4784a0eb607afb93c9a881e3bcfa93c66325",
+    "python": "passed"
+  },
+  {
+    "id": "area-098",
+    "kind": "hole",
+    "crs": 4326,
+    "expected_bounds": [
+      142.97,
+      -36.02,
+      143.03,
+      -35.98
+    ],
+    "features": 1,
+    "vertices": 10,
+    "sha256": "eb11519de6b39a6ed68d728054cc3e1092134e5e585f7b502c7418859a101824",
+    "python": "passed"
+  },
+  {
+    "id": "area-099",
+    "kind": "multipart UTM",
+    "crs": 32754,
+    "expected_bounds": [
+      142.97,
+      -36.02,
+      143.12,
+      -35.98
+    ],
+    "features": 2,
+    "vertices": 10,
+    "sha256": "43f3c944cd49251def92d49ac70d902ebb74ee451ae6771ed6cbfdeae43ea412",
+    "python": "passed"
+  },
+  {
+    "id": "area-100",
+    "kind": "Mercator 33 vertices",
+    "crs": 3857,
+    "expected_bounds": [
+      142.97,
+      -36.02,
+      143.03,
+      -35.98
+    ],
+    "features": 1,
+    "vertices": 33,
+    "sha256": "7aebf73d5f0378db37285f5a14a8c4761e4501a858828cd4f2a470c867f548ee",
+    "python": "passed"
+  },
+  {
+    "id": "invalid-001",
+    "kind": "missing prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "cc3f1140b80b02c25174f11354624b03ac733896181f2881bb059885ec6607b7"
+  },
+  {
+    "id": "invalid-002",
+    "kind": "missing shx",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "5b4f067ea8e25764643ba7b84103763209326d2f3585862b784cd49ec2e6f920"
+  },
+  {
+    "id": "invalid-003",
+    "kind": "missing dbf",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "8054481b3d9f206a61334b672493671e22ee8f409b1dab3b38d179c4fa8325ec"
+  },
+  {
+    "id": "invalid-004",
+    "kind": "empty prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "54d07e79963670c02cb296c92f731c29f57841d3981a1d4e66598909859dcd54"
+  },
+  {
+    "id": "invalid-005",
+    "kind": "corrupt shp",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "a07c09ceff0039f417203c78bcb26d02b00e2ec700db587314080c6b89e5b274"
+  },
+  {
+    "id": "invalid-006",
+    "kind": "missing prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "3bb239b35dc03e5212316fa7ff87b4743d85c5b231edf9da7f3268deb7c562e7"
+  },
+  {
+    "id": "invalid-007",
+    "kind": "missing shx",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "d7fb953586561fdf7759771612a70abbac0cfdfe04638585537223e42460e7dd"
+  },
+  {
+    "id": "invalid-008",
+    "kind": "missing dbf",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "b0f5a720a59fff15e83e71b96d76775c9580774d166935fba4ed3f3683fd1131"
+  },
+  {
+    "id": "invalid-009",
+    "kind": "empty prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "ee117630f1794c2e6a6ff431811d40fefef60959b6e3d666a128d993c93750de"
+  },
+  {
+    "id": "invalid-010",
+    "kind": "corrupt shp",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "99e0993da4ad44a6b8159e3f6f8488943ab7564cee7e07a59f11ec020c76653a"
+  },
+  {
+    "id": "invalid-011",
+    "kind": "missing prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "10357d03f0eb9c21b0b086f5f741bbe509020bfa8fdb7906d7f4577bb68743fc"
+  },
+  {
+    "id": "invalid-012",
+    "kind": "missing shx",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "6db0862f254efee9215e7a84e8b0258f3da68ca0cffc7660cadc3550fd36de45"
+  },
+  {
+    "id": "invalid-013",
+    "kind": "missing dbf",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "6ace018a9ff967c75e9f3c0658825cdf10a4deff41d45cc80c0958c6778a0acf"
+  },
+  {
+    "id": "invalid-014",
+    "kind": "empty prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "d4a10a300beab7a2568ba85efcdfb39229b916240c5be143607f91774c227c4e"
+  },
+  {
+    "id": "invalid-015",
+    "kind": "corrupt shp",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "00c9601ae4979ea2ee8769e8fcb4e58d6709642c7d19cb264a9a37d990590aec"
+  },
+  {
+    "id": "invalid-016",
+    "kind": "missing prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "a0f807a04bde638f636360607c248118bd1990fd6d9a56dd49f997fe3e8ea74f"
+  },
+  {
+    "id": "invalid-017",
+    "kind": "missing shx",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "e3316bd8d5fccbbc95a6fdc66364a96646679d62da09dbc88e89937ab82768c8"
+  },
+  {
+    "id": "invalid-018",
+    "kind": "missing dbf",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "b0b6992e8aefec6ffe95bb15379767fbda86ae42321091e5445f52cc6e34103f"
+  },
+  {
+    "id": "invalid-019",
+    "kind": "empty prj",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "8dc0019a48ff35debe220e62cfb5730e097cc26eb108be97f8ae984d24f849e2"
+  },
+  {
+    "id": "invalid-020",
+    "kind": "corrupt shp",
+    "reject": true,
+    "python": "correctly rejected",
+    "sha256": "6830387c3fb87d3c497d923fdd33674e3e25681161e2fe2fd1562512ee4f0fd9"
+  }
+]

@@ -1,8 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {handleRequest} from './processor-worker.mjs';
+import vm from 'node:vm';
+import fs from 'node:fs';
 const env={EARTH_WINDOW_PROCESSOR_URL:'https://processor.example',EARTH_WINDOW_PROCESSOR_PASSWORD:'test-secret'};
 const request=(path,options={})=>new Request('https://site.example'+path,options);
+test('export controls send the uploaded polygon only while boundary masking is selected',async()=>{
+  const elements=[],sent=[];
+  class Element {
+    constructor(tag){this.tag=tag;this.children=[];this.value='';elements.push(this);}
+    append(...items){this.children.push(...items);if(this.tag==='select'&&!this.value)this.value=items[0]?.value;}
+    setAttribute(){} replaceChildren(...items){this.children=items;} addEventListener(){} removeEventListener(){} click(){}
+  }
+  const band={id:'red',key:'red',index:0,label:'Red',isTiff:true,canPreview:true};
+  const geometry={type:'Polygon',coordinates:[[[10,19],[10.1,19],[10.1,19.1],[10,19]]]};
+  const context={window:{EARTH_WINDOW_CROPS:true},document:{createElement:t=>new Element(t),createTextNode:t=>({textContent:t}),getElementById:()=>new Element('dialog')},
+    Option:class{constructor(label,value){this.label=label;this.value=value;}},
+    EW:{bands:()=>[band],presets:()=>[],indices:()=>[],source:()=>({sourceId:'s2'})},
+    AbortController,TextEncoder,Blob,setTimeout:()=>0,clearTimeout(){},URL:{createObjectURL:()=> 'blob:test',revokeObjectURL(){}},
+    fetch:async(url,options)=>{sent.push(JSON.parse(options.body));return {ok:true,blob:async()=>new Blob(['tiff'])};}};
+  vm.runInNewContext(fs.readFileSync('dist/bands.js','utf8'),context);
+  context.window.EarthBands.panel({id:'scene'},{scope:'area',bounds:[10,19,10.1,19.1],geometry});
+  const button=elements.find(e=>e.textContent==='Download GeoTIFF crop ↓');
+  const checkbox=elements.find(e=>e.type==='checkbox');
+  assert.equal(checkbox.checked,true);
+  await button.onclick();assert.deepEqual(sent[0].geometry,geometry);
+  checkbox.checked=false;await button.onclick();assert.equal('geometry' in sent[1],false);
+});
 test('gateway distinguishes connection failures from timeouts without exposing diagnostics',async()=>{
   const original=globalThis.fetch;
   try {
@@ -19,7 +43,7 @@ test('crop gateway requires signed-in identity and refuses cross-origin requests
   assert.equal((await handleRequest(request('/api/crop',{method:'POST',headers:{'oai-authenticated-user-id':'test','Origin':'https://other.example'}}),env)).status,403);
 });
 test('gateway bounds chunked request bodies before contacting processor',async()=>{
-  const response=await handleRequest(request('/api/crop',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'x'.repeat(8193)}),env);
+  const response=await handleRequest(request('/api/crop',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'x'.repeat(1024*1024+1)}),env);
   assert.equal(response.status,413);
 });
 test('gateway forwards only its service credential and streams GeoTIFF response',async()=>{
@@ -48,7 +72,7 @@ test('static assets and config never contain the processing password',async()=>{
 test('area preview uses the same authenticated bounded gateway',async()=>{
  assert.equal((await handleRequest(request('/api/preview',{method:'POST'}),env)).status,401);
  assert.equal((await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test',Origin:'https://other.example'}}),env)).status,403);
- assert.equal((await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'x'.repeat(8193)}),env)).status,413);
+ assert.equal((await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'x'.repeat(1024*1024+1)}),env)).status,413);
  const old=globalThis.fetch;
  globalThis.fetch=async(url,options)=>{assert.equal(url.pathname,'/api/preview');assert.equal(options.method,'POST');return Response.json({width:1,height:1,data:[42]});};
  try{const r=await handleRequest(request('/api/preview',{method:'POST',headers:{'oai-authenticated-user-id':'test','Content-Type':'application/json'},body:'{}'}),env);assert.equal(r.status,200);assert.deepEqual((await r.json()).data,[42]);}finally{globalThis.fetch=old;}

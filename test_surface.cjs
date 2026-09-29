@@ -71,15 +71,7 @@ test('unsupported projections, rotated grids, dateline tiles and cancellation ar
   const aborted=new AbortController();aborted.abort();
   await assert.rejects(api.project([raster()],null,aborted.signal),/cancelled/);
 });
-test('before/after ordering excludes overlapping composite periods',()=>{
-  const context=vm.createContext({window:{},EW});
-  vm.runInContext(fs.readFileSync('dist/studio.js','utf8'),context);
-  const {chronological}=context.window.EWStudio;
-  const f=(start,end)=>({properties:{start_datetime:start,end_datetime:end}});
-  assert.equal(chronological(f('2024-08-28','2024-09-04'),f('2024-09-05','2024-09-12')),true);
-  assert.equal(chronological(f('2024-08-28','2024-09-04'),f('2024-09-04','2024-09-12')),false);
-  assert.equal(chronological(f('2024-09-05','2024-09-12'),f('2024-08-28','2024-09-04')),false);
-});
+
 
 test('2D Mercator resampling uses nonlinear latitude while preserving extent',async()=>{
   const env=projectionEnvironment();

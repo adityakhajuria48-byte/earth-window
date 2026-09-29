@@ -10,7 +10,7 @@ export async function handleRequest(request, env, assets = {}) {
     if (!configured) return json(503, 'Crop processing is not connected yet.');
     const origin = request.headers.get('Origin');
     if ((origin && origin !== url.origin) || request.headers.get('Sec-Fetch-Site') === 'cross-site') return json(403, 'Start the export from Earth Window.');
-    const upload = path === '/api/aoi', maxBody = upload ? 10 * 1024 * 1024 : 8192;
+    const upload = path === '/api/aoi', maxBody = upload ? 10 * 1024 * 1024 : 1024 * 1024;
     const requestType = upload ? 'application/zip' : 'application/json';
     let body;
     if (path !== '/api/health') {

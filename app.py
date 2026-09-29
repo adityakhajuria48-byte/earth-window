@@ -299,12 +299,13 @@ class Handler(SimpleHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
-            if not 0 < length <= 8192 or self.headers.get_content_type() != "application/json":
+            from crops import MAX_REQUEST
+            if not 0 < length <= MAX_REQUEST or self.headers.get_content_type() != "application/json":
                 raise ValueError("Expected a small JSON crop request.")
             from crops import parameters
             data = parameters(json.loads(self.rfile.read(length)))
         except (ValueError, UnicodeError):
-            self.json_response(400, {"error": "Invalid crop request. Check the scene, band and bounding coordinates."})
+            self.json_response(400, {"error": "Invalid crop request. Check the scene, band, bounds and polygon; limit to 20,000 vertices and 1 MB."})
             return
         if not _crop_slot.acquire(blocking=False):
             self.json_response(429, {"error": "Another image is processing. Please retry shortly."})

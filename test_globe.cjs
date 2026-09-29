@@ -67,6 +67,34 @@ function environment(){
   vm.runInContext(fs.readFileSync('dist/app.js','utf8'),context);
   return {context,calls,get,globeStub};
 }
+test('archive search publishes each page early and reuses successful geometry queries across filters',async()=>{
+  const {context}=environment();let calls=0;const progress=[];
+  context.fetch=async()=>{calls++;return {ok:true,json:async()=>({features:[{id:String(calls),properties:{}}],links:calls===1?[{rel:'next',href:'https://archive.example/v1/search?page=2'}]:[]})};};
+  context.q={scope:'point',lat:32.9,lon:75.1,start:'2024-01-01T00:00:00Z',end:'2024-01-02T00:00:00Z'};
+  context.s={id:'test',name:'test',collection:'images',endpoint:'https://archive.example/v1/search'};
+  context.signal=new AbortController().signal;context.progress=x=>progress.push(x.features.length);
+  const first=await vm.runInContext('fetchSource(q,s,signal,progress)',context);
+  assert.equal(calls,2);assert.deepEqual(progress,[1,2]);assert.equal(first.features.length,2);
+  context.q.cloud=20;
+  const cached=await vm.runInContext('fetchSource(q,s,signal)',context);
+  assert.equal(calls,2);assert.equal(cached.cached,true);
+  context.q.lon=76;
+  await vm.runInContext('fetchSource(q,s,signal)',context);assert.equal(calls,3);
+});
+test('failed archive responses are retried and never stored as empty coverage',async()=>{
+  const {context}=environment();let calls=0;context.fetch=async()=>{calls++;throw Error('offline');};
+  context.q={scope:'world',start:'2024-01-01T00:00:00Z',end:'2024-01-02T00:00:00Z'};
+  context.s={id:'test',name:'test',collection:'images',endpoint:'https://archive.example/v1/search'};
+  context.signal=new AbortController().signal;
+  for(let i=0;i<2;i++)assert.equal((await vm.runInContext('fetchSource(q,s,signal)',context)).status,'unavailable');
+  assert.equal(calls,2);
+});
+test('comparison controls are removed while single-image preview and terrain controls remain',()=>{
+  const html=fs.readFileSync('dist/index.html','utf8'),app=fs.readFileSync('dist/app.js','utf8');
+  assert.doesNotMatch(html,/id="(?:compare-enabled|before-date|after-date|swipe)"/);
+  assert.doesNotMatch(app,/EWStudio\.pin|Use as Before|Use as After/);
+  assert.match(html,/id="terrain-toggle"/);assert.match(app,/EWGlobe\.showSurfaces\(\[entry\],false\)/);
+});
 test('failed 3D startup preserves 2D zoom; explicitly leaving 3D recentres the selected place',()=>{
   const {context,globeStub}=environment(),views=[];
   vm.runInContext("setPlace(32.916,75.141,'Udhampur')",context);

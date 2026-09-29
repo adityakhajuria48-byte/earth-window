@@ -20,6 +20,17 @@ ITEM = {"id": "example", "collection": "sentinel-2-l2a", "properties": {"datetim
 
 
 class RequestTests(unittest.TestCase):
+    def test_polygon_request_limits_and_structure(self):
+        good = {"type": "Polygon", "coordinates": [[[10, 19], [11, 19], [11, 20], [10, 19]]]}
+        self.assertEqual(crops.parameters({**Q, "geometry": good})["geometry"], good)
+        bad = [None, {"type": "Point", "coordinates": [10, 19]},
+               {"type": "Polygon", "coordinates": [[[10, 19], [11, 19], [11, 20], [10, 20]]]},
+               {"type": "Polygon", "coordinates": [[[True, 19]] * 4]},
+               {"type": "Polygon", "coordinates": [[[10, 19]] * 20001]}]
+        for geometry in bad:
+            with self.subTest(geometry=str(geometry)[:80]), self.assertRaises(ValueError):
+                crops.parameters({**Q, "geometry": geometry})
+
     def test_invalid_extent_and_band(self):
         for patch_data in ({"bbox": [179, 0, -179, 1]}, {"bbox": [0, 0, 3, 1]}, {"bbox": [0, 0, float("nan"), 1]}, {"band": True}, {"band": 0}, {"item": ""}):
             with self.subTest(patch_data=patch_data), self.assertRaises(ValueError):
@@ -53,6 +64,47 @@ class RequestTests(unittest.TestCase):
 
 @unittest.skipIf(rasterio is None, "Install requirements-raster.txt to validate raster exports")
 class RasterTests(unittest.TestCase):
+    def test_100_boundaries_against_independent_pixel_centre_oracle(self):
+        from rasterio.io import MemoryFile
+        from rasterio.warp import transform_bounds, transform
+        from rasterio.transform import from_bounds, xy
+        from shapely.geometry import shape
+        from shapely import contains_xy
+        cases = json.loads(Path('validation/shapefile-results.json').read_text())
+        if isinstance(cases, dict): cases = cases['results']
+        valid = [case for case in cases if case.get('geometry')]
+        self.assertEqual(len(valid), 100)
+        for i, case in enumerate(valid):
+            with self.subTest(case=case.get('id', i)):
+                geometry = case['geometry']
+                bounds = shape(geometry).bounds
+                crs = 'EPSG:3857' if i % 2 else 'EPSG:4326'
+                grid = from_bounds(*transform_bounds('EPSG:4326', crs, *bounds), 64, 64)
+                rows, cols = np.indices((64, 64))
+                xs, ys = xy(grid, rows.ravel(), cols.ravel())
+                lon, lat = transform(crs, 'EPSG:4326', xs, ys)
+                expected = contains_xy(shape(geometry), lon, lat).reshape(64, 64)
+                values = np.arange(1, 4097, dtype='uint16').reshape(64, 64)
+                q = crops.parameters({**Q, 'bbox':list(bounds), 'geometry':geometry})
+                with MemoryFile() as memory:
+                    with memory.open(driver='GTiff', width=64, height=64, count=1, dtype='uint16', crs=crs, transform=grid) as src:
+                        src.write(values, 1)
+                        crops.write_crop(src, self.output, q, ITEM, {})
+                with rasterio.open(self.output) as out:
+                    np.testing.assert_array_equal(out.read_masks(1) > 0, expected)
+                    np.testing.assert_array_equal(out.read(1)[expected], values[expected])
+                    self.assertTrue(np.all(out.read(1)[~expected] == 0))
+                    self.assertEqual(out.transform, grid)
+                    self.assertIn('Polygon', out.tags()['AREA_MASK'])
+
+    def test_mask_rejects_invalid_topology_and_empty_intersection(self):
+        invalid = {'type':'Polygon','coordinates':[[[10.02,19.94],[10.06,19.98],[10.06,19.94],[10.02,19.98],[10.02,19.94]]]}
+        outside = {'type':'Polygon','coordinates':[[[11,19],[11.1,19],[11.1,19.1],[11,19.1],[11,19]]]}
+        with rasterio.open(self.source) as src:
+            for geometry in (invalid, outside):
+                with self.assertRaises(ValueError):
+                    crops.write_crop(src, self.output, {**Q, 'geometry':geometry}, ITEM, {})
+
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)

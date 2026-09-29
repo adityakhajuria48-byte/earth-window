@@ -121,7 +121,7 @@ const EWGlobe = (() => {
     document.getElementById('view-label').textContent=active?'3D GLOBE':'2D MAP';
     if(ready){viewer.useDefaultRenderLoop=active&&!document.hidden;if(active){viewer.resize();render();}}
     config.onMode(active);
-    if(window.EWStudio)EWStudio.onMode(active);
+
     if(ready)detailNote();
   }
   async function setTerrain(enabled){
@@ -151,17 +151,9 @@ const EWGlobe = (() => {
     if(ready)for(const layer of surfaceLayers)viewer.imageryLayers.remove(layer,true);
     surfaceLayers=[];
     if(ready)detailNote();
-    document.getElementById('swipe-line').hidden=true;
-    document.getElementById('swipe-labels').hidden=true;render();
+    render();
   }
-  function setSplit(value){if(ready){viewer.scene.splitPosition=Number(value)/100;render();}document.getElementById('swipe-line').style.left=value+'%';}
-  function setComparison(enabled){
-    if(!ready)return;
-    surfaceLayers.forEach((layer,i)=>{layer.splitDirection=enabled?(i===0?Cesium.SplitDirection.LEFT:Cesium.SplitDirection.RIGHT):Cesium.SplitDirection.NONE;layer.show=enabled||i===0;});
-    document.getElementById('swipe-line').hidden=!enabled||surfaceLayers.length<2;
-    document.getElementById('swipe-labels').hidden=!enabled||surfaceLayers.length<2;render();
-  }
-  async function showSurfaces(entries,compare,fly=true){
+  async function showSurfaces(entries,compare=false,fly=true){
     if(!ready)throw Error('The 3D globe is unavailable. Try refreshing or open the original band files.');
     useMode(true);clearSurfaces();const revision=surfaceRevision;
     try{
@@ -171,12 +163,12 @@ const EWGlobe = (() => {
           provider=new Cesium.UrlTemplateImageryProvider({url:`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${entry.date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,maximumLevel:9,tilingScheme:new Cesium.WebMercatorTilingScheme(),credit:'NASA GIBS · Terra/MODIS '+entry.date,enablePickFeatures:false});
         }else provider=await Cesium.SingleTileImageryProvider.fromUrl(entry.url,{rectangle:Cesium.Rectangle.fromDegrees(...entry.bounds),credit:entry.credit});
         if(revision!==surfaceRevision)return;
-        provider.errorEvent.addEventListener(()=>{if(revision===surfaceRevision)document.getElementById('overlay-status').textContent='An image layer could not load. Availability for this comparison is incomplete.';});
+        provider.errorEvent.addEventListener(()=>{if(revision===surfaceRevision)document.getElementById('overlay-status').textContent='An image layer could not load. Try another band or the original file.';});
         surfaceLayers.push(viewer.imageryLayers.addImageryProvider(provider));
       }
       if(revision!==surfaceRevision)return;
       detailNote();
-      setComparison(compare);setSplit(document.getElementById('swipe').value);
+
       if(fly&&entries[0]?.bounds)move(Cesium.Rectangle.fromDegrees(...entries[0].bounds));
       render();
     }catch(e){if(revision===surfaceRevision)clearSurfaces();throw e;}
@@ -244,6 +236,6 @@ const EWGlobe = (() => {
     }catch(error){console.error('Earth Window globe: '+error.message+' '+error.stack);if(viewer&&!viewer.isDestroyed())viewer.destroy();viewer=null;ready=false;loading=null;useMode(false);status('2D view active. 3D graphics could not start in this browser.');document.getElementById('terrain-status').textContent='Terrain unavailable until 3D loads.';}
     finally{document.getElementById('view-3d').disabled=false;}
   }
-  return {init,setPosition,setLayer,footprints,bounds,home,rings,zoomAmount,showSurfaces,clearSurfaces,setComparison,setSplit,get active(){return active;}};
+  return {init,setPosition,setLayer,footprints,bounds,home,rings,zoomAmount,showSurfaces,clearSurfaces,get active(){return active;}};
 })();
 if(typeof module!=='undefined')module.exports=EWGlobe;

@@ -13,12 +13,44 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 MAX_PIXELS = 4_000_000
 MAX_BYTES = 64 * 1024 * 1024
+MAX_REQUEST = 1024 * 1024
 HOSTS = {
     "data.inpe.br", "sentinel-cogs.s3.us-west-2.amazonaws.com",
     "sentinel-s2-l2a.s3.amazonaws.com", "earth-search-data.s3.amazonaws.com",
     "landsateuwest.blob.core.windows.net", "modiseuwest.blob.core.windows.net",
     "alos.blob.core.windows.net",
 }
+
+
+def boundary(value):
+    """Bound and validate untrusted WGS84 GeoJSON before raster processing."""
+    if not isinstance(value, dict) or value.get("type") not in ("Polygon", "MultiPolygon"):
+        raise ValueError("Use a Polygon or MultiPolygon boundary in WGS 84.")
+    coordinates = value.get("coordinates")
+    polygons = [coordinates] if value["type"] == "Polygon" else coordinates
+    if not isinstance(polygons, list) or not 1 <= len(polygons) <= 500:
+        raise ValueError("Use between 1 and 500 polygons.")
+    count, longitudes = 0, []
+    for polygon in polygons:
+        if not isinstance(polygon, list) or not polygon:
+            raise ValueError("The boundary contains an empty polygon.")
+        for ring in polygon:
+            if not isinstance(ring, list) or len(ring) < 4:
+                raise ValueError("Boundary rings need at least four coordinates.")
+            count += len(ring)
+            if count > 20000:
+                raise ValueError("Simplify the boundary to at most 20,000 vertices.")
+            for point in ring:
+                if (not isinstance(point, list) or len(point) != 2 or
+                    any(isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in point) or
+                    not (-180 <= point[0] <= 180 and -90 <= point[1] <= 90)):
+                    raise ValueError("Boundary coordinates must be WGS 84 longitude and latitude.")
+                longitudes.append(point[0])
+            if ring[0] != ring[-1]:
+                raise ValueError("Close every boundary ring before exporting.")
+    if max(longitudes) - min(longitudes) > 180:
+        raise ValueError("Split a boundary crossing the date line before exporting.")
+    return {"type": value["type"], "coordinates": coordinates}
 
 
 def parameters(data):
@@ -41,7 +73,10 @@ def parameters(data):
         raise ValueError("Bounds must be ordered and cannot cross the date line. Export each side separately.")
     if e - w > 2 or n - s > 2:
         raise ValueError("Choose an area no wider or taller than 2 degrees.")
-    return {**out, "band": band, "bbox": bbox}
+    result = {**out, "band": band, "bbox": bbox}
+    if "geometry" in data:
+        result["geometry"] = boundary(data["geometry"])
+    return result
 
 
 def safe_asset(href):
@@ -159,6 +194,13 @@ def write_crop(src, output, q, item, asset):
     import rasterio
     from rasterio.windows import Window, from_bounds
     from rasterio.warp import transform_bounds
+    geometry = q.get("geometry")
+    if geometry is not None:
+        from shapely.geometry import shape
+        geometry = boundary(geometry)
+        polygon = shape(geometry)
+        if polygon.is_empty or not polygon.is_valid:
+            raise ValueError("Repair invalid or overlapping polygon rings in GIS before exporting.")
     band = q["band"]
     if not src.crs or src.transform.b or src.transform.d or src.transform.a <= 0 or src.transform.e >= 0:
         raise ValueError("This raster needs a georeferencing workflow not supported by crop export.")
@@ -187,6 +229,14 @@ def write_crop(src, output, q, item, asset):
         nodata = float(meta["nodata"])
         mask[values == nodata] = 0
     mask[~np.isfinite(values)] = 0
+    if geometry is not None:
+        from rasterio.features import geometry_mask
+        from rasterio.warp import transform_geom
+        projected = transform_geom("EPSG:4326", src.crs, geometry)
+        inside = geometry_mask([projected], out_shape=values.shape,
+                               transform=src.window_transform(win), invert=True, all_touched=False)
+        mask[~inside] = 0
+        values[~inside] = nodata if nodata is not None else 0
     if not np.any(mask):
         raise ValueError("The crop contains only no-data pixels. Choose another scene or area.")
     scale = meta.get("scale")
@@ -211,7 +261,8 @@ def write_crop(src, output, q, item, asset):
             dst.update_tags(SOURCE_COLLECTION=item["collection"], SOURCE_ITEM=item["id"], SOURCE_ASSET=q["asset"],
                             SOURCE_BAND=str(band), SOURCE_TIME=json.dumps({k: v for k, v in item.get("properties", {}).items() if k in ("datetime", "start_datetime", "end_datetime")}),
                             REQUESTED_BBOX_WGS84=json.dumps(q["bbox"]),
-                            PROCESSING="Native-grid bounding rectangle, clipped to source extent. Stored values unchanged. No cloud/quality masking. Scale and offset retained as metadata.")
+                            AREA_MASK="Polygon with holes; pixel-centre inclusion" if geometry is not None else "Bounding rectangle",
+                            PROCESSING=("Native-grid polygon mask within requested bounds; exterior and hole pixels excluded. Valid stored values unchanged. " if geometry is not None else "Native-grid bounding rectangle, clipped to source extent. Stored values unchanged. ") + "No cloud/quality masking. Scale and offset retained as metadata.")
     return {"width": int(win.width), "height": int(win.height), "crs": src.crs.to_string()}
 
 

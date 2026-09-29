@@ -2,9 +2,9 @@
 
 **Explore any location in the world. Earth Window searches connected satellite archives automatically and tells you which satellites have data.** There is no satellite-selection step.
 
-The app includes a full-screen 3D terrain workspace, globe imagery and before/after comparison, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with detailed Esri reference imagery, no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
+The app includes a full-screen 3D terrain workspace, single-image globe imagery, actual capture times, labelled composite periods, optical cloud filters, original data links, metadata export, and band controls specific to each image. It opens on the whole-world map with detailed Esri reference imagery, no preselected city and a recent date. Search any city, enter any valid `latitude, longitude`, or click anywhere on the map for local imagery and bands. Use **Search map area** for a region or **Whole world** to remove the geographic filter.
 
-**Latest validation (20 September 2026):** 77 automated checks pass. A live CBERS-4 area preview matches its native GeoTIFF pixel-for-pixel. The complete browser-to-processor workflow and GPU terrain placement are still unverified; see the dated validation report below.
+**Latest update (29 September 2026):** Before/after controls have been removed. Searches publish individual archive pages early, reuse successful queries for five minutes, and batch UI updates. Shapefile GeoTIFF downloads can now exclude exterior pixels and holes. **155 JavaScript and 45 Python tests pass**, including 100 polygon-mask cases. Browser/GPU verification is still unavailable. See `validation/UPDATE-2026-09-29.md`; older dated sections below describe historical versions.
 
 ## Run the Python website
 

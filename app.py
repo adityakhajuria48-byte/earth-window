@@ -86,8 +86,8 @@ def search_parameters(params: dict[str, str], now: datetime | None = None) -> di
     datetime.strptime(params.get("time", "12:00"), "%H:%M")
     if day.date() > now.date():
         raise ValueError("Future imagery is not available.")
-    if day.year < 1982:
-        raise ValueError("Choose a date from 1982 onward.")
+    if day.year < 1972:
+        raise ValueError("Choose a date from 1972 onward.")
     start = day - timedelta(days=days)
     end = min(day + timedelta(days=days + 1) - timedelta(milliseconds=1), now)
     return {**geo, "start": start.isoformat(), "end": end.isoformat(), "cloud": cloud, "resolution": resolution}
@@ -177,6 +177,8 @@ def pixel_spacing(feature: dict):
     for asset in feature.get("assets", {}).values():
         if not isinstance(asset, dict): continue
         values.append(asset.get("gsd"))
+        for band in asset.get("raster:bands") or []:
+            if isinstance(band, dict): values.append(band.get("spatial_resolution"))
         for band in asset.get("eo:bands") or asset.get("bands") or []:
             if isinstance(band, dict): values.append(band.get("resolution_x"))
     valid = [v for v in values if isinstance(v, (float, int)) and not isinstance(v, bool) and math.isfinite(v) and v > 0]

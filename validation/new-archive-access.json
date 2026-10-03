@@ -1,0 +1,83 @@
+[
+  {
+    "collection": "hls2-l30",
+    "item": "HLS.L30.T56JKT.2026270T235951.v2.0",
+    "search_count": 1,
+    "host": "hls2euwest.blob.core.windows.net",
+    "status": 206,
+    "magic": "49492a00c00000004744414c5f535452",
+    "cors": "*"
+  },
+  {
+    "collection": "hls2-s30",
+    "item": "HLS.S30.T59VNH.2026270T234621.v2.0",
+    "search_count": 1,
+    "host": "hls2euwest.blob.core.windows.net",
+    "status": 206,
+    "magic": "49492a00c00000004744414c5f535452",
+    "cors": "*"
+  },
+  {
+    "collection": "aster-l1t",
+    "item": "AST_L1T_00312272006020322_20150518201805",
+    "search_count": 1,
+    "host": "astersa.blob.core.windows.net",
+    "status": 206,
+    "magic": "49492a00c00000004744414c5f535452",
+    "cors": "*"
+  },
+  {
+    "collection": "landsat-c2-l1",
+    "item": "LM05_L1GS_039039_20130107_02_T2",
+    "search_count": 1,
+    "host": "landsateuwest.blob.core.windows.net",
+    "status": 206,
+    "magic": "49492a00080000001200000103000100",
+    "cors": "*"
+  },
+  {
+    "collection": "sentinel-1-rtc",
+    "item": "S1C_IW_GRDH_1SDH_20260928T224558_20260928T224627_009653_013376_rtc",
+    "search_count": 1,
+    "host": "sentinel1euwestrtc.blob.core.windows.net",
+    "status": 206,
+    "magic": "49492a00c00000004744414c5f535452",
+    "cors": "*"
+  },
+  {
+    "collection": "AMZ1-WFI-L4-SR-1",
+    "item": "AMAZONIA_1_WFI_20260919_036_021_L4",
+    "search_count": 1,
+    "host": "data.inpe.br",
+    "status": 206,
+    "magic": "49492a00c00000004744414c5f535452",
+    "cors": null
+  },
+  {
+    "collection": "CB4-PAN5M-L4-DN-1",
+    "item": "CBERS_4_PAN5M_20260928_159_125_L4",
+    "search_count": 1,
+    "host": "data.inpe.br",
+    "status": 206,
+    "magic": "49492a007ec25b0c789cedc1010d0000",
+    "cors": null
+  },
+  {
+    "collection": "CB2B-HRC-L2-DN-1",
+    "item": "CBERS_2B_HRC_20100311_158_B_147_4_L2",
+    "search_count": 1,
+    "host": "data.inpe.br",
+    "status": 206,
+    "magic": "49492a00080000001900000103000100",
+    "cors": null
+  },
+  {
+    "collection": "CB4A-MUX-L4-SR-1",
+    "item": "CBERS_4A_MUX_20260919_207_136_L4",
+    "search_count": 1,
+    "host": "data.inpe.br",
+    "status": 206,
+    "magic": "49492a00c00000004744414c5f535452",
+    "cors": null
+  }
+]

@@ -28,6 +28,13 @@ class SearchTests(unittest.TestCase):
         q = app.search_parameters({**self.params, "window": "7"}, self.now)
         self.assertEqual(q["end"], "2025-09-12T08:00:00+00:00")
 
+    def test_historical_mss_dates_and_raster_spacing(self):
+        q = app.search_parameters({**self.params, "date": "1972-07-25"}, self.now)
+        self.assertTrue(q["start"].startswith("1972-07-25"))
+        with self.assertRaises(ValueError):
+            app.search_parameters({**self.params, "date": "1971-12-31"}, self.now)
+        self.assertEqual(app.pixel_spacing({"properties": {"gsd": 79}, "assets": {"red": {"raster:bands": [{"spatial_resolution": 60}]}}}), 60)
+
     def test_invalid_search_rejected(self):
         for key, value in [("lat", "nan"), ("lat", "91"), ("lon", "181"), ("cloud", "101"), ("cloud", "nan"), ("date", "2025-09-13"), ("date", "2025-02-30"), ("window", "1000"), ("time", "25:00")]:
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):

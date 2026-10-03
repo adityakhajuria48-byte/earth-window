@@ -22,7 +22,7 @@ test('points anywhere in the world and regions produce correct geometry',()=>{
 test('automatic registry includes optical, radar, composite, and international sources',()=>{
   assert.equal(new Set(sources.map(s=>s.id)).size,sources.length);
   for(const family of ['Resourcesat-1','CBERS','Sentinel-3','Sentinel-5P','Sentinel-6'])assert.ok(sources.some(s=>s.family===family));
-  assert.deepEqual(new Set(sources.map(x=>x.region)),new Set(['Europe','United States','Japan','India','China / Brazil','Europe / international']));
+  assert.deepEqual(new Set(sources.map(x=>x.region)),new Set(['Europe','United States','Japan','India','China / Brazil','Europe / international','Brazil']));
   assert.ok(sources.every(s=>s.endpoint.startsWith('https:')));
 });
 test('cloud filter never drops radar or unknown optical cloud values',()=>{
@@ -177,4 +177,20 @@ test('resolution limits exclude coarse and unknown pixels, keeping finer real ba
  const a={...asset('red'), 'eo:bands':[{name:'red',common_name:'red',resolution_x:16}]};
  assert.equal(EW.matches(make(undefined,{red:a}),{...q,resolution:30}),true);
  assert.equal(EW.matches(make(undefined,{red:a}),{...q,resolution:10}),false);
+});
+
+test('new real archive fixtures expose original bands with correct per-band spacing',()=>{
+  const fixtures=require('./validation/new-archive-fixtures.json');
+  for(const {source,item} of fixtures){
+    const record=EW.attach(item,sources.find(s=>s.id===source)), bs=EW.bands(record);
+    assert.ok(bs.length>0,source);assert.ok(bs.every(b=>b.gsd>0),source);
+    if(source==='aster'){
+      assert.equal(bs.length,14);
+      assert.deepEqual([...new Set(bs.map(b=>b.gsd))].sort((a,b)=>a-b),[15,30,90]);
+      assert.equal(bs.filter(b=>b.key==='TIR').length,5);
+    }
+    if(source==='landsat-mss')assert.ok(bs.every(b=>b.gsd===60));
+    if(source==='s1-rtc')assert.ok(bs.some(b=>['vv','vh','hh','hv'].includes(b.common)));
+    if(source==='hls-l30'||source==='hls-s30')assert.ok(EW.presets(bs).some(p=>p.id==='true'));
+  }
 });

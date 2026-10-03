@@ -18,7 +18,8 @@ HOSTS = {
     "data.inpe.br", "sentinel-cogs.s3.us-west-2.amazonaws.com",
     "sentinel-s2-l2a.s3.amazonaws.com", "earth-search-data.s3.amazonaws.com",
     "landsateuwest.blob.core.windows.net", "modiseuwest.blob.core.windows.net",
-    "alos.blob.core.windows.net",
+    "alos.blob.core.windows.net", "hls2euwest.blob.core.windows.net",
+    "astersa.blob.core.windows.net", "sentinel1euwestrtc.blob.core.windows.net",
 }
 
 

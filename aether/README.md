@@ -30,7 +30,7 @@ For PyTorch CPU support, install a compatible PyTorch build separately from the 
 ```bash
 python -m aether.cli benchmark --size 2048 --repeats 5 --backend numpy
 python -m aether.cli benchmark --size 2048 --repeats 5 --backend torch
-python -m pytest aether/tests -q
+python -m pytest tests -q
 ```
 
 The Torch backend automatically uses CUDA when available; otherwise it uses CPU and reports that device. The benchmark includes warm-up runs and synchronizes CUDA before timing.

@@ -180,9 +180,17 @@ class RangeFile(io.RawIOBase):
         while self.pos < end:
             start = self.pos // 65536 * 65536
             if start not in self.cache:
-                if len(self.cache) > 64:
-                    del self.cache[next(key for key in self.cache if key != -1)]
-                self.cache[start] = self._range(start, min(65536, self.size - start))
+                # Coalesce adjacent blocks requested by this read (at most 1 MiB).
+                stop = min(self.size, ((end + 65535) // 65536) * 65536, start + 16 * 65536)
+                for offset in range(start + 65536, stop, 65536):
+                    if offset in self.cache:
+                        stop = offset
+                        break
+                raw = self._range(start, stop - start)
+                for offset in range(0, len(raw), 65536):
+                    if len(self.cache) > 64:
+                        del self.cache[next(key for key in self.cache if key != -1)]
+                    self.cache[start + offset] = raw[offset:offset + 65536]
             count = min(end - self.pos, len(self.cache[start]) - (self.pos - start))
             chunks.append(self.cache[start][self.pos-start:self.pos-start+count])
             self.pos += count
@@ -303,3 +311,4 @@ if __name__ == "__main__":
         message = str(exc) if isinstance(exc, ValueError) else "The provider could not supply this crop. Try a smaller area or open the original file."
         print(json.dumps({"error": message}))
         sys.exit(1)
+

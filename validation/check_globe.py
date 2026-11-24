@@ -38,10 +38,25 @@ with sync_playwright() as pw:
             page.wait_for_timeout(500)
         raise AssertionError(label+' overlay was missing from the expected map center')
     check('Initial')
+    page.evaluate("""() => {
+      const original=Cesium.Globe.prototype.getHeight;
+      Cesium.Globe.prototype.getHeight=function(position) {
+        window.qaGlobe=this;
+        return original.call(this,position);
+      };
+    }""")
     before=page.evaluate('EWGlobe.bounds()')
     page.locator('#globe-in').dispatch_event('click')
     page.wait_for_function('previous=>JSON.stringify(EWGlobe.bounds())!==JSON.stringify(previous)',arg=before)
     check('Zoomed')
+    heights=page.wait_for_function("""() => {
+      if(!window.qaGlobe) return false;
+      const samples=[[75.08,32.88],[75.10,32.90],[75.12,32.92]].map(
+        ([lon,lat])=>qaGlobe.getHeight(Cesium.Cartographic.fromDegrees(lon,lat)));
+      return samples.every(Number.isFinite) && Math.min(...samples)>100 &&
+        Math.max(...samples)-Math.min(...samples)>10 && samples;
+    }""",timeout=60000).json_value()
+    print('Terrain heights (m):',heights,flush=True)
     page.locator('#view-2d').dispatch_event('click')
     assert not page.evaluate('EWGlobe.active')
     page.locator('#view-3d').dispatch_event('click')
